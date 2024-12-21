@@ -1,13 +1,10 @@
 import express, { Express } from "express";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 import postsController from "./controllers/post.controller";
 import commentsController from "./controllers/comment.controller";
 import authenticate from "./middlewares/auth.middleware";
 import authController from "./controllers/auth.controller";
 import usersController from "./controllers/user.controller";
-
-dotenv.config();
 
 const mongoURI = process.env.MONGO_URI;
 

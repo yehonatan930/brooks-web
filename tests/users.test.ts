@@ -6,8 +6,23 @@ import { IUser } from "../src/schemas/user.schema";
 
 let app: Express;
 
+let accessToken: string;
+
 beforeAll(async () => {
   app = await serverPromise;
+});
+
+async function login() {
+  const res = await request(app).post("/auth/login").send({
+    username: "test user",
+    password: "password",
+  });
+
+  accessToken = res.body.accessToken;
+}
+
+beforeEach(async () => {
+  await login();
 });
 
 afterAll(async () => {
@@ -27,7 +42,8 @@ describe("POST /users", () => {
     const response = await request(app)
       .post("/users")
       .send(newUser)
-      .set("Accept", "application/json");
+      .set("Accept", "application/json")
+      .set("Authorization", `JWT ${accessToken}`);
     expect(response.status).toBe(201);
     expect(response.body.username).toBe(newUser.username);
     expect(response.body.email).toBe(newUser.email);
@@ -38,7 +54,9 @@ describe("POST /users", () => {
 
 describe("GET /users", () => {
   it("should return all users", async () => {
-    const response = await request(app).get("/users");
+    const response = await request(app)
+      .get("/users")
+      .set("Authorization", `JWT ${accessToken}`);
     expect(response.status).toBe(200);
     expect(response.body).toBeInstanceOf(Array);
     response.body.forEach((user: any) => {
@@ -52,7 +70,9 @@ describe("GET /users", () => {
 
 describe("GET /users/:id", () => {
   it("should return a user by ID", async () => {
-    const response = await request(app).get("/users/1");
+    const response = await request(app)
+      .get("/users/1")
+      .set("Authorization", `JWT ${accessToken}`);
     expect(response.status).toBe(200);
     expect(response.body._id).toBe(1);
     expect(response.body.username).toBeDefined();
@@ -73,7 +93,8 @@ describe("PUT /users/:id", () => {
     const response = await request(app)
       .put("/users/1")
       .send(updatedUser)
-      .set("Accept", "application/json");
+      .set("Accept", "application/json")
+      .set("Authorization", `JWT ${accessToken}`);
     expect(response.status).toBe(201);
     expect(response.body.username).toBe(updatedUser.username);
     expect(response.body.email).toBe(updatedUser.email);
@@ -84,11 +105,15 @@ describe("PUT /users/:id", () => {
 
 describe("DELETE /users/:id", () => {
   it("should delete a user by ID", async () => {
-    const response = await request(app).delete("/users/1");
+    const response = await request(app)
+      .delete("/users/1")
+      .set("Authorization", `JWT ${accessToken}`);
     expect(response.status).toBe(200);
     expect(response.body._id).toBe(1);
 
-    const userResponse = await request(app).get("/users/1");
+    const userResponse = await request(app)
+      .get("/users/1")
+      .set("Authorization", `JWT ${accessToken}`);
     expect(userResponse.status).toBe(404);
   });
 });

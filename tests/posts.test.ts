@@ -6,8 +6,31 @@ import serverPromise from "../src/server";
 
 let app: Express;
 
+let postSender: number;
+let accessToken: string;
+
 beforeAll(async () => {
   app = await serverPromise;
+
+  const res = await request(app).post("auth/register").send({
+    username: "test user",
+    password: "password",
+  });
+
+  postSender = res.body._id;
+});
+
+async function login() {
+  const res = await request(app).post("/auth/login").send({
+    username: "test user",
+    password: "password",
+  });
+
+  accessToken = res.body.accessToken;
+}
+
+beforeEach(async () => {
+  await login();
 });
 
 afterAll(async () => {
@@ -17,7 +40,7 @@ afterAll(async () => {
 describe("POST /posts", () => {
   it("should create a new post", async () => {
     const newPost: IPost = {
-      sender: 1,
+      sender: postSender,
       title: "Hello, World!",
       content: "This is a test post",
     };
@@ -25,7 +48,8 @@ describe("POST /posts", () => {
     const response = await request(app)
       .post("/posts")
       .send(newPost)
-      .set("Accept", "application/json");
+      .set("Accept", "application/json")
+      .set("Authorization", `JWT ${accessToken}`);
     expect(response.status).toBe(201);
     expect(response.body.sender).toBe(newPost.sender);
     expect(response.body.title).toBe(newPost.title);
@@ -36,7 +60,9 @@ describe("POST /posts", () => {
 
 describe("GET /posts", () => {
   it("should return all posts", async () => {
-    const response = await request(app).get("/posts");
+    const response = await request(app)
+      .get("/posts")
+      .set("Authorization", `JWT ${accessToken}`);
     expect(response.status).toBe(200);
     expect(response.body).toBeInstanceOf(Array);
     response.body.forEach((post: IPost) => {
@@ -48,12 +74,14 @@ describe("GET /posts", () => {
   });
 
   it("should return posts by sender", async () => {
-    const response = await request(app).get("/posts?sender=1");
+    const response = await request(app)
+      .get(`/posts?sender=${postSender}`)
+      .set("Authorization", `JWT ${accessToken}`);
     expect(response.status).toBe(200);
     expect(response.body).toBeInstanceOf(Array);
     response.body.forEach((post: IPost) => {
       expect(post._id).toBeDefined();
-      expect(post.sender).toBe("test user");
+      expect(post.sender).toBe(postSender);
       expect(post.title).toBeDefined();
       expect(post.content).toBeDefined();
     });
@@ -62,7 +90,9 @@ describe("GET /posts", () => {
 
 describe("GET /posts/:id", () => {
   it("should return a post by id", async () => {
-    const posts = await request(app).get("/posts");
+    const posts = await request(app)
+      .get("/posts")
+      .set("Authorization", `JWT ${accessToken}`);
     const postId = posts.body[0]._id;
     const response = await request(app).get(`/posts/${postId}`);
     expect(response.status).toBe(200);
@@ -77,11 +107,13 @@ describe("GET /posts/:id", () => {
 
 describe("PUT /posts", () => {
   it("should update a post", async () => {
-    const posts = await request(app).get("/posts");
+    const posts = await request(app)
+      .get("/posts")
+      .set("Authorization", `JWT ${accessToken}`);
     const postId = posts.body[0]._id;
     const updatedPost: IPost = {
       _id: postId,
-      sender: 1,
+      sender: postSender,
       title: "Hello, World!",
       content: "This is an updated test post",
     };
@@ -89,7 +121,8 @@ describe("PUT /posts", () => {
     const response = await request(app)
       .put("/posts")
       .send(updatedPost)
-      .set("Accept", "application/json");
+      .set("Accept", "application/json")
+      .set("Authorization", `JWT ${accessToken}`);
     expect(response.status).toBe(201);
     expect(response.body._id).toBe(postId);
     expect(response.body.sender).toBe(updatedPost.sender);
@@ -100,7 +133,7 @@ describe("PUT /posts", () => {
   it("should return 404 if post not found", async () => {
     const updatedPost: IPost = {
       _id: 1234567890,
-      sender: 1,
+      sender: postSender,
       title: "Hello, World!",
       content: "This is an updated test post",
     };
@@ -108,7 +141,8 @@ describe("PUT /posts", () => {
     const response = await request(app)
       .put("/posts")
       .send(updatedPost)
-      .set("Accept", "application/json");
+      .set("Accept", "application/json")
+      .set("Authorization", `JWT ${accessToken}`);
     expect(response.status).toBe(404);
   });
 });
