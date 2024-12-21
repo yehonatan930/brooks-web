@@ -66,12 +66,12 @@ router.post("/login", async (req: Request, res: Response) => {
     }
 
     const accessToken = generateToken(
-      user._id,
+      user._id.toString(),
       process.env.ACCESS_TOKEN_SECRET as string,
       "1h"
     );
     const refreshToken = generateToken(
-      user._id,
+      user._id.toString(),
       process.env.REFRESH_TOKEN_SECRET as string,
       "7d"
     );

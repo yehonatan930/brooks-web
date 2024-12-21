@@ -52,7 +52,8 @@ router.put("/", async (req, res) => {
     );
     if (!updatedPost)
       return res.status(404).json({ message: "Post not found" });
-    res.json(updatedPost);
+
+    res.status(201).json(updatedPost);
   } catch (err) {
     res
       .status(400)

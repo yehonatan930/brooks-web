@@ -1,6 +1,6 @@
-import express from 'express';
-import mongoose, {Error} from 'mongoose';
-import { commentSchema } from '../schemas/comment.schema';
+import express from "express";
+import mongoose from "mongoose";
+import { commentSchema } from "../schemas/comment.schema";
 const router = express.Router();
 
 const Comment = mongoose.model("Comment", commentSchema);
@@ -71,6 +71,12 @@ router.get("/:postId", async (req, res) => {
 
 // Add a New Comment
 router.post("/", async (req, res) => {
+  if (!req.body.sender || !req.body.content || !req.body.postId) {
+    return res
+      .status(400)
+      .json({ error: "sender, content and postId are required" });
+  }
+
   try {
     const comment = new Comment(req.body);
     await comment.save();
