@@ -1,13 +1,13 @@
 import request from "supertest";
-import serverPromise from "../src/server";
+import serverPromise from "../server";
 import { Express } from "express";
 import mongoose from "mongoose";
-import { IPost } from "../src/schemas/post.schema";
-import { IComment } from "../src/schemas/comment.schema";
+import { IPost } from "../schemas/post.schema";
+import { IComment } from "../schemas/comment.schema";
 
 let app: Express;
 
-let commentAuthor: number;
+let commentAuthor: string;
 let accessToken: string;
 let postId: number;
 

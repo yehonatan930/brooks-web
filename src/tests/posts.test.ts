@@ -1,12 +1,12 @@
 import request from "supertest";
 import { Express } from "express";
 import mongoose from "mongoose";
-import { IPost } from "../src/schemas/post.schema";
-import serverPromise from "../src/server";
+import { IPost } from "../schemas/post.schema";
+import serverPromise from "../server";
 
 let app: Express;
 
-let postSender: number;
+let postSender: string;
 let accessToken: string;
 
 beforeAll(async () => {

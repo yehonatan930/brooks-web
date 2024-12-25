@@ -1,8 +1,8 @@
 import request from "supertest";
 import { Express } from "express";
 import mongoose from "mongoose";
-import serverPromise from "../src/server";
-import { IUser } from "../src/schemas/user.schema";
+import serverPromise from "../server";
+import { IUser } from "../schemas/user.schema";
 
 let app: Express;
 
@@ -32,7 +32,7 @@ afterAll(async () => {
 describe("POST /users", () => {
   it("should create a new user", async () => {
     const newUser: IUser = {
-      _id: 1,
+      _id: "1",
       username: "Test User",
       email: "example@gamil.com",
       password: "password",

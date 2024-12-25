@@ -1,11 +1,11 @@
 import dotenv from "dotenv";
 import serverPromise from "./server";
 
-if (process.env.NODE_ENV === "test") {
-  dotenv.config({ path: ".test.env" });
-} else {
-  dotenv.config();
-}
+// if (process.env.NODE_ENV === "test") {
+//   dotenv.config({ path: "./.test.env" });
+// } else {
+dotenv.config();
+// }
 
 const PORT = process.env.PORT;
 

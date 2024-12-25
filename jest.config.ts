@@ -1,4 +1,6 @@
 import type { Config } from "jest";
+// import dotenv from "dotenv";
+// dotenv.config();
 
 const config: Config = {
   testEnvironment: "node",
@@ -10,7 +12,6 @@ const config: Config = {
   collectCoverageFrom: ["src/**/*.ts"],
   preset: "ts-jest",
   testTimeout: 30000,
-  setupFilesAfterEnv: ["./jest.setup.ts"],
   testMatch: ["**/*.test.ts"],
 };
 

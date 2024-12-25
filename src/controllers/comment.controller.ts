@@ -16,7 +16,7 @@ router.delete("/:id", async (req, res) => {
       return res.status(404).json({ error: "Comment not found" });
     }
 
-    res.status(200).json({ message: "Comment deleted successfully" });
+    res.status(200).json({ _id: deletedComment._id });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

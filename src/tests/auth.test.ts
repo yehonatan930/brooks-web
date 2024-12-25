@@ -1,5 +1,5 @@
 import request from "supertest";
-import serverPromise from "../src/server";
+import serverPromise from "../server";
 import { Express } from "express";
 import mongoose from "mongoose";
 
@@ -36,7 +36,7 @@ describe("register user", () => {
   it("should register a new user", async () => {
     const response = await request(app)
       .post("/auth/register")
-      .send({ email: userEmail, password: userPassword });
+      .send({ username: "username", email: userEmail, password: userPassword });
     expect(response.status).toBe(201);
     expect(response.body.email).toBe(userEmail);
   });
