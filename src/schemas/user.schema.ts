@@ -9,7 +9,7 @@ export const userSchema = new mongoose.Schema<IUser>({
 });
 
 export interface IUser {
-  _id: string;
+  _id?: String;
   username: string;
   email: string;
   password: string;

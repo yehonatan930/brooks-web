@@ -52,7 +52,8 @@ router.put("/", async (req, res) => {
     );
     if (!updatedPost)
       return res.status(404).json({ message: "Post not found" });
-    res.json(updatedPost);
+
+    res.status(201).json(updatedPost);
   } catch (err) {
     res
       .status(400)
@@ -63,12 +64,13 @@ router.put("/", async (req, res) => {
 // Create a new post
 router.post("/", async (req, res) => {
   try {
+    console.debug(req.body);
     const newPost = new Post(req.body);
     const savedPost = await newPost.save();
-    res.status(201).json(savedPost);
+    res.status(201).json(newPost);
   } catch (err) {
     res
-      .status(400)
+      .status(500)
       .json({ message: "Error creating post", error: err.message });
   }
 });

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 export interface IComment {
-  _id: number;
+  _id?: number;
   postId: number;
   content: string;
   author: string;

@@ -8,8 +8,9 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "useUnknownInCatchVariables": false,
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "sourceMap": true
   },
-  "include": ["src/**/*", "tests/**/*"],
+  "include": ["src/**/*", "src/tests/**/*"],
   "exclude": ["node_modules", "dist"]
 }

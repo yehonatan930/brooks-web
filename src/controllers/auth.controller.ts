@@ -40,7 +40,7 @@ router.post("/register", async (req: Request, res: Response) => {
     });
 
     await newUser.save();
-    res.status(201).json({ message: "User created successfully" });
+    res.status(201).json(newUser);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error registering user" });
@@ -66,14 +66,14 @@ router.post("/login", async (req: Request, res: Response) => {
     }
 
     const accessToken = generateToken(
-      user._id,
+      user._id.toString(),
       process.env.ACCESS_TOKEN_SECRET as string,
-      "1h"
+      process.env.REFRESH_TIMEOUT
     );
     const refreshToken = generateToken(
-      user._id,
+      user._id.toString(),
       process.env.REFRESH_TOKEN_SECRET as string,
-      "7d"
+      "1h"
     );
 
     user.tokens.push(refreshToken);
@@ -115,9 +115,9 @@ router.post("/refresh", async (req: Request, res: Response) => {
         }
 
         const accessToken = generateToken(
-          user._id,
+          user._id.toString(),
           process.env.ACCESS_TOKEN_SECRET as string,
-          "1h"
+          process.env.REFRESH_TIMEOUT
         );
         res.json({ accessToken });
       }
@@ -125,6 +125,39 @@ router.post("/refresh", async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error refreshing token" });
+  }
+});
+
+router.post("/logout", async (req: Request, res: Response) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    jwt.verify(
+      token,
+      process.env.REFRESH_TOKEN_SECRET as string,
+      async (err: jwt.VerifyErrors, userInfo: jwt.JwtPayload) => {
+        if (err) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
+
+        const userId = userInfo._id;
+        const user = await User.findById(userId);
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+
+        user.tokens = [];
+        await user.save();
+        res.json({ message: "User logged out" });
+      }
+    );
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error logging out user" });
   }
 });
 

@@ -13,10 +13,10 @@ const authenticate = (req: Request, res: Response, next: NextFunction) => {
     return res.status(401).json({ message: "Access denied" });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err: any, user: any) => {
-    console.log(err, user);
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err: any, user: any) => {
     if (err) {
-      return res.status(403).json({ message: "Invalid token" });
+      console.error(err, user);
+      return res.status(401).json({ message: "Invalid token" });
     }
 
     req.user = user;
