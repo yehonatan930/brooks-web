@@ -12,7 +12,8 @@ let accessToken: string;
 beforeAll(async () => {
   app = await serverPromise;
 
-  const res = await request(app).post("auth/register").send({
+  const res = await request(app).post("/auth/register").send({
+    email: "anEmail@o",
     username: "test user",
     password: "password",
   });
@@ -22,7 +23,7 @@ beforeAll(async () => {
 
 async function login() {
   const res = await request(app).post("/auth/login").send({
-    username: "test user",
+    email: "anEmail@o",
     password: "password",
   });
 
@@ -34,6 +35,7 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
+  await request(app).delete(`/users/${postSender}`);
   await mongoose.connection.close();
 });
 

@@ -14,7 +14,8 @@ let postId: number;
 beforeAll(async () => {
   app = await serverPromise;
 
-  const res = await request(app).post("auth/register").send({
+  const res = await request(app).post("/auth/register").send({
+    email: "anEmail@o",
     username: "test user",
     password: "password",
   });
@@ -45,6 +46,7 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
+  await request(app).delete(`/users/${commentAuthor}`);
   await mongoose.connection.close();
 });
 
