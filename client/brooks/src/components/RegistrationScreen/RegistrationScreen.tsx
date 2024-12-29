@@ -8,6 +8,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PersonIcon from '@mui/icons-material/Person';
 import { registerUser } from '../../services/userService';
 import './RegistrationScreen.scss';
+import { toast } from 'react-toastify';
 
 interface RegistrationScreenProps {
   onRegister: (email: string, password: string) => void;
@@ -34,6 +35,7 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ onRegister, onE
   const handleRegister = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (password !== confirmPassword) {
+      toast.error('Passwords do not match');
       onError('Passwords do not match');
       return;
     }
