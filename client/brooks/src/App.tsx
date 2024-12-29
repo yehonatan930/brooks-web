@@ -4,10 +4,6 @@ import {Route, Routes} from "react-router-dom";
 import RegistrationScreen from "./components/RegistrationScreen/RegistrationScreen";
 
 function App() {
-  const handleRegister = (email: string, password: string) => {
-    // Handle registration logic here
-    console.log('Registering user:', email, password);
-  };
 
   const handleError = (error: string) => {
     // Handle error logic here
@@ -20,7 +16,7 @@ function App() {
         <Routes>
           {/*<Route path="/" element={<HomeFeedScreen />} />*/}
           {/*<Route path="/login" element={<LoginScreen />} />*/}
-          <Route path="/register" element={<RegistrationScreen onRegister={handleRegister} onError={handleError}/>} />
+          <Route path="/register" element={<RegistrationScreen onError={handleError}/>} />
           {/*<Route path="/post/create" element={<PostCreationScreen />} />*/}
           {/*<Route path="/profile" element={<ProfileScreen />} />*/}
           {/*<Route path="/discover" element={<DiscoverScreen />} />*/}
