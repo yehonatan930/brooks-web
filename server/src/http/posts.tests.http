@@ -1,0 +1,62 @@
+@ACCESS_TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiX2lkIjoiY2QzOTU1ODgtMTQ0MS00YzllLWE5YTYtMmJmOGJhYmQxOTUzIiwiaWF0IjoxNzMzODMyMzQzLCJleHAiOjE3MzM4MzU5NDN9.s3JdXKWilduvz8W2ZuUm3zi9fW5Sy6t_ivfFJ-AacRo
+
+### Create a new post
+POST http://localhost:8080/posts HTTP/1.1
+Content-Type: application/json
+Authorization: JWT {{ACCESS_TOKEN}}
+
+{
+  "_id": 1,
+  "title": "My First Post",
+  "content": "This is the content of my first post.",
+  "sender": 1
+}
+
+###
+
+### Create another post
+POST http://localhost:8080/posts HTTP/1.1
+Content-Type: application/json
+
+{
+  "_id": 2,
+  "title": "My Second Post",
+  "content": "Content of the second post.",
+  "sender": 2
+}
+
+### Get all posts
+GET http://localhost:8080/posts HTTP/1.1
+Content-Type: application/json
+Authorization: JWT {{ACCESS_TOKEN}}
+
+###
+
+### Update an existing post
+PUT http://localhost:8080/posts HTTP/1.1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "title": "Updated Title",
+  "content": "Updated content for my first post.",
+  "sender": 1
+}
+
+### Get all posts by a specific sender
+GET http://localhost:8080/posts?sender=1 HTTP/1.1
+Content-Type: application/json
+
+###
+
+### Get a post by ID
+GET http://localhost:8080/posts/1 HTTP/1.1
+Content-Type: application/json
+
+###
+
+### Get all posts (to check both posts exist)
+GET http://localhost:8080/posts HTTP/1.1
+Content-Type: application/json
+
+###
