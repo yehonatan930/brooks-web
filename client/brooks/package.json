@@ -3,10 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "cra-template": "1.2.0",
+    "cra-template-typescript": "1.2.0",
+    "expo-linear-gradient": "^14.0.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-scripts": "5.0.1"
+    "react-router-dom": "^7.1.1",
+    "react-scripts": "^5.0.1",
+    "sass": "^1.83.0",
+    "styled-components": "^6.1.13"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -33,6 +37,15 @@
     ]
   },
   "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.0.2",
+    "@types/react-dom": "^18.0.0",
+    "less": "^4.2.1",
+    "typescript": "^5.7.2",
     "web-vitals": "^4.2.4"
+  },
+  "overrides": {
+    "typescript": "^5.7.2"
   }
 }
