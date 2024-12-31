@@ -13,6 +13,7 @@ const config: Config = {
   preset: "ts-jest",
   testTimeout: 30000,
   testMatch: ["**/*.test.ts"],
+  openHandlesTimeout: 0,
 };
 
 export default config;

@@ -71,14 +71,18 @@ router.get("/:postId", async (req, res) => {
 
 // Add a New Comment
 router.post("/", async (req, res) => {
-  if (!req.body.sender || !req.body.content || !req.body.postId) {
+  if (!req.body.author || !req.body.content || !req.body.postId) {
     return res
       .status(400)
       .json({ error: "sender, content and postId are required" });
   }
 
   try {
-    const comment = new Comment(req.body);
+    const comment = new Comment({
+      ...req.body,
+      postId: new mongoose.Types.ObjectId(req.body.postId as string),
+      _id: new mongoose.Types.ObjectId(),
+    });
     await comment.save();
     res.status(201).json(comment);
   } catch (error: any) {

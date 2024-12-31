@@ -29,6 +29,9 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(404).json({ error: "Post not found" });
+    }
     const post: IPost = await Post.findById(id);
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
@@ -41,13 +44,15 @@ router.get("/:id", async (req, res) => {
 
 // update a Post
 router.put("/", async (req, res) => {
+  if (!mongoose.isValidObjectId(req.body._id)) {
+    return res.status(404).json({ error: "Post not found" });
+  }
   try {
     const updatedPost: IPost = await Post.findByIdAndUpdate(
-      req.body.id,
+      req.body._id,
       req.body,
       {
         new: true,
-        runValidators: true,
       }
     );
     if (!updatedPost)
@@ -64,10 +69,12 @@ router.put("/", async (req, res) => {
 // Create a new post
 router.post("/", async (req, res) => {
   try {
-    console.debug(req.body);
-    const newPost = new Post(req.body);
+    const newPost = new Post({
+      ...req.body,
+      _id: new mongoose.Types.ObjectId(),
+    });
     const savedPost = await newPost.save();
-    res.status(201).json(newPost);
+    res.status(201).json(savedPost);
   } catch (err) {
     res
       .status(500)

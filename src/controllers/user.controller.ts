@@ -26,21 +26,6 @@ router.get("/:id", async (req: Request, res: Response) => {
   }
 });
 
-// POST: Create a new user
-router.post("/", async (req: Request, res: Response) => {
-  try {
-    const { _id, username, email, password, tokens } = req.body;
-    if (!_id || !username || !email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-    const newUser = new User({ _id, username, email, password, tokens });
-    await newUser.save();
-    res.status(201).json(newUser);
-  } catch (error) {
-    res.status(500).json({ message: "Error creating user", error });
-  }
-});
-
 // PUT: Update an existing user
 router.put("/:id", async (req: Request, res: Response) => {
   try {

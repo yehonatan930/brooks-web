@@ -99,7 +99,7 @@ router.post("/refresh", async (req: Request, res: Response) => {
       process.env.REFRESH_TOKEN_SECRET as string,
       async (err: jwt.VerifyErrors, userInfo: jwt.JwtPayload) => {
         if (err) {
-          return res.status(403).json({ message: "Forbidden" });
+          return res.status(403).json({ message: "Forbidden jwt err" });
         }
 
         const userId = userInfo._id;
@@ -111,7 +111,7 @@ router.post("/refresh", async (req: Request, res: Response) => {
         if (!user.tokens.includes(token)) {
           user.tokens = [];
           await user.save();
-          return res.status(403).json({ message: "Forbidden" });
+          return res.status(403).json({ message: "Forbidden user tokens" });
         }
 
         const accessToken = generateToken(

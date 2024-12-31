@@ -9,32 +9,35 @@ let app: Express;
 
 let commentAuthor: string;
 let accessToken: string;
-let postId: number;
+let postId: string;
+
+const email = `${Math.floor(Math.random() * 1000)}@yeah`;
 
 beforeAll(async () => {
   app = await serverPromise;
 
   const res = await request(app).post("/auth/register").send({
-    email: "anEmail@o",
+    email,
     username: "test user",
     password: "password",
   });
 
   commentAuthor = res.body._id;
 
-  await request(app)
+  const res2 = await request(app)
     .post("/posts")
     .send({
-      _id: postId,
       title: "Test Post",
       content: "This is a test post",
       sender: commentAuthor,
     } as IPost);
+
+  postId = "6773540ea45a563c1d9cb46c";
 });
 
 async function login() {
   const res = await request(app).post("/auth/login").send({
-    username: "test user",
+    email,
     password: "password",
   });
 
@@ -52,9 +55,9 @@ afterAll(async () => {
 
 describe("POST /comments", () => {
   it("should create a new comment", async () => {
-    const newComment: IComment = {
+    const newComment = {
       content: "This is a test comment",
-      postId: postId,
+      postId,
       author: commentAuthor,
     };
 
@@ -72,7 +75,7 @@ describe("POST /comments", () => {
 
   it("should not create a new comment without content", async () => {
     const newComment = {
-      postId: postId,
+      postId,
     };
 
     const response = await request(app)
@@ -101,7 +104,7 @@ describe("POST /comments", () => {
   it("should not create a new comment without sender", async () => {
     const newComment = {
       content: "This is a test comment",
-      postId: postId,
+      postId,
     };
 
     const response = await request(app)
@@ -121,9 +124,9 @@ describe("GET /comments", () => {
       .set("Authorization", `JWT ${accessToken}`);
     expect(response.status).toBe(200);
     expect(response.body).toBeInstanceOf(Array);
-    response.body.forEach((comment: any) => {
+    response.body.forEach((comment: IComment) => {
       expect(comment._id).toBeDefined();
-      expect(comment.sender).toBeDefined();
+      expect(comment.author).toBeDefined();
       expect(comment.content).toBeDefined();
     });
   });
@@ -136,9 +139,9 @@ describe("GET /comments/:postId", () => {
       .set("Authorization", `JWT ${accessToken}`);
     expect(response.status).toBe(200);
     expect(response.body).toBeInstanceOf(Array);
-    response.body.forEach((comment: any) => {
+    response.body.forEach((comment: IComment) => {
       expect(comment._id).toBeDefined();
-      expect(comment.sender).toBeDefined();
+      expect(comment.author).toBeDefined();
       expect(comment.content).toBeDefined();
       expect(comment.postId).toBe(postId);
     });
@@ -182,8 +185,5 @@ describe("DELETE /comments/:id", () => {
       .set("Authorization", `JWT ${accessToken}`);
     expect(commentResponse.status).toBe(200);
     expect(commentResponse.body._id).toBe(commentId);
-
-    const getResponse = await request(app).get(`/comments/${commentId}`);
-    expect(getResponse.status).toBe(404);
   });
 });

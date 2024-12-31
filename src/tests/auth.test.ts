@@ -93,6 +93,7 @@ describe("refresh token", () => {
     const response = await request(app)
       .post("/auth/refresh")
       .set("Authorization", `JWT ${refreshToken}`);
+    console.log(response.body);
     expect(response.status).toBe(200);
     expect(response.body.accessToken).toBeDefined();
 
