@@ -5,11 +5,21 @@ import mongoose from "mongoose";
 
 let app: Express;
 
+const originalEnv = process.env;
+
 beforeAll(async () => {
+  jest.resetModules();
+
   app = await serverPromise;
+
+  process.env = {
+    ...originalEnv,
+    REFRESH_TIMEOUT: "3s",
+  };
 });
 
 afterAll(async () => {
+  process.env = originalEnv;
   await mongoose.connection.close();
 });
 
@@ -29,14 +39,16 @@ describe("restrict access with invalid token", () => {
   });
 });
 
-const userEmail = "email@bobo.com";
+const userEmail = `${Math.floor(Math.random() * 1000)}@yeah`;
 const userPassword = "password";
 
 describe("register user", () => {
   it("should register a new user", async () => {
-    const response = await request(app)
-      .post("/auth/register")
-      .send({ username: "username", email: userEmail, password: userPassword });
+    const response = await request(app).post("/auth/register").send({
+      username: "username",
+      email: userEmail,
+      password: userPassword,
+    });
     expect(response.status).toBe(201);
     expect(response.body.email).toBe(userEmail);
   });
@@ -93,7 +105,6 @@ describe("refresh token", () => {
     const response = await request(app)
       .post("/auth/refresh")
       .set("Authorization", `JWT ${refreshToken}`);
-    console.log(response.body);
     expect(response.status).toBe(200);
     expect(response.body.accessToken).toBeDefined();
 
@@ -126,7 +137,7 @@ describe("logout user", () => {
   it("should logout a user", async () => {
     const response = await request(app)
       .post("/auth/logout")
-      .set("Authorization", `JWT ${accessToken}`);
+      .set("Authorization", `JWT ${refreshToken}`);
     expect(response.status).toBe(200);
   });
 });

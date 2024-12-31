@@ -66,17 +66,19 @@ router.post("/login", async (req: Request, res: Response) => {
     }
 
     const accessToken = generateToken(
-      user._id.toString(),
+      user._id,
       process.env.ACCESS_TOKEN_SECRET as string,
       process.env.REFRESH_TIMEOUT
     );
     const refreshToken = generateToken(
-      user._id.toString(),
+      user._id,
       process.env.REFRESH_TOKEN_SECRET as string,
       "1h"
     );
 
     user.tokens.push(refreshToken);
+    console.debug("regresh userId ", user._id);
+    console.debug("login user tkon:", user.tokens);
     await user.save();
 
     res.json({ accessToken, refreshToken });
@@ -102,11 +104,14 @@ router.post("/refresh", async (req: Request, res: Response) => {
           return res.status(403).json({ message: "Forbidden jwt err" });
         }
 
-        const userId = userInfo._id;
+        const userId = userInfo.userId;
         const user = await User.findById(userId);
         if (!user) {
           return res.status(404).json({ message: "User not found" });
         }
+
+        console.debug("regresh userId ", userId);
+        console.debug("regresh user.tokens ", user.tokens);
 
         if (!user.tokens.includes(token)) {
           user.tokens = [];
@@ -115,7 +120,7 @@ router.post("/refresh", async (req: Request, res: Response) => {
         }
 
         const accessToken = generateToken(
-          user._id.toString(),
+          user._id,
           process.env.ACCESS_TOKEN_SECRET as string,
           process.env.REFRESH_TIMEOUT
         );
