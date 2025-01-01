@@ -6,6 +6,8 @@ import authenticate from "./middlewares/auth.middleware";
 import authController from "./controllers/auth.controller";
 import usersController from "./controllers/user.controller";
 import dotenv from "dotenv";
+import {setupSwagger} from "./swagger";
+import cors from "cors";
 dotenv.config();
 
 const mongoURI = process.env.MONGO_URI;
@@ -21,6 +23,9 @@ const serverPromise: Promise<Express> = new Promise((resolve, reject) => {
     .then(() => {
       console.log("Connected to MongoDB");
       const app: Express = express();
+
+      app.use(cors())
+      setupSwagger(app);
       app.use(express.json());
       app.use(authenticate);
       app.use("/auth", authController);
