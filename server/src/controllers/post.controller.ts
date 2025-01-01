@@ -84,6 +84,9 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(404).json({ error: "Post not found" });
+    }
     const post: IPost = await Post.findById(id);
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
@@ -135,14 +138,16 @@ router.get("/:id", async (req, res) => {
  *         description: Post not found
  */
 router.put("/", async (req, res) => {
+  if (!mongoose.isValidObjectId(req.body._id)) {
+    return res.status(404).json({ error: "Post not found" });
+  }
   try {
     const updatedPost: IPost = await Post.findByIdAndUpdate(
-        req.body.id,
-        req.body,
-        {
-          new: true,
-          runValidators: true,
-        }
+      req.body._id,
+      req.body,
+      {
+        new: true,
+      }
     );
     if (!updatedPost)
       return res.status(404).json({ message: "Post not found" });
@@ -150,8 +155,8 @@ router.put("/", async (req, res) => {
     res.status(201).json(updatedPost);
   } catch (err) {
     res
-        .status(400)
-        .json({ message: "Error updating post", error: err.message });
+      .status(400)
+      .json({ message: "Error updating post", error: err.message });
   }
 });
 
@@ -194,10 +199,12 @@ router.put("/", async (req, res) => {
  */
 router.post("/", async (req, res) => {
   try {
-    console.debug(req.body);
-    const newPost = new Post(req.body);
+    const newPost = new Post({
+      ...req.body,
+      _id: new mongoose.Types.ObjectId(),
+    });
     const savedPost = await newPost.save();
-    res.status(201).json(newPost);
+    res.status(201).json(savedPost);
   } catch (err) {
     res
       .status(500)
