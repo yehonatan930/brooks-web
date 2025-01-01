@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
@@ -9,7 +9,6 @@ const User = mongoose.model("User", userSchema);
 
 const router = express.Router();
 
-// Utility function to generate tokens
 const generateToken = (userId: string, secret: string, expiresIn: string) => {
   return jwt.sign({ userId }, secret, { expiresIn });
 };
