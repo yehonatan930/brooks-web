@@ -1,6 +1,6 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import { commentSchema } from '../schemas/comment.schema';
+import express from "express";
+import mongoose from "mongoose";
+import { commentSchema } from "../schemas/comment.schema";
 const router = express.Router();
 
 const Comment = mongoose.model("Comment", commentSchema);
@@ -109,9 +109,9 @@ router.put("/:id", async (req, res) => {
 
   try {
     const updatedComment = await Comment.findByIdAndUpdate(
-        id,
-        { content, author },
-        { new: true }
+      id,
+      { content, author },
+      { new: true }
     );
 
     if (!updatedComment) {
@@ -224,8 +224,18 @@ router.get("/:postId", async (req, res) => {
  *         description: Server error
  */
 router.post("/", async (req, res) => {
+  if (!req.body.author || !req.body.content || !req.body.postId) {
+    return res
+      .status(400)
+      .json({ error: "sender, content and postId are required" });
+  }
+
   try {
-    const comment = new Comment(req.body);
+    const comment = new Comment({
+      ...req.body,
+      postId: new mongoose.Types.ObjectId(req.body.postId as string),
+      _id: new mongoose.Types.ObjectId(),
+    });
     await comment.save();
     res.status(201).json(comment);
   } catch (error: any) {
