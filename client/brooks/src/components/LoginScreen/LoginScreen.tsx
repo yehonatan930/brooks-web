@@ -37,7 +37,6 @@ const LoginScreen: React.FC = () => {
     mutation.mutate(data);
   };
 
-
   const mutation = useMutation(loginUser, {
     onSuccess: () => {
       toast.success('Registration successful! Welcome!');
@@ -48,7 +47,7 @@ const LoginScreen: React.FC = () => {
       });
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Registration failed');
+      toast.error(error.response?.data?.message || 'Login failed');
     },
   });
 
@@ -70,8 +69,10 @@ const LoginScreen: React.FC = () => {
                 placeholder="Email"
                 error={!!errors.email}
                 helperText={errors.email ? errors.email.message : ''}
-                InputProps={{
-                  startAdornment: <EmailIcon />,
+                slotProps={{
+                  input: {
+                    startAdornment: <EmailIcon />,
+                  },
                 }}
               />
             )}
@@ -91,8 +92,10 @@ const LoginScreen: React.FC = () => {
                 placeholder="Password"
                 error={!!errors.password}
                 helperText={errors.password ? errors.password.message : ''}
-                InputProps={{
-                  startAdornment: <LockIcon />,
+                slotProps={{
+                  input: {
+                    startAdornment: <LockIcon />,
+                  },
                 }}
               />
             )}

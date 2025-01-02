@@ -190,7 +190,7 @@ router.post("/", async (req: Request, res: Response) => {
 router.put("/:id", async (req: Request, res: Response) => {
   try {
     const { username, email, password, tokens } = req.body;
-    const user = await User.findByIdAndUpdate(
+    const user: IUser = await User.findByIdAndUpdate(
         req.params.id,
         { username, email, password, tokens },
         { new: true }
@@ -232,7 +232,7 @@ router.put("/:id", async (req: Request, res: Response) => {
  */
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
-    const user = await User.findByIdAndDelete(req.params.id);
+    const user: IUser = await User.findByIdAndDelete(req.params.id);
     if (!user) return res.status(404).json({ message: "User not found" });
     res.status(200).json({ _id: user._id });
   } catch (error) {
