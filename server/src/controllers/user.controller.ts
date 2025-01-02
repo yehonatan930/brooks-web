@@ -1,6 +1,8 @@
-import express, { Request, Response } from "express";
-import mongoose from "mongoose";
-import { IUser, userSchema } from "../schemas/user.schema";
+import express, { Request, Response } from 'express';
+import mongoose from 'mongoose';
+import { IUser, userSchema } from '../schemas/user.schema';
+import _ from 'lodash';
+
 const router = express.Router();
 
 const User = mongoose.model("User", userSchema);
@@ -64,11 +66,13 @@ router.get("/", async (req: Request, res: Response) => {
  *       500:
  *         description: Error fetching user
  */
-router.get("/:id", async (req: Request, res: Response) => {
+router.get("/:email", async (req: Request, res: Response) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findOne({ email: req.params.email});
+
     if (!user) return res.status(404).json({ message: "User not found" });
-    res.status(200).json(user);
+
+    res.status(200).json(_.pick(user, ['username', 'email']));
   } catch (error) {
     res.status(500).json({ message: "Error fetching user", error });
   }
