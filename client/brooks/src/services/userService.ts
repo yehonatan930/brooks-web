@@ -10,8 +10,6 @@ axiosInstance.interceptors.request.use((config) => {
         config.headers.Authorization = `jwt ${token}`;
     }
 
-    config.headers.Authorization = `jwt 2b1a4dd2e06be19220b154a848d8a57fb4fcefbf17f212ccfcbb56aaa77faa899ba3c5a92db29c6e377a6ea17114777529beb060b5b6255392a5a2b8d9ce8eac`;
-
     return config;
 });
 
