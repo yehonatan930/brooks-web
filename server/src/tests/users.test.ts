@@ -10,7 +10,7 @@ describe("User tests", () => {
   let accessToken: string;
 
   let userId: string;
-  const email = `${Math.floor(Math.random() * 1000)}@yeah`;
+  const email = `anEmail@o`;
 
   beforeAll(async () => {
     app = await serverPromise;
@@ -38,6 +38,11 @@ describe("User tests", () => {
   });
 
   afterAll(async () => {
+    const response = await request(app)
+      .delete(`/users/${userId}`)
+      .set("Authorization", `JWT ${accessToken}`);
+    expect(response.status).toBe(200);
+
     await mongoose.connection.close();
   });
 
