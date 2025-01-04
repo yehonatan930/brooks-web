@@ -26,7 +26,7 @@ describe("User tests", () => {
 
   async function login() {
     const res = await request(app).post("/auth/login").send({
-      email: "anEmail@o",
+      email: "yeah@oo",
       password: "password",
     });
 
@@ -53,6 +53,7 @@ describe("User tests", () => {
         .set("Authorization", `JWT ${accessToken}`);
       expect(response.status).toBe(200);
       expect(response.body).toBeInstanceOf(Array);
+
       response.body.forEach((user: any) => {
         expect(user._id).toBeDefined();
         expect(user.username).toBeDefined();

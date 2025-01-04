@@ -9,7 +9,12 @@ const User = mongoose.model("User", userSchema);
 
 const router = express.Router();
 
-const generateToken = (userId: string, secret: string, expiresIn: string) => {
+// Utility function to generate tokens
+export const generateToken = (
+  userId: string,
+  secret: string,
+  expiresIn: string
+) => {
   return jwt.sign({ userId }, secret, { expiresIn });
 };
 
@@ -148,7 +153,7 @@ router.post("/logout", async (req: Request, res: Response) => {
           return res.status(403).json({ message: "Forbidden" });
         }
 
-        const userId = userInfo._id;
+        const userId = userInfo.userId;
         const user = await User.findById(userId);
         if (!user) {
           return res.status(404).json({ message: "User not found" });
@@ -156,7 +161,7 @@ router.post("/logout", async (req: Request, res: Response) => {
 
         user.tokens = [];
         await user.save();
-        res.json({ message: "User logged out" });
+        return res.status(200).json({ message: "User logged out" });
       }
     );
   } catch (error) {
