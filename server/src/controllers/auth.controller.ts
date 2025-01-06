@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import mongoose from "mongoose";
-import { userSchema } from "../schemas/user.schema";
+import { IUser, userSchema } from '../schemas/user.schema';
 
 const User = mongoose.model("User", userSchema);
 
@@ -20,7 +20,7 @@ router.post("/register", async (req: Request, res: Response) => {
     return res.status(400).json({ message: "Please enter all fields" });
   }
 
-  const emailExists = await User.findOne({
+  const emailExists: IUser = await User.findOne({
     email,
   });
 
@@ -31,7 +31,7 @@ router.post("/register", async (req: Request, res: Response) => {
   try {
     const salt = await bcrypt.genSalt(10);
     const encryptedPassword = await bcrypt.hash(password, salt);
-    const newUser = new User({
+    const newUser: IUser = new User({
       _id: uuidv4(),
       username,
       email,
@@ -54,7 +54,7 @@ router.post("/login", async (req: Request, res: Response) => {
   }
 
   try {
-    const user = await User.findOne({ email });
+    const user: IUser = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -104,7 +104,7 @@ router.post("/refresh", async (req: Request, res: Response) => {
         }
 
         const userId = userInfo.userId;
-        const user = await User.findById(userId);
+        const user: IUser = await User.findById(userId);
         if (!user) {
           return res.status(404).json({ message: "User not found" });
         }
@@ -149,7 +149,7 @@ router.post("/logout", async (req: Request, res: Response) => {
         }
 
         const userId = userInfo._id;
-        const user = await User.findById(userId);
+        const user: IUser = await User.findById(userId);
         if (!user) {
           return res.status(404).json({ message: "User not found" });
         }
