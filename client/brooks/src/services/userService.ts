@@ -37,3 +37,8 @@ export const getUser = async (email: string) => {
     const response = await axiosInstance.get(`/users/${email}`);
     return response.data;
 };
+
+export const logoutUser = async () => {
+    const response = await axiosInstance.post('/auth/logout');
+    return response.data;
+};
