@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import './App.scss';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import RegistrationScreen from './components/RegistrationScreen/RegistrationScreen';
 import LoginScreen from './components/LoginScreen/LoginScreen';
 import ProfileScreen from './components/ProfileScreen/ProfileScreen';
@@ -15,6 +15,11 @@ function AppContent() {
   const handleError = (error: string) => {
     // Handle error logic here
     console.error('Error occurred:', error);
+  };
+
+  const handleLogout = () => {
+    setUser(null); // Clear user from context
+    navigate('/login'); // Redirect to login page
   };
 
   return (
