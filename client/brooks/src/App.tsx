@@ -6,6 +6,7 @@ import LoginScreen from './components/LoginScreen/LoginScreen';
 import ProfileScreen from './components/ProfileScreen/ProfileScreen';
 import { UserProvider, useUser } from './context/UserContext';
 import Navbar from './components/Navbar/Navbar';
+import EditProfileScreen from './components/EditProfileScreen/EditProfileScreen';
 
 function AppContent() {
   const { user, setUser } = useUser();
@@ -34,7 +35,7 @@ function AppContent() {
           {/*<Route path="/post/create" element={<PostCreationScreen />} />*/}
           {/*<Route path="/discover" element={<DiscoverScreen />} />*/}
           {/*<Route path="/post/:id" element={<PostDetailScreen />} />*/}
-          {/*<Route path="/profile/edit" element={<EditProfileScreen />} />*/}
+          <Route path="/profile/edit" element={<EditProfileScreen />} />
         </Routes>
       </Suspense>
     </div>
