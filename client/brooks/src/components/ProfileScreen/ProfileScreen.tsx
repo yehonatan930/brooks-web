@@ -3,12 +3,11 @@ import './ProfileScreen.scss';
 import { useUser } from '../../context/UserContext';
 import { useFetchUser } from '../../hooks/useLogin';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
+import { Link } from 'react-router-dom';
 
 const ProfileScreen: React.FC = () => {
   const { user, setUser } = useUser();
-  const {
-    user: fetchedUser
-  } = useFetchUser(user?.email || '');
+  const { user: fetchedUser } = useFetchUser(user?.email || '');
 
   useEffect(() => {
     if (fetchedUser) {
@@ -22,12 +21,22 @@ const ProfileScreen: React.FC = () => {
         <h2 className="profile__title">Profile</h2>
         {user && (
           <div className="profile__details">
+            {user.profilePicture && (
+              <img
+                src={user.profilePicture}
+                alt="Profile Picture"
+                className="profile__picture"
+              />
+            )}
             <p className="profile__detail">
               <strong>Username:</strong> {user.username}
             </p>
             <p className="profile__detail">
               <strong>Email:</strong> {user.email}
             </p>
+            <Link to="/profile/edit" className="profile__edit-link">
+              Edit Profile
+            </Link>
           </div>
         )}
       </div>
