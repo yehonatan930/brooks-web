@@ -5,6 +5,7 @@ export interface IUser extends mongoose.Document<string> {
   email: string;
   password: string;
   tokens: string[];
+  profilePicture?: string;
 }
 
 export const userSchema = new mongoose.Schema<IUser>({
@@ -13,4 +14,5 @@ export const userSchema = new mongoose.Schema<IUser>({
   email: { type: String, required: true },
   password: { type: String, required: true },
   tokens: { type: [String], required: true },
+  profilePicture: { type: String, required: false },
 });
