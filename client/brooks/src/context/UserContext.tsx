@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-interface User {
+export interface User {
   username: string;
   email: string;
-
+  profilePicture: string;
 }
 
 interface UserContextType {
@@ -14,15 +14,11 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-interface UserProviderProps {
-  children: ReactNode;
-}
-
-export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
+export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
   const setEmail = (email: string) => {
-    setUser((prevUser) => (prevUser ? { ...prevUser, email } : { email, username: '' }));
+    setUser((prevUser) => (prevUser ? { ...prevUser, email } : { email, username: '', profilePicture: '' }));
   };
 
   return (
