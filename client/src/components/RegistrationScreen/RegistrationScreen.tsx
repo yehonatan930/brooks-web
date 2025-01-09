@@ -3,7 +3,7 @@ import { useMutation } from 'react-query';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { Button as MuiButton, TextField } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
@@ -35,7 +35,6 @@ const schema = yup.object().shape({
     .required('Confirm Password is required'),
 });
 
-
 const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ onError }) => {
   const {
     control,
@@ -51,9 +50,9 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ onError }) => {
     onSuccess: () => {
       toast.success('Registration successful! Welcome!');
       confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
       });
       navigate('/login');
     },
@@ -68,7 +67,7 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ onError }) => {
   };
 
   return (
-    <div className="container">
+    <div className="pretty-card">
       <form className="registration-form" onSubmit={handleSubmit(onSubmit)}>
         <h2 className="title">Register</h2>
         <Tooltip title="Enter your username" arrow>
@@ -159,14 +158,14 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ onError }) => {
         </Tooltip>
         <Tooltip title={!isValid ? 'Oops, forgot something?' : ''} arrow>
           <span>
-            <MuiButton
+            <Button
               disabled={!isValid}
               type="submit"
               variant="contained"
               className="button"
             >
               Start Having Fun
-            </MuiButton>
+            </Button>
           </span>
         </Tooltip>
         <p className="paragraph">

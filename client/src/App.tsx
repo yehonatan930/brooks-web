@@ -8,6 +8,7 @@ import { UserProvider, useUser } from './context/UserContext';
 import Navbar from './components/Navbar/Navbar';
 import EditProfileScreen from './components/EditProfileScreen/EditProfileScreen';
 import FeedScreen from './components/FeedScreen/FeedScreen';
+import CreatePostScreen from './components/CreatePostScreen/CreatePostScreen';
 
 function AppContent() {
   const { user, setUser } = useUser();
@@ -37,7 +38,7 @@ function AppContent() {
             element={<RegistrationScreen onError={handleError} />}
           />
           <Route path="/profile" element={<ProfileScreen />} />
-          {/*<Route path="/post/create" element={<PostCreationScreen />} />*/}
+          <Route path="/post/create" element={<CreatePostScreen />} />
           <Route path="/feed" element={<FeedScreen />} />
           {/*<Route path="/post/:id" element={<PostDetailScreen />} />*/}
           <Route path="/profile/edit" element={<EditProfileScreen />} />
