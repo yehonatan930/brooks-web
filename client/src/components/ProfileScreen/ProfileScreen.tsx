@@ -24,7 +24,7 @@ const ProfileScreen: React.FC = () => {
             {user.profilePicture && (
               <img
                 src={user.profilePicture}
-                alt="Profile Picture"
+                alt="Profile"
                 className="profile__picture"
               />
             )}
@@ -42,7 +42,7 @@ const ProfileScreen: React.FC = () => {
       </div>
     );
   } else {
-    return (<LoadingSpinner />);
+    return <LoadingSpinner />;
   }
 };
 

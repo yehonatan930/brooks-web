@@ -7,11 +7,11 @@ import ProfileScreen from './components/ProfileScreen/ProfileScreen';
 import { UserProvider, useUser } from './context/UserContext';
 import Navbar from './components/Navbar/Navbar';
 import EditProfileScreen from './components/EditProfileScreen/EditProfileScreen';
+import FeedScreen from './components/FeedScreen/FeedScreen';
 
 function AppContent() {
   const { user, setUser } = useUser();
   const navigate = useNavigate();
-
 
   const handleError = (error: string) => {
     // Handle error logic here
@@ -28,12 +28,17 @@ function AppContent() {
       {user && <Navbar onLogout={handleLogout} />}
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
-          <Route path="/login" element={<LoginScreen onError={handleError} />} />
-          <Route path="/register" element={<RegistrationScreen onError={handleError} />} />
+          <Route
+            path="/login"
+            element={<LoginScreen onError={handleError} />}
+          />
+          <Route
+            path="/register"
+            element={<RegistrationScreen onError={handleError} />}
+          />
           <Route path="/profile" element={<ProfileScreen />} />
-          {/*<Route path="/" element={<HomeFeedScreen />} />*/}
           {/*<Route path="/post/create" element={<PostCreationScreen />} />*/}
-          {/*<Route path="/discover" element={<DiscoverScreen />} />*/}
+          <Route path="/feed" element={<FeedScreen />} />
           {/*<Route path="/post/:id" element={<PostDetailScreen />} />*/}
           <Route path="/profile/edit" element={<EditProfileScreen />} />
         </Routes>
