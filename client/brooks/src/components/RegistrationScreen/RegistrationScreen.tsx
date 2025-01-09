@@ -12,6 +12,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import { toast } from 'react-toastify';
 import { registerUser } from '../../services/userService';
 import './RegistrationScreen.scss';
+import confetti from 'canvas-confetti';
 
 interface RegistrationScreenProps {
   onError: (error: string) => void;
@@ -19,21 +20,39 @@ interface RegistrationScreenProps {
 
 const schema = yup.object().shape({
   username: yup.string().required('Username is required'),
-  email: yup.string().email('Invalid email format').required('Email is required'),
-  password: yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
-  confirmPassword: yup.string()
+  email: yup
+    .string()
+    .email('Invalid email format')
+    .required('Email is required'),
+  password: yup
+    .string()
+    .min(6, 'Password must be at least 6 characters')
+    .required('Password is required'),
+  confirmPassword: yup
+    .string()
     .oneOf([yup.ref('password'), undefined], 'Passwords must match')
     .required('Confirm Password is required'),
 });
 
+
 const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ onError }) => {
-  const { control, handleSubmit, formState: { errors } } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm({
     resolver: yupResolver(schema),
+    mode: 'onChange',
   });
 
   const mutation = useMutation(registerUser, {
     onSuccess: () => {
       toast.success('Registration successful! Welcome!');
+      confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+      });
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || 'Registration failed');
@@ -60,6 +79,7 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ onError }) => {
                 className="input-field"
                 type="text"
                 placeholder="Username"
+                margin={'normal'}
                 error={!!errors.username}
                 helperText={errors.username ? errors.username.message : ''}
                 InputProps={{
@@ -76,6 +96,7 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ onError }) => {
             defaultValue=""
             render={({ field }) => (
               <TextField
+                margin={'normal'}
                 {...field}
                 className="input-field"
                 type="email"
@@ -96,6 +117,7 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ onError }) => {
             defaultValue=""
             render={({ field }) => (
               <TextField
+                margin={'normal'}
                 {...field}
                 className="input-field"
                 type="password"
@@ -117,11 +139,14 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ onError }) => {
             render={({ field }) => (
               <TextField
                 {...field}
+                margin={'normal'}
                 className="input-field"
                 type="password"
                 placeholder="Confirm Password"
                 error={!!errors.confirmPassword}
-                helperText={errors.confirmPassword ? errors.confirmPassword.message : ''}
+                helperText={
+                  errors.confirmPassword ? errors.confirmPassword.message : ''
+                }
                 InputProps={{
                   startAdornment: <CheckCircleIcon />,
                 }}
@@ -129,9 +154,18 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ onError }) => {
             )}
           />
         </Tooltip>
-        <MuiButton type="submit" variant="contained" className="button">
-          Register
-        </MuiButton>
+        <Tooltip title={!isValid ? 'Oops, forgot something?' : ''} arrow>
+          <span>
+            <MuiButton
+              disabled={!isValid}
+              type="submit"
+              variant="contained"
+              className="button"
+            >
+              Start Having Fun
+            </MuiButton>
+          </span>
+        </Tooltip>
         <p className="paragraph">
           Already have an account?{' '}
           <a href="/login" className="login-link">
