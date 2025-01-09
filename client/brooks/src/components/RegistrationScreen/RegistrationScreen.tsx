@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import { registerUser } from '../../services/userService';
 import './RegistrationScreen.scss';
 import confetti from 'canvas-confetti';
+import { useNavigate } from 'react-router-dom';
 
 interface RegistrationScreenProps {
   onError: (error: string) => void;
@@ -44,6 +45,7 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ onError }) => {
     resolver: yupResolver(schema),
     mode: 'onChange',
   });
+  const navigate = useNavigate();
 
   const mutation = useMutation(registerUser, {
     onSuccess: () => {
@@ -53,6 +55,7 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ onError }) => {
           spread: 70,
           origin: { y: 0.6 },
       });
+      navigate('/login');
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || 'Registration failed');

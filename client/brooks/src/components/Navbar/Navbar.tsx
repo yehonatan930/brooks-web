@@ -1,16 +1,30 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import './Navbar.scss';
+import { logoutUser } from '../../services/userService';
 
 interface NavbarProps {
   onLogout: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onLogout }) => {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      localStorage.removeItem('token'); // Remove token from local storage
+      onLogout(); // Call the onLogout prop to update the app state
+      navigate('/login'); // Redirect to the login page
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar__container">
-        <div className="navbar__brand">MyApp</div>
+        <div className="navbar__brand">Brook</div>
         <ul className="navbar__list">
           <li className="navbar__item">
             <NavLink
@@ -38,7 +52,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout }) => {
           </li>
           <li className="navbar__item">
             <button
-              onClick={onLogout}
+              onClick={handleLogout}
               className="navbar__link navbar__button"
             >
               Logout

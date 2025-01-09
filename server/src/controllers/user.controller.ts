@@ -66,13 +66,13 @@ router.get("/", async (req: Request, res: Response) => {
  *       500:
  *         description: Error fetching user
  */
-router.get("/:email", async (req: Request, res: Response) => {
+router.get("/user", async (req: Request, res: Response) => {
   try {
-    const user = await User.findOne({ email: req.params.email});
+    const user = await User.findById(req.user.userId);
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    res.status(200).json(_.pick(user, ['username', 'email']));
+    res.status(200).json(_.pick(user, ['username', 'email', 'profilePicture']));
   } catch (error) {
     res.status(500).json({ message: "Error fetching user", error });
   }
@@ -127,10 +127,10 @@ router.get("/:email", async (req: Request, res: Response) => {
  */
 router.put("/:id", async (req: Request, res: Response) => {
   try {
-    const { username, email, password, tokens } = req.body;
+    const { username, email, password, profilePicture } = req.body;
     const user: IUser = await User.findByIdAndUpdate(
-      req.params.id,
-      { username, email, password, tokens },
+      req.user.userId,
+      { username, email, password, profilePicture },
       { new: true }
     );
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -170,7 +170,7 @@ router.put("/:id", async (req: Request, res: Response) => {
  */
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
-    const user: IUser = await User.findByIdAndDelete(req.params.id);
+    const user: IUser = await User.findByIdAndDelete(req.user.userId);
     if (!user) return res.status(404).json({ message: "User not found" });
     res.status(200).json({ _id: user._id });
   } catch (error) {

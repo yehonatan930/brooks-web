@@ -1,11 +1,12 @@
 import React, { Suspense } from 'react';
 import './App.scss';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import RegistrationScreen from './components/RegistrationScreen/RegistrationScreen';
 import LoginScreen from './components/LoginScreen/LoginScreen';
 import ProfileScreen from './components/ProfileScreen/ProfileScreen';
 import { UserProvider, useUser } from './context/UserContext';
 import Navbar from './components/Navbar/Navbar';
+import EditProfileScreen from './components/EditProfileScreen/EditProfileScreen';
 
 function AppContent() {
   const { user, setUser } = useUser();
@@ -15,6 +16,11 @@ function AppContent() {
   const handleError = (error: string) => {
     // Handle error logic here
     console.error('Error occurred:', error);
+  };
+
+  const handleLogout = () => {
+    setUser(null); // Clear user from context
+    navigate('/login'); // Redirect to login page
   };
 
   return (
@@ -29,7 +35,7 @@ function AppContent() {
           {/*<Route path="/post/create" element={<PostCreationScreen />} />*/}
           {/*<Route path="/discover" element={<DiscoverScreen />} />*/}
           {/*<Route path="/post/:id" element={<PostDetailScreen />} />*/}
-          {/*<Route path="/profile/edit" element={<EditProfileScreen />} />*/}
+          <Route path="/profile/edit" element={<EditProfileScreen />} />
         </Routes>
       </Suspense>
     </div>
