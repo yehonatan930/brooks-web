@@ -39,8 +39,9 @@ export const loginUser = async (data: LoginData) => {
     const response = await axiosInstance.post('/auth/login', data);
     return response.data;
 };
-export const getUser = async (email: string) => {
-    const response = await axiosInstance.get(`/users/${email}`);
+
+export const getUser = async () => {
+    const response = await axiosInstance.get(`/users/user`);
     return response.data;
 };
 

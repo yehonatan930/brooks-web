@@ -24,7 +24,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout }) => {
   return (
     <nav className="navbar">
       <div className="navbar__container">
-        <div className="navbar__brand">MyApp</div>
+        <div className="navbar__brand">Brook</div>
         <ul className="navbar__list">
           <li className="navbar__item">
             <NavLink

@@ -10,7 +10,7 @@ export const useFetchUser = (userEmail: string) => {
     const fetchUser = async () => {
       try {
         setIsLoading(true);
-        const data = await getUser(userEmail); // Corrected the function call
+        const data = await getUser(); // Corrected the function call
         setUser(data);
       } catch (err: any) {
         setError(err.message);
