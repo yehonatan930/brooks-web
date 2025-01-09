@@ -81,8 +81,8 @@ router.post("/login", async (req: Request, res: Response) => {
     );
 
     user.tokens.push(refreshToken);
-    console.debug("regresh userId ", user._id);
-    console.debug("login user tkon:", user.tokens);
+    console.debug("refresh userId ", user._id);
+    console.debug("login user token:", user.tokens);
     await user.save();
 
     res.json({ accessToken, refreshToken });

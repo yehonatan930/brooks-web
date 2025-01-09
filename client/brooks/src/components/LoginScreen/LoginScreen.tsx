@@ -10,7 +10,9 @@ import './LoginScreen.scss';
 import { useMutation } from 'react-query';
 import { loginUser } from '../../services/userService';
 import { toast } from 'react-toastify';
-import confetti from "canvas-confetti";
+import confetti from 'canvas-confetti';
+import { useUser } from '../../context/UserContext';
+import { useNavigate } from 'react-router-dom';
 
 const schema = yup.object().shape({
   email: yup
@@ -24,6 +26,7 @@ const schema = yup.object().shape({
 });
 
 const LoginScreen: React.FC = () => {
+  const navigate = useNavigate();
   const {
     control,
     handleSubmit,
@@ -32,23 +35,26 @@ const LoginScreen: React.FC = () => {
     resolver: yupResolver(schema),
     mode: 'onChange',
   });
+  const { setEmail } = useUser();
 
   const onSubmit = (data: any) => {
     mutation.mutate(data);
   };
 
-
   const mutation = useMutation(loginUser, {
-    onSuccess: () => {
-      toast.success('Registration successful! Welcome!');
+    onSuccess: (data, { email }) => {
+      localStorage.setItem('token', data.accessToken); // Store the JWT token
+      setEmail(email);
+      toast.success('Login successful! Welcome!');
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
       });
+      navigate('/profile'); // Navigate to the profile screen}
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Registration failed');
+      toast.error(error.response?.data?.message || 'Login failed');
     },
   });
 
@@ -70,8 +76,10 @@ const LoginScreen: React.FC = () => {
                 placeholder="Email"
                 error={!!errors.email}
                 helperText={errors.email ? errors.email.message : ''}
-                InputProps={{
-                  startAdornment: <EmailIcon />,
+                slotProps={{
+                  input: {
+                    startAdornment: <EmailIcon />,
+                  },
                 }}
               />
             )}
@@ -91,8 +99,10 @@ const LoginScreen: React.FC = () => {
                 placeholder="Password"
                 error={!!errors.password}
                 helperText={errors.password ? errors.password.message : ''}
-                InputProps={{
-                  startAdornment: <LockIcon />,
+                slotProps={{
+                  input: {
+                    startAdornment: <LockIcon />,
+                  },
                 }}
               />
             )}
