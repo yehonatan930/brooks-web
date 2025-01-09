@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 
 const ProfileScreen: React.FC = () => {
   const { user, setUser } = useUser();
-  const { user: fetchedUser } = useFetchUser(user?.email || '');
+  const { user: fetchedUser } = useFetchUser();
 
   useEffect(() => {
     if (fetchedUser) {
