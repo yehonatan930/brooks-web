@@ -22,9 +22,9 @@ interface PostProps {
 
 const Post: FunctionComponent<PostProps> = (props) => {
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ maxWidth: 300 }}>
       <CardHeader
-        avatar={<Avatar sx={{ bgcolor: '#FFFFFF' }}>R</Avatar>}
+        avatar={<Avatar sx={{ bgcolor: '#456319' }}>R</Avatar>}
         action={
           <IconButton aria-label="settings">
             <MoreVertIcon />
