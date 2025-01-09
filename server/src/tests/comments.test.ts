@@ -32,7 +32,7 @@ beforeAll(async () => {
       sender: commentAuthor,
     } as IPost);
 
-  postId = "6773540ea45a563c1d9cb46c";
+  postId = "677815024466160f0e770436";
 });
 
 async function login() {

@@ -80,68 +80,6 @@ router.get("/:email", async (req: Request, res: Response) => {
 
 /**
  * @swagger
- * /users:
- *   post:
- *     summary: Create a new user
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - _id
- *               - username
- *               - email
- *               - password
- *             properties:
- *               _id:
- *                 type: string
- *               username:
- *                 type: string
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *               tokens:
- *                 type: array
- *                 items:
- *                   type: string
- *             example:
- *               _id: "1"
- *               username: "johndoe"
- *               email: "johndoe@example.com"
- *               password: "password123"
- *               tokens: []
- *     responses:
- *       201:
- *         description: User created successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'
- *       400:
- *         description: All fields are required
- *       500:
- *         description: Error creating user
- */
-router.post("/", async (req: Request, res: Response) => {
-  try {
-    const { _id, username, email, password, tokens } = req.body;
-    if (!_id || !username || !email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-    const newUser = new User({ _id, username, email, password, tokens });
-    await newUser.save();
-    res.status(201).json(newUser);
-  } catch (error) {
-    res.status(500).json({ message: "Error creating user", error });
-  }
-});
-
-/**
- * @swagger
  * /users/{id}:
  *   put:
  *     summary: Update an existing user

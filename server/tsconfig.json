@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "typeRoots": ["./node_modules/@types", "src/@types"],
+    "typeRoots": ["./node_modules/@types", "./src/@types"],
     "target": "ES6",
     "module": "CommonJS",
     "esModuleInterop": true,
@@ -11,6 +11,6 @@
     "strictNullChecks": false,
     "sourceMap": true
   },
-  "include": ["src/**/*", "src/tests/**/*"],
+  "include": ["./src/**/*", "./src/tests/**/*"],
   "exclude": ["node_modules", "dist"]
 }
