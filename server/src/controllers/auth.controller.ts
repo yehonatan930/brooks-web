@@ -147,7 +147,7 @@ router.post("/logout", async (req: Request, res: Response) => {
   try {
     jwt.verify(
       token,
-      process.env.REFRESH_TOKEN_SECRET as string,
+      process.env.ACCESS_TOKEN_SECRET as string,
       async (err: jwt.VerifyErrors, userInfo: jwt.JwtPayload) => {
         if (err) {
           return res.status(403).json({ message: "Forbidden" });
