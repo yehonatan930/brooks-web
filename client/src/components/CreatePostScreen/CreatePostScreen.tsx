@@ -2,13 +2,14 @@ import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { Button, TextField, Tooltip } from '@mui/material';
+import { TextField, Tooltip } from '@mui/material';
 import BookIcon from '@mui/icons-material/Book';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import './CreatePostScreen.scss';
 import ChangeImageButton from './ChangeImageButton';
 import { NewPostFormData } from '../../types/post';
 import { useCreatePost } from '../../hooks/useCreatePost';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 interface CreatePostScreenProps {}
 
@@ -25,12 +26,7 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
     imageUrl: '',
   });
 
-  const {
-    newPost,
-    isLoading,
-    error,
-    mutate: createPost,
-  } = useCreatePost(postData);
+  const { isLoading, mutate: createPost } = useCreatePost(postData);
 
   const {
     control,
@@ -138,14 +134,15 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
           </div>
         )}
         <span>
-          <Button
+          <LoadingButton
             disabled={!isValid}
             type="submit"
             variant="contained"
             className="button"
+            loading={isLoading}
           >
             Publish
-          </Button>
+          </LoadingButton>
         </span>
       </form>
     </div>

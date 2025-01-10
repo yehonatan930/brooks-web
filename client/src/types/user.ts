@@ -14,3 +14,11 @@ export interface UpdateUserData {
   email: string;
   profilePicture: string;
 }
+
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  profilePicture: string;
+  createdAt: string;
+}

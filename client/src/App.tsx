@@ -4,14 +4,15 @@ import { Route, Routes, useNavigate } from 'react-router-dom';
 import RegistrationScreen from './components/RegistrationScreen/RegistrationScreen';
 import LoginScreen from './components/LoginScreen/LoginScreen';
 import ProfileScreen from './components/ProfileScreen/ProfileScreen';
-import { UserProvider, useUser } from './context/UserContext';
 import Navbar from './components/Navbar/Navbar';
 import EditProfileScreen from './components/EditProfileScreen/EditProfileScreen';
 import FeedScreen from './components/FeedScreen/FeedScreen';
 import CreatePostScreen from './components/CreatePostScreen/CreatePostScreen';
+import { loggedInUserAtom } from './context/UserAtom';
+import { useAtom } from 'jotai';
 
-function AppContent() {
-  const { user, setUser } = useUser();
+function App() {
+  const [user, setUser] = useAtom(loggedInUserAtom);
   const navigate = useNavigate();
 
   const handleError = (error: string) => {
@@ -45,14 +46,6 @@ function AppContent() {
         </Routes>
       </Suspense>
     </div>
-  );
-}
-
-function App() {
-  return (
-    <UserProvider>
-      <AppContent />
-    </UserProvider>
   );
 }
 

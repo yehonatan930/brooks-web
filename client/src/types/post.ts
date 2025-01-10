@@ -1,10 +1,9 @@
 export interface Post {
-  id: string;
+  _id: string;
   bookTitle: string;
   content: string;
   imageUrl: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
   userId: string;
 }
 
