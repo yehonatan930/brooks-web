@@ -7,9 +7,10 @@ import Tooltip from '@mui/material/Tooltip';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import './LoginScreen.scss';
-import { useNavigate } from 'react-router-dom';
 import { useAtom } from 'jotai';
 import { loggedInUserAtom } from '../../context/UserAtom';
+import useLogin from '../../hooks/useLogin';
+import { LoginData } from '../../types/user';
 
 const schema = yup.object().shape({
   email: yup
@@ -23,7 +24,6 @@ const schema = yup.object().shape({
 });
 
 const LoginScreen: React.FC = () => {
-  const navigate = useNavigate();
   const {
     control,
     handleSubmit,
@@ -34,8 +34,10 @@ const LoginScreen: React.FC = () => {
   });
   const [user, setUser] = useAtom(loggedInUserAtom);
 
-  const onSubmit = (data: any) => {
-    mutation.mutate(data);
+  const { mutate } = useLogin(setUser);
+
+  const onSubmit = (data: LoginData) => {
+    mutate(data);
   };
 
   return (

@@ -10,6 +10,8 @@ import ChangeImageButton from './ChangeImageButton';
 import { NewPostFormData } from '../../types/post';
 import { useCreatePost } from '../../hooks/useCreatePost';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { useAtomValue } from 'jotai';
+import { loggedInUserAtom } from '../../context/UserAtom';
 
 interface CreatePostScreenProps {}
 
@@ -20,13 +22,15 @@ const schema = yup.object().shape({
 });
 
 const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
+  const user = useAtomValue(loggedInUserAtom);
+
   const [postData, setPostData] = useState<NewPostFormData>({
     bookTitle: '',
     content: '',
     imageUrl: '',
   });
 
-  const { isLoading, mutate: createPost } = useCreatePost(postData);
+  const { isLoading, mutate: createPost } = useCreatePost();
 
   const {
     control,
@@ -39,7 +43,7 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
 
   const onSubmit = (data: any) => {
     console.log(data);
-    createPost();
+    createPost({ userId: user._id, ...postData });
   };
 
   const onChangeInFormData = (e: any) => {

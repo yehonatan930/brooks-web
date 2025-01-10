@@ -4,6 +4,7 @@ import './Navbar.scss';
 import { logoutUser } from '../../services/userService';
 import { useAtom } from 'jotai';
 import { loggedInUserAtom } from '../../context/UserAtom';
+import { User } from '../../types/user';
 
 interface NavbarProps {}
 
@@ -14,7 +15,7 @@ const Navbar: React.FC<NavbarProps> = ({}) => {
     try {
       await logoutUser();
       localStorage.removeItem('token');
-      setUser(null);
+      setUser({} as User);
     } catch (error) {
       console.error('Logout failed:', error);
     }

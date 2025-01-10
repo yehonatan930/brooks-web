@@ -2,8 +2,8 @@ import { AxiosResponse } from 'axios';
 import axiosInstance from './axiosInstance';
 import {
   LoginData,
+  LoginResponse,
   RegisterData,
-  Tokens,
   UpdateUserData,
   User,
 } from '../types/user';
@@ -12,8 +12,8 @@ export const registerUser = async (data: RegisterData): Promise<void> => {
   await axiosInstance.post('/auth/register', data);
 };
 
-export const loginUser = async (data: LoginData): Promise<Tokens> => {
-  const response = await axiosInstance.post<Tokens>('/auth/login', data);
+export const loginUser = async (data: LoginData): Promise<LoginResponse> => {
+  const response = await axiosInstance.post<LoginResponse>('/auth/login', data);
   return response.data;
 };
 

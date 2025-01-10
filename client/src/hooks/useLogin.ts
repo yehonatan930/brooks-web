@@ -3,19 +3,19 @@ import { toast } from 'react-toastify';
 import confetti from 'canvas-confetti';
 import { loginUser } from '../services/userService';
 import { useNavigate } from 'react-router-dom';
-import { LoginData, Tokens } from '../types/user';
+import { LoginData, LoginResponse, User } from '../types/user';
 
-const useLogin = () => {
+const useLogin = (setUser: (user: User) => void) => {
   const navigate = useNavigate();
 
   const { data: tokens, ...rest } = useMutation<
-    Tokens,
+    LoginResponse,
     any,
     LoginData,
     unknown
   >(loginUser, {
-    onSuccess: (data, { email }) => {
-      localStorage.setItem('token', data.accessToken); // Store the JWT token
+    onSuccess: (data: LoginResponse) => {
+      localStorage.setItem('token', data.accessToken);
       toast.success('Login successful! Welcome!');
       confetti({
         particleCount: 100,
@@ -23,7 +23,9 @@ const useLogin = () => {
         origin: { y: 0.6 },
       });
 
-      navigate('/profile'); // Navigate to the profile screen}
+      setUser({ _id: data.userId } as User);
+
+      navigate('/profile');
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || 'Login failed');

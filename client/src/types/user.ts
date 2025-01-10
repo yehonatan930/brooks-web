@@ -14,6 +14,10 @@ export interface Tokens {
   refreshToken: string;
 }
 
+export interface LoginResponse extends Tokens {
+  userId: string;
+}
+
 export interface UpdateUserData {
   id: string;
   username?: string;

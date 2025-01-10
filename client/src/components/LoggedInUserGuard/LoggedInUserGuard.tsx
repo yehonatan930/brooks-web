@@ -16,9 +16,9 @@ const LoggedInUserGuard: FunctionComponent<LoggedInUserGuardProps> = (
 
   useEffect(() => {
     if (
-      !user ||
-      window.location.pathname === '/login' ||
-      window.location.pathname === '/register'
+      window.location.pathname !== '/login' &&
+      window.location.pathname !== '/register' &&
+      (!user || !user._id)
     ) {
       navigate('/login');
     }
