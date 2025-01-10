@@ -8,8 +8,12 @@ export interface Post {
   userId: string;
 }
 
-export interface NewPostData {
+export interface NewPostFormData {
   bookTitle: string;
   content: string;
   imageUrl: string;
+}
+
+export interface NewPostData extends NewPostFormData {
+  userId: string;
 }

@@ -6,8 +6,9 @@ import { Button, TextField, Tooltip } from '@mui/material';
 import BookIcon from '@mui/icons-material/Book';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import './CreatePostScreen.scss';
-import ChangeImageButton from './changeImageButton';
-import { NewPostData } from '../../types/post';
+import ChangeImageButton from './ChangeImageButton';
+import { NewPostFormData } from '../../types/post';
+import { useCreatePost } from '../../hooks/useCreatePost';
 
 interface CreatePostScreenProps {}
 
@@ -18,11 +19,18 @@ const schema = yup.object().shape({
 });
 
 const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
-  const [postData, setPostData] = useState<NewPostData>({
+  const [postData, setPostData] = useState<NewPostFormData>({
     bookTitle: '',
     content: '',
     imageUrl: '',
   });
+
+  const {
+    newPost,
+    isLoading,
+    error,
+    mutate: createPost,
+  } = useCreatePost(postData);
 
   const {
     control,
@@ -35,6 +43,7 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
 
   const onSubmit = (data: any) => {
     console.log(data);
+    createPost();
   };
 
   const onChangeInFormData = (e: any) => {

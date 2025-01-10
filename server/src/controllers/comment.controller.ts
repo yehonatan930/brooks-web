@@ -1,9 +1,9 @@
-import express from "express";
-import mongoose from "mongoose";
-import { commentSchema } from "../schemas/comment.schema";
+import express from 'express';
+import mongoose from 'mongoose';
+import { commentSchema } from '../schemas/comment.schema';
 const router = express.Router();
 
-const Comment = mongoose.model("Comment", commentSchema);
+const Comment = mongoose.model('Comment', commentSchema);
 
 /**
  * @swagger
@@ -40,14 +40,14 @@ const Comment = mongoose.model("Comment", commentSchema);
  *       500:
  *         description: Server error
  */
-router.delete("/:id", async (req, res) => {
+router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
     const deletedComment = await Comment.findByIdAndDelete(id);
 
     if (!deletedComment) {
-      return res.status(404).json({ error: "Comment not found" });
+      return res.status(404).json({ error: 'Comment not found' });
     }
 
     res.status(200).json({ _id: id });
@@ -99,12 +99,12 @@ router.delete("/:id", async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.put("/:id", async (req, res) => {
+router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const { content, author } = req.body;
 
   if (!content) {
-    return res.status(400).json({ error: "Content is required" });
+    return res.status(400).json({ error: 'Content is required' });
   }
 
   try {
@@ -115,7 +115,7 @@ router.put("/:id", async (req, res) => {
     );
 
     if (!updatedComment) {
-      return res.status(404).json({ error: "Comment not found" });
+      return res.status(404).json({ error: 'Comment not found' });
     }
 
     res.status(200).json(updatedComment);
@@ -142,7 +142,7 @@ router.put("/:id", async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const comments = await Comment.find();
     res.status(200).json(comments);
@@ -176,7 +176,7 @@ router.get("/", async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.get("/:postId", async (req, res) => {
+router.get('/:postId', async (req, res) => {
   const { postId } = req.params;
   try {
     const comments = await Comment.find({ postId });
@@ -223,11 +223,11 @@ router.get("/:postId", async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   if (!req.body.author || !req.body.content || !req.body.postId) {
     return res
       .status(400)
-      .json({ error: "sender, content and postId are required" });
+      .json({ error: 'author, content and postId are required' });
   }
 
   try {

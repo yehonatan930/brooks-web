@@ -1,9 +1,9 @@
-import express from "express";
-import mongoose from "mongoose";
-import { IPost, postSchema } from "../schemas/post.schema";
+import express from 'express';
+import mongoose from 'mongoose';
+import { IPost, postSchema } from '../schemas/post.schema';
 const router = express.Router();
 
-const Post = mongoose.model("Post", postSchema);
+const Post = mongoose.model('Post', postSchema);
 
 /**
  * @swagger
@@ -20,11 +20,11 @@ const Post = mongoose.model("Post", postSchema);
  *     tags: [Posts]
  *     parameters:
  *       - in: query
- *         name: sender
+ *         name: userId
  *         schema:
  *           type: string
  *         required: false
- *         description: Filter posts by sender ID
+ *         description: Filter posts by userId ID
  *     responses:
  *       200:
  *         description: List of posts
@@ -37,9 +37,9 @@ const Post = mongoose.model("Post", postSchema);
  *       500:
  *         description: Server error
  */
-router.get("/", async (req, res) => {
-  const { sender } = req.query;
-  if (!sender) {
+router.get('/', async (req, res) => {
+  const { userId } = req.query;
+  if (!userId) {
     try {
       const posts: IPost[] = await Post.find();
       res.status(200).json(posts);
@@ -48,7 +48,7 @@ router.get("/", async (req, res) => {
     }
   } else {
     try {
-      const posts: IPost[] = await Post.find({ sender });
+      const posts: IPost[] = await Post.find({ userId });
       res.status(200).json(posts);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -81,15 +81,15 @@ router.get("/", async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.get("/:id", async (req, res) => {
+router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     if (!mongoose.isValidObjectId(id)) {
-      return res.status(404).json({ error: "Post not found" });
+      return res.status(404).json({ error: 'Post not found' });
     }
     const post: IPost = await Post.findById(id);
     if (!post) {
-      return res.status(404).json({ error: "Post not found" });
+      return res.status(404).json({ error: 'Post not found' });
     }
     res.status(200).json(post);
   } catch (error: any) {
@@ -114,17 +114,17 @@ router.get("/:id", async (req, res) => {
  *             properties:
  *               id:
  *                 type: string
- *               title:
+ *               :
  *                 type: string
  *               content:
  *                 type: string
- *               sender:
+ *               userId:
  *                 type: string
  *             example:
  *               id: "64d2f8b0b9f8c9a1a5f8b3c3"
- *               title: "Updated Title"
+ *               : "Updated Title"
  *               content: "Updated content"
- *               sender: "12345"
+ *               userId: "12345"
  *     responses:
  *       200:
  *         description: Updated post
@@ -137,9 +137,9 @@ router.get("/:id", async (req, res) => {
  *       404:
  *         description: Post not found
  */
-router.put("/", async (req, res) => {
+router.put('/', async (req, res) => {
   if (!mongoose.isValidObjectId(req.body._id)) {
-    return res.status(404).json({ error: "Post not found" });
+    return res.status(404).json({ error: 'Post not found' });
   }
   try {
     const updatedPost: IPost = await Post.findByIdAndUpdate(
@@ -150,13 +150,13 @@ router.put("/", async (req, res) => {
       }
     );
     if (!updatedPost)
-      return res.status(404).json({ message: "Post not found" });
+      return res.status(404).json({ message: 'Post not found' });
 
     res.status(201).json(updatedPost);
   } catch (err) {
     res
       .status(400)
-      .json({ message: "Error updating post", error: err.message });
+      .json({ message: 'Error updating post', error: err.message });
   }
 });
 
@@ -173,20 +173,20 @@ router.put("/", async (req, res) => {
  *           schema:
  *             type: object
  *             required:
- *               - title
+ *               -
  *               - content
- *               - sender
+ *               - userId
  *             properties:
- *               title:
+ *               :
  *                 type: string
  *               content:
  *                 type: string
- *               sender:
+ *               userId:
  *                 type: string
  *             example:
- *               title: "Sample Post"
+ *               : "Sample Post"
  *               content: "This is a sample post."
- *               sender: "12345"
+ *               userId: "12345"
  *     responses:
  *       201:
  *         description: Post created successfully
@@ -197,7 +197,7 @@ router.put("/", async (req, res) => {
  *       400:
  *         description: Bad request
  */
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const newPost = new Post({
       ...req.body,
@@ -208,7 +208,7 @@ router.post("/", async (req, res) => {
   } catch (err) {
     res
       .status(500)
-      .json({ message: "Error creating post", error: err.message });
+      .json({ message: 'Error creating post', error: err.message });
   }
 });
 
