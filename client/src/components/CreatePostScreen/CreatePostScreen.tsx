@@ -1,20 +1,13 @@
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { useMutation } from 'react-query';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import {
-  Box,
-  Button,
-  IconButton,
-  styled,
-  TextField,
-  Tooltip,
-} from '@mui/material';
+import { Button, TextField, Tooltip } from '@mui/material';
 import BookIcon from '@mui/icons-material/Book';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
-import PhotoCameraBackIcon from '@mui/icons-material/PhotoCameraBack';
 import './CreatePostScreen.scss';
+import ChangeImageButton from './changeImageButton';
+import { NewPostData } from '../../types/post';
 
 interface CreatePostScreenProps {}
 
@@ -24,14 +17,8 @@ const schema = yup.object().shape({
   imageUrl: yup.string(),
 });
 
-export interface PostFormData {
-  bookTitle: string;
-  content: string;
-  imageUrl: string;
-}
-
 const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
-  const [postData, setPostData] = useState<PostFormData>({
+  const [postData, setPostData] = useState<NewPostData>({
     bookTitle: '',
     content: '',
     imageUrl: '',
@@ -80,18 +67,6 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
       fetchBookCover(postData.bookTitle);
     }
   }, [fetchBookCover, postData.bookTitle]);
-
-  const VisuallyHiddenInput = styled('input')({
-    clip: 'rect(0 0 0 0)',
-    clipPath: 'inset(50%)',
-    height: 1,
-    overflow: 'hidden',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    whiteSpace: 'nowrap',
-    width: 1,
-  });
 
   return (
     <div className="pretty-card">
@@ -145,19 +120,7 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
         </Tooltip>
         {postData.imageUrl && (
           <div className="CreatePostScreen__image-preview-container">
-            <Button
-              className="CreatePostScreen__image-preview-change"
-              component="label"
-              variant="contained"
-              startIcon={<PhotoCameraBackIcon />}
-            >
-              change image
-              <VisuallyHiddenInput
-                type="file"
-                onChange={(event) => console.log(event.target.files)}
-                // multiple
-              />
-            </Button>
+            <ChangeImageButton onChange={() => {}} />
             <img
               src={postData.imageUrl}
               alt="preview"

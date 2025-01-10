@@ -7,3 +7,9 @@ export interface Post {
   updatedAt: string;
   userId: string;
 }
+
+export interface NewPostData {
+  bookTitle: string;
+  content: string;
+  imageUrl: string;
+}
