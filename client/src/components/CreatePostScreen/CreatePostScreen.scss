@@ -1,0 +1,22 @@
+.CreatePostScreen__image-preview {
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.CreatePostScreen__image-preview-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.CreatePostScreen__image-preview-change.MuiButton-root {
+  position: absolute;
+  top: 0;
+  right: 0;
+  text-transform: lowercase;
+}

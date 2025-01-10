@@ -1,21 +1,21 @@
 import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import './Navbar.scss';
 import { logoutUser } from '../../services/userService';
+import { useAtom } from 'jotai';
+import { loggedInUserAtom } from '../../context/UserAtom';
+import { User } from '../../types/user';
 
-interface NavbarProps {
-  onLogout: () => void;
-}
+interface NavbarProps {}
 
-const Navbar: React.FC<NavbarProps> = ({ onLogout }) => {
-  const navigate = useNavigate();
+const Navbar: React.FC<NavbarProps> = ({}) => {
+  const [user, setUser] = useAtom(loggedInUserAtom);
 
   const handleLogout = async () => {
     try {
       await logoutUser();
-      localStorage.removeItem('token'); // Remove token from local storage
-      onLogout(); // Call the onLogout prop to update the app state
-      navigate('/login'); // Redirect to the login page
+      localStorage.removeItem('token');
+      setUser({} as User);
     } catch (error) {
       console.error('Logout failed:', error);
     }
@@ -29,7 +29,9 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout }) => {
           <li className="navbar__item">
             <NavLink
               to="/home"
-              className={({ isActive }) => isActive ? 'navbar__link navbar__link--active' : 'navbar__link'}
+              className={({ isActive }) =>
+                isActive ? 'navbar__link navbar__link--active' : 'navbar__link'
+              }
             >
               Home
             </NavLink>
@@ -37,7 +39,9 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout }) => {
           <li className="navbar__item">
             <NavLink
               to="/profile"
-              className={({ isActive }) => isActive ? 'navbar__link navbar__link--active' : 'navbar__link'}
+              className={({ isActive }) =>
+                isActive ? 'navbar__link navbar__link--active' : 'navbar__link'
+              }
             >
               Profile
             </NavLink>
@@ -45,7 +49,9 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout }) => {
           <li className="navbar__item">
             <NavLink
               to="/discover"
-              className={({ isActive }) => isActive ? 'navbar__link navbar__link--active' : 'navbar__link'}
+              className={({ isActive }) =>
+                isActive ? 'navbar__link navbar__link--active' : 'navbar__link'
+              }
             >
               Discover
             </NavLink>

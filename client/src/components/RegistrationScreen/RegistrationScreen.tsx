@@ -1,23 +1,19 @@
 import React from 'react';
-import { useMutation } from 'react-query';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { Button as MuiButton, TextField } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PersonIcon from '@mui/icons-material/Person';
-import { toast } from 'react-toastify';
-import { registerUser } from '../../services/userService';
 import './RegistrationScreen.scss';
-import confetti from 'canvas-confetti';
-import { useNavigate } from 'react-router-dom';
+import useRegister from '../../hooks/useRegister';
+import { RegisterData } from '../../types/user';
+import { LoadingButton } from '@mui/lab';
 
-interface RegistrationScreenProps {
-  onError: (error: string) => void;
-}
+interface RegistrationScreenProps {}
 
 const schema = yup.object().shape({
   username: yup.string().required('Username is required'),
@@ -35,8 +31,7 @@ const schema = yup.object().shape({
     .required('Confirm Password is required'),
 });
 
-
-const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ onError }) => {
+const RegistrationScreen: React.FC<RegistrationScreenProps> = ({}) => {
   const {
     control,
     handleSubmit,
@@ -45,30 +40,15 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ onError }) => {
     resolver: yupResolver(schema),
     mode: 'onChange',
   });
-  const navigate = useNavigate();
 
-  const mutation = useMutation(registerUser, {
-    onSuccess: () => {
-      toast.success('Registration successful! Welcome!');
-      confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-      });
-      navigate('/login');
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Registration failed');
-      onError(error.response?.data?.message || 'Registration failed');
-    },
-  });
+  const { mutate: register, isLoading } = useRegister();
 
-  const onSubmit = (data: any) => {
-    mutation.mutate(data);
+  const onSubmit = (data: RegisterData) => {
+    register(data);
   };
 
   return (
-    <div className="container">
+    <div className="pretty-card">
       <form className="registration-form" onSubmit={handleSubmit(onSubmit)}>
         <h2 className="title">Register</h2>
         <Tooltip title="Enter your username" arrow>
@@ -159,14 +139,15 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ onError }) => {
         </Tooltip>
         <Tooltip title={!isValid ? 'Oops, forgot something?' : ''} arrow>
           <span>
-            <MuiButton
+            <LoadingButton
               disabled={!isValid}
               type="submit"
               variant="contained"
               className="button"
+              loading={isLoading}
             >
               Start Having Fun
-            </MuiButton>
+            </LoadingButton>
           </span>
         </Tooltip>
         <p className="paragraph">

@@ -1,11 +1,11 @@
-import express, { Request, Response } from "express";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { v4 as uuidv4 } from "uuid";
-import mongoose from "mongoose";
+import express, { Request, Response } from 'express';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
+import mongoose from 'mongoose';
 import { IUser, userSchema } from '../schemas/user.schema';
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema);
 
 const router = express.Router();
 
@@ -18,11 +18,11 @@ export const generateToken = (
   return jwt.sign({ userId }, secret, { expiresIn });
 };
 
-router.post("/register", async (req: Request, res: Response) => {
+router.post('/register', async (req: Request, res: Response) => {
   const { username, email, password } = req.body;
 
   if (!username || !email || !password) {
-    return res.status(400).json({ message: "Please enter all fields" });
+    return res.status(400).json({ message: 'Please enter all fields' });
   }
 
   const emailExists: IUser = await User.findOne({
@@ -30,7 +30,7 @@ router.post("/register", async (req: Request, res: Response) => {
   });
 
   if (emailExists) {
-    return res.status(400).json({ message: "Email already exists" });
+    return res.status(400).json({ message: 'Email already exists' });
   }
 
   try {
@@ -47,26 +47,26 @@ router.post("/register", async (req: Request, res: Response) => {
     res.status(201).json(newUser);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error registering user" });
+    res.status(500).json({ message: 'Error registering user' });
   }
 });
 
-router.post("/login", async (req: Request, res: Response) => {
+router.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ message: "Please enter all fields" });
+    return res.status(400).json({ message: 'Please enter all fields' });
   }
 
   try {
     const user: IUser = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: 'Invalid credentials' });
     }
 
     const accessToken = generateToken(
@@ -77,26 +77,26 @@ router.post("/login", async (req: Request, res: Response) => {
     const refreshToken = generateToken(
       user._id,
       process.env.REFRESH_TOKEN_SECRET as string,
-      "1h"
+      '1h'
     );
 
     user.tokens.push(refreshToken);
-    console.debug("refresh userId ", user._id);
-    console.debug("login user token:", user.tokens);
+    console.debug('refresh userId ', user._id);
+    console.debug('login user token:', user.tokens);
     await user.save();
 
-    res.json({ accessToken, refreshToken });
+    res.json({ accessToken, refreshToken, userId: user._id });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error logging in user" });
+    res.status(500).json({ message: 'Error logging in user' });
   }
 });
 
-router.post("/refresh", async (req: Request, res: Response) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+router.post('/refresh', async (req: Request, res: Response) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
   if (!token) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({ message: 'Unauthorized' });
   }
 
   try {
@@ -105,22 +105,22 @@ router.post("/refresh", async (req: Request, res: Response) => {
       process.env.REFRESH_TOKEN_SECRET as string,
       async (err: jwt.VerifyErrors, userInfo: jwt.JwtPayload) => {
         if (err) {
-          return res.status(403).json({ message: "Forbidden jwt err" });
+          return res.status(403).json({ message: 'Forbidden jwt err' });
         }
 
         const userId = userInfo.userId;
         const user: IUser = await User.findById(userId);
         if (!user) {
-          return res.status(404).json({ message: "User not found" });
+          return res.status(404).json({ message: 'User not found' });
         }
 
-        console.debug("regresh userId ", userId);
-        console.debug("regresh user.tokens ", user.tokens);
+        console.debug('regresh userId ', userId);
+        console.debug('regresh user.tokens ', user.tokens);
 
         if (!user.tokens.includes(token)) {
           user.tokens = [];
           await user.save();
-          return res.status(403).json({ message: "Forbidden user tokens" });
+          return res.status(403).json({ message: 'Forbidden user tokens' });
         }
 
         const accessToken = generateToken(
@@ -133,15 +133,15 @@ router.post("/refresh", async (req: Request, res: Response) => {
     );
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error refreshing token" });
+    res.status(500).json({ message: 'Error refreshing token' });
   }
 });
 
-router.post("/logout", async (req: Request, res: Response) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+router.post('/logout', async (req: Request, res: Response) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
   if (!token) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({ message: 'Unauthorized' });
   }
 
   try {
@@ -150,23 +150,23 @@ router.post("/logout", async (req: Request, res: Response) => {
       process.env.ACCESS_TOKEN_SECRET as string,
       async (err: jwt.VerifyErrors, userInfo: jwt.JwtPayload) => {
         if (err) {
-          return res.status(403).json({ message: "Forbidden" });
+          return res.status(403).json({ message: 'Forbidden' });
         }
 
         const userId = userInfo.userId;
         const user: IUser = await User.findById(userId);
         if (!user) {
-          return res.status(404).json({ message: "User not found" });
+          return res.status(404).json({ message: 'User not found' });
         }
 
         user.tokens = [];
         await user.save();
-        return res.status(200).json({ message: "User logged out" });
+        return res.status(200).json({ message: 'User logged out' });
       }
     );
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error logging out user" });
+    res.status(500).json({ message: 'Error logging out user' });
   }
 });
 

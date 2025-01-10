@@ -1,19 +1,22 @@
 import React, { useEffect } from 'react';
 import './ProfileScreen.scss';
-import { useUser } from '../../context/UserContext';
-import { useFetchUser } from '../../hooks/useLogin';
+import { useFetchUser } from '../../hooks/useFetchUser';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import { Link } from 'react-router-dom';
+import { loggedInUserAtom } from '../../context/UserAtom';
+import { useAtom } from 'jotai';
 
 const ProfileScreen: React.FC = () => {
-  const { user, setUser } = useUser();
-  const { user: fetchedUser } = useFetchUser();
+  const [user, setUser] = useAtom(loggedInUserAtom);
+  const { user: fetchedUser, isSuccess: fetchSucceeded } = useFetchUser(
+    user._id
+  );
 
   useEffect(() => {
-    if (fetchedUser) {
+    if (fetchSucceeded && fetchedUser) {
       setUser(fetchedUser);
     }
-  }, [fetchedUser, setUser]);
+  }, [fetchSucceeded, fetchedUser, setUser]);
 
   if (fetchedUser) {
     return (
@@ -24,7 +27,7 @@ const ProfileScreen: React.FC = () => {
             {user.profilePicture && (
               <img
                 src={user.profilePicture}
-                alt="Profile Picture"
+                alt="Profile"
                 className="profile__picture"
               />
             )}
@@ -42,7 +45,7 @@ const ProfileScreen: React.FC = () => {
       </div>
     );
   } else {
-    return (<LoadingSpinner />);
+    return <LoadingSpinner />;
   }
 };
 
