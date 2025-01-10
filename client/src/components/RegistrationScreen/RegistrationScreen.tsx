@@ -1,5 +1,4 @@
 import React from 'react';
-import { useMutation } from 'react-query';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -9,11 +8,9 @@ import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PersonIcon from '@mui/icons-material/Person';
-import { toast } from 'react-toastify';
-import { registerUser } from '../../services/userService';
 import './RegistrationScreen.scss';
-import confetti from 'canvas-confetti';
-import { useNavigate } from 'react-router-dom';
+import useRegister from '../../hooks/useRegister';
+import { RegisterData } from '../../types/user';
 
 interface RegistrationScreenProps {
   onError: (error: string) => void;
@@ -44,26 +41,11 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ onError }) => {
     resolver: yupResolver(schema),
     mode: 'onChange',
   });
-  const navigate = useNavigate();
 
-  const mutation = useMutation(registerUser, {
-    onSuccess: () => {
-      toast.success('Registration successful! Welcome!');
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-      });
-      navigate('/login');
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Registration failed');
-      onError(error.response?.data?.message || 'Registration failed');
-    },
-  });
+  const { mutate: register, isLoading } = useRegister();
 
-  const onSubmit = (data: any) => {
-    mutation.mutate(data);
+  const onSubmit = (data: RegisterData) => {
+    register(data);
   };
 
   return (

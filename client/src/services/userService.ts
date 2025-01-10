@@ -1,20 +1,24 @@
-import axios, { AxiosResponse } from 'axios';
-import { User } from '../context/UserContext';
+import { AxiosResponse } from 'axios';
 import axiosInstance from './axiosInstance';
-import { LoginData, RegisterData, UpdateUserData } from '../types/user';
+import {
+  LoginData,
+  RegisterData,
+  Tokens,
+  UpdateUserData,
+  User,
+} from '../types/user';
 
-export const registerUser = async (data: RegisterData) => {
-  const response = await axiosInstance.post('/auth/register', data);
+export const registerUser = async (data: RegisterData): Promise<void> => {
+  await axiosInstance.post('/auth/register', data);
+};
+
+export const loginUser = async (data: LoginData): Promise<Tokens> => {
+  const response = await axiosInstance.post<Tokens>('/auth/login', data);
   return response.data;
 };
 
-export const loginUser = async (data: LoginData) => {
-  const response = await axiosInstance.post('/auth/login', data);
-  return response.data;
-};
-
-export const getUser = async () => {
-  const response = await axiosInstance.get(`/users/user`);
+export const getUser = async (id: string): Promise<User> => {
+  const response = await axiosInstance.get<User>(`/users/${id}`);
   return response.data;
 };
 
@@ -23,11 +27,12 @@ export const logoutUser = async () => {
   return response.data;
 };
 
-export const updateUser: (data: UpdateUserData) => Promise<User> = async (
-  data: Partial<User>
-) => {
-  const response: AxiosResponse<User> = await axiosInstance.put(
-    `/users/${data.email}`,
+export const updateUser = async (
+  id: string,
+  data: Partial<UpdateUserData>
+): Promise<User> => {
+  const response: AxiosResponse<User> = await axiosInstance.put<User>(
+    `/users/${id}`,
     data
   );
   return response.data;

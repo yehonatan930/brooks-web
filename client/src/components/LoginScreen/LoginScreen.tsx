@@ -11,8 +11,9 @@ import { useMutation } from 'react-query';
 import { loginUser } from '../../services/userService';
 import { toast } from 'react-toastify';
 import confetti from 'canvas-confetti';
-import { useUser } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import { useAtom } from 'jotai';
+import { loggedInUserAtom } from '../../context/UserAtom';
 
 const schema = yup.object().shape({
   email: yup
@@ -35,7 +36,7 @@ const LoginScreen: React.FC = () => {
     resolver: yupResolver(schema),
     mode: 'onChange',
   });
-  const { setEmail } = useUser();
+  const [user, setUser] = useAtom(loggedInUserAtom);
 
   const onSubmit = (data: any) => {
     mutation.mutate(data);
@@ -44,7 +45,6 @@ const LoginScreen: React.FC = () => {
   const mutation = useMutation(loginUser, {
     onSuccess: (data, { email }) => {
       localStorage.setItem('token', data.accessToken); // Store the JWT token
-      setEmail(email);
       toast.success('Login successful! Welcome!');
       confetti({
         particleCount: 100,

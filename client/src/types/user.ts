@@ -9,10 +9,15 @@ export interface LoginData {
   password: string;
 }
 
+export interface Tokens {
+  accessToken: string;
+  refreshToken: string;
+}
+
 export interface UpdateUserData {
-  username: string;
-  email: string;
-  profilePicture: string;
+  username?: string;
+  email?: string;
+  profilePicture?: string;
 }
 
 export interface User {
