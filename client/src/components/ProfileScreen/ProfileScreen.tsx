@@ -8,13 +8,15 @@ import { useAtom } from 'jotai';
 
 const ProfileScreen: React.FC = () => {
   const [user, setUser] = useAtom(loggedInUserAtom);
-  const { user: fetchedUser } = useFetchUser(user._id);
+  const { user: fetchedUser, isSuccess: fetchSucceeded } = useFetchUser(
+    user._id
+  );
 
   useEffect(() => {
-    if (fetchedUser) {
+    if (fetchSucceeded && fetchedUser) {
       setUser(fetchedUser);
     }
-  }, [fetchedUser, setUser]);
+  }, [fetchSucceeded, fetchedUser, setUser]);
 
   if (fetchedUser) {
     return (
