@@ -1,11 +1,11 @@
 import express, { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { IUser, userSchema } from '../schemas/user.schema';
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 const router = express.Router();
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema);
 
 /**
  * @swagger
@@ -32,12 +32,12 @@ const User = mongoose.model("User", userSchema);
  *       500:
  *         description: Error fetching users
  */
-router.get("/", async (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
   try {
     const users = await User.find();
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching users", error });
+    res.status(500).json({ message: 'Error fetching users', error });
   }
 });
 
@@ -66,15 +66,15 @@ router.get("/", async (req: Request, res: Response) => {
  *       500:
  *         description: Error fetching user
  */
-router.get("/user", async (req: Request, res: Response) => {
+router.get('/:id', async (req: Request, res: Response) => {
   try {
-    const user = await User.findById(req.user.userId);
+    const user = await User.findById(req.params.id);
 
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
     res.status(200).json(_.pick(user, ['username', 'email', 'profilePicture']));
   } catch (error) {
-    res.status(500).json({ message: "Error fetching user", error });
+    res.status(500).json({ message: 'Error fetching user', error });
   }
 });
 
@@ -125,7 +125,7 @@ router.get("/user", async (req: Request, res: Response) => {
  *       500:
  *         description: Error updating user
  */
-router.put("/:id", async (req: Request, res: Response) => {
+router.put('/:id', async (req: Request, res: Response) => {
   try {
     const { username, email, password, profilePicture } = req.body;
     const user: IUser = await User.findByIdAndUpdate(
@@ -133,10 +133,10 @@ router.put("/:id", async (req: Request, res: Response) => {
       { username, email, password, profilePicture },
       { new: true }
     );
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: 'User not found' });
     res.status(201).json(user);
   } catch (error) {
-    res.status(500).json({ message: "Error updating user", error });
+    res.status(500).json({ message: 'Error updating user', error });
   }
 });
 
@@ -168,13 +168,13 @@ router.put("/:id", async (req: Request, res: Response) => {
  *       500:
  *         description: Error deleting user
  */
-router.delete("/:id", async (req: Request, res: Response) => {
+router.delete('/:id', async (req: Request, res: Response) => {
   try {
     const user: IUser = await User.findByIdAndDelete(req.user.userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: 'User not found' });
     res.status(200).json({ _id: user._id });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting user", error });
+    res.status(500).json({ message: 'Error deleting user', error });
   }
 });
 

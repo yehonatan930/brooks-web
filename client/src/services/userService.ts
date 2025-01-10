@@ -27,12 +27,9 @@ export const logoutUser = async () => {
   return response.data;
 };
 
-export const updateUser = async (
-  id: string,
-  data: Partial<UpdateUserData>
-): Promise<User> => {
+export const updateUser = async (data: UpdateUserData): Promise<User> => {
   const response: AxiosResponse<User> = await axiosInstance.put<User>(
-    `/users/${id}`,
+    `/users/${data.id}`,
     data
   );
   return response.data;

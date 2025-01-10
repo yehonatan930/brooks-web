@@ -1,29 +1,31 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import './EditProfileScreen.scss';
-import { useUpdateUser } from '../../hooks/useUpdateUser';
+import { useUpdateLoggedInUser } from '../../hooks/useUpdateUser';
 import { loggedInUserAtom } from '../../context/UserAtom';
-import { useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
 
 const EditProfileScreen: React.FC = () => {
-  const user = useAtomValue(loggedInUserAtom);
-  const [username, setUsername] = useState<string>(user?.username || '');
-  const [email, setEmail] = useState<string>(user?.email || '');
-  const [profilePicture, setProfilePicture] = useState<string>(
-    user?.profilePicture || ''
+  const [loggedInUser, setLoggedInUser] = useAtom(loggedInUserAtom);
+  const [username, setUsername] = useState<string>(
+    loggedInUser?.username || ''
   );
-  const updateUserMutation = useUpdateUser();
+  const [email, setEmail] = useState<string>(loggedInUser?.email || '');
+  const [profilePicture, setProfilePicture] = useState<string>(
+    loggedInUser?.profilePicture || ''
+  );
+  const { mutate } = useUpdateLoggedInUser(setLoggedInUser);
 
   useEffect(() => {
-    if (user) {
-      setUsername(user.username);
-      setEmail(user.email);
-      setProfilePicture(user.profilePicture);
+    if (loggedInUser) {
+      setUsername(loggedInUser.username);
+      setEmail(loggedInUser.email);
+      setProfilePicture(loggedInUser.profilePicture);
     }
-  }, [user]);
+  }, [loggedInUser]);
 
   const handleSave = () => {
-    if (user) {
-      updateUserMutation.mutate({ username, email, profilePicture });
+    if (loggedInUser) {
+      mutate({ id: loggedInUser._id, username, email, profilePicture });
     }
   };
 

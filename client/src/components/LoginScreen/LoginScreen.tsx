@@ -7,10 +7,6 @@ import Tooltip from '@mui/material/Tooltip';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import './LoginScreen.scss';
-import { useMutation } from 'react-query';
-import { loginUser } from '../../services/userService';
-import { toast } from 'react-toastify';
-import confetti from 'canvas-confetti';
 import { useNavigate } from 'react-router-dom';
 import { useAtom } from 'jotai';
 import { loggedInUserAtom } from '../../context/UserAtom';
@@ -41,22 +37,6 @@ const LoginScreen: React.FC = () => {
   const onSubmit = (data: any) => {
     mutation.mutate(data);
   };
-
-  const mutation = useMutation(loginUser, {
-    onSuccess: (data, { email }) => {
-      localStorage.setItem('token', data.accessToken); // Store the JWT token
-      toast.success('Login successful! Welcome!');
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-      });
-      navigate('/profile'); // Navigate to the profile screen}
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Login failed');
-    },
-  });
 
   return (
     <div className="login__container">
