@@ -11,10 +11,9 @@ import PersonIcon from '@mui/icons-material/Person';
 import './RegistrationScreen.scss';
 import useRegister from '../../hooks/useRegister';
 import { RegisterData } from '../../types/user';
+import { LoadingButton } from '@mui/lab';
 
-interface RegistrationScreenProps {
-  onError: (error: string) => void;
-}
+interface RegistrationScreenProps {}
 
 const schema = yup.object().shape({
   username: yup.string().required('Username is required'),
@@ -32,7 +31,7 @@ const schema = yup.object().shape({
     .required('Confirm Password is required'),
 });
 
-const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ onError }) => {
+const RegistrationScreen: React.FC<RegistrationScreenProps> = ({}) => {
   const {
     control,
     handleSubmit,
@@ -140,14 +139,15 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({ onError }) => {
         </Tooltip>
         <Tooltip title={!isValid ? 'Oops, forgot something?' : ''} arrow>
           <span>
-            <Button
+            <LoadingButton
               disabled={!isValid}
               type="submit"
               variant="contained"
               className="button"
+              loading={isLoading}
             >
               Start Having Fun
-            </Button>
+            </LoadingButton>
           </span>
         </Tooltip>
         <p className="paragraph">
