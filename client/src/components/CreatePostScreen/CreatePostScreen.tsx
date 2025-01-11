@@ -11,7 +11,7 @@ import { NewPostFormData } from '../../types/post';
 import { useCreatePost } from '../../hooks/useCreatePost';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useAtomValue } from 'jotai';
-import { loggedInUserAtom } from '../../context/UserAtom';
+import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 
 interface CreatePostScreenProps {}
 

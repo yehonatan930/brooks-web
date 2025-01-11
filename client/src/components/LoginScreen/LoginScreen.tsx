@@ -8,9 +8,10 @@ import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import './LoginScreen.scss';
 import { useAtom } from 'jotai';
-import { loggedInUserAtom } from '../../context/UserAtom';
+import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import useLogin from '../../hooks/useLogin';
-import { LoginData } from '../../types/user';
+import { LoginData, User } from '../../types/user';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 const schema = yup.object().shape({
   email: yup
@@ -32,9 +33,19 @@ const LoginScreen: React.FC = () => {
     resolver: yupResolver(schema),
     mode: 'onChange',
   });
-  const [user, setUser] = useAtom(loggedInUserAtom);
+  const [loggedInUser, setLoggedInUser] = useAtom(loggedInUserAtom);
+  const [_, setLocalStorageUserId] = useLocalStorage<string>('userId', '');
 
-  const { mutate } = useLogin(setUser);
+  const handleSetLoggedInUser = (userId: string) => {
+    console.log('login: userId', userId);
+    setLoggedInUser({ _id: userId } as User);
+    setLocalStorageUserId(loggedInUser._id);
+  };
+
+  console.log('login: loggedInUser', loggedInUser);
+  console.log('login: local storgae id', _);
+
+  const { mutate } = useLogin(handleSetLoggedInUser);
 
   const onSubmit = (data: LoginData) => {
     mutate(data);
@@ -44,64 +55,58 @@ const LoginScreen: React.FC = () => {
     <div className="login__container">
       <form className="login__form" onSubmit={handleSubmit(onSubmit)}>
         <h2 className="login__title">Login</h2>
-        <Tooltip title="Enter your email" arrow>
-          <Controller
-            name="email"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <TextField
-                margin="normal"
-                {...field}
-                className="login__input-field"
-                type="email"
-                placeholder="Email"
-                error={!!errors.email}
-                helperText={errors.email ? errors.email.message : ''}
-                slotProps={{
-                  input: {
-                    startAdornment: <EmailIcon />,
-                  },
-                }}
-              />
-            )}
-          />
-        </Tooltip>
-        <Tooltip title="Enter your password" arrow>
-          <Controller
-            name="password"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <TextField
-                margin="normal"
-                {...field}
-                className="login__input-field"
-                type="password"
-                placeholder="Password"
-                error={!!errors.password}
-                helperText={errors.password ? errors.password.message : ''}
-                slotProps={{
-                  input: {
-                    startAdornment: <LockIcon />,
-                  },
-                }}
-              />
-            )}
-          />
-        </Tooltip>
-        <Tooltip title={!isValid ? 'Oops, forgot something?' : ''} arrow>
-          <span>
-            <MuiButton
-              type="submit"
-              variant="contained"
-              className="login__button"
-              disabled={!isValid}
-            >
-              Login
-            </MuiButton>
-          </span>
-        </Tooltip>
+        <Controller
+          name="email"
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <TextField
+              margin="normal"
+              {...field}
+              className="login__input-field"
+              type="email"
+              placeholder="Email"
+              error={!!errors.email}
+              helperText={errors.email ? errors.email.message : ''}
+              slotProps={{
+                input: {
+                  startAdornment: <EmailIcon />,
+                },
+              }}
+            />
+          )}
+        />
+        <Controller
+          name="password"
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <TextField
+              margin="normal"
+              {...field}
+              className="login__input-field"
+              type="password"
+              placeholder="Password"
+              error={!!errors.password}
+              helperText={errors.password ? errors.password.message : ''}
+              slotProps={{
+                input: {
+                  startAdornment: <LockIcon />,
+                },
+              }}
+            />
+          )}
+        />
+        <span>
+          <MuiButton
+            type="submit"
+            variant="contained"
+            className="login__button"
+            disabled={!isValid}
+          >
+            Login
+          </MuiButton>
+        </span>
         <p className="login__paragraph">
           Don't have an account?{' '}
           <a href="/register" className="login__register-link">

@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import './Navbar.scss';
 import { logoutUser } from '../../services/userService';
 import { useAtom } from 'jotai';
-import { loggedInUserAtom } from '../../context/UserAtom';
+import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import { User } from '../../types/user';
 
 interface NavbarProps {}

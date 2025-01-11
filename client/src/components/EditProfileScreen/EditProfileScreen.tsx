@@ -1,11 +1,11 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import './EditProfileScreen.scss';
-import { useUpdateLoggedInUser } from '../../hooks/useUpdateUser';
-import { loggedInUserAtom } from '../../context/UserAtom';
-import { useAtom } from 'jotai';
+import { useUpdateUser } from '../../hooks/useUpdateUser';
+import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
+import { useAtomValue } from 'jotai';
 
 const EditProfileScreen: React.FC = () => {
-  const [loggedInUser, setLoggedInUser] = useAtom(loggedInUserAtom);
+  const loggedInUser = useAtomValue(loggedInUserAtom);
   const [username, setUsername] = useState<string>(
     loggedInUser?.username || ''
   );
@@ -13,7 +13,7 @@ const EditProfileScreen: React.FC = () => {
   const [profilePicture, setProfilePicture] = useState<string>(
     loggedInUser?.profilePicture || ''
   );
-  const { mutate } = useUpdateLoggedInUser(setLoggedInUser);
+  const { mutate } = useUpdateUser();
 
   useEffect(() => {
     if (loggedInUser) {

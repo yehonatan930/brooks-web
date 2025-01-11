@@ -15,6 +15,7 @@
     "cra-template-typescript": "1.2.0",
     "expo-linear-gradient": "^14.0.1",
     "jotai": "^2.11.0",
+    "jotai-devtools": "^0.10.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-hook-form": "^7.54.2",
@@ -23,6 +24,7 @@
     "react-router-dom": "^7.1.1",
     "react-scripts": "^5.0.1",
     "react-toastify": "^11.0.2",
+    "usehooks-ts": "^3.1.0",
     "yup": "^1.6.1"
   },
   "scripts": {

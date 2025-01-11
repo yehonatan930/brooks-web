@@ -5,9 +5,7 @@ import confetti from 'canvas-confetti';
 import { useNavigate } from 'react-router-dom';
 import { UpdateUserData, User } from '../types/user';
 
-export const useUpdateLoggedInUser = (
-  setLoggedInUser: (value: User) => void
-) => {
+export const useUpdateUser = () => {
   const navigate = useNavigate();
 
   const { data: user, ...rest } = useMutation<
@@ -17,7 +15,6 @@ export const useUpdateLoggedInUser = (
     unknown
   >('updateUser', updateUser, {
     onSuccess: (data: User) => {
-      setLoggedInUser(data);
       toast.success('Update successful!!');
       confetti({
         particleCount: 100,
