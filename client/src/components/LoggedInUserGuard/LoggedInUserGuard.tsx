@@ -14,12 +14,14 @@ const LoggedInUserGuard: FunctionComponent<LoggedInUserGuardProps> = (
 ) => {
   const [user, setUser] = useAtom(loggedInUserAtom);
 
-  const [localStorageUserId, _] = useLocalStorage<string>('userId', '');
+  const [getLocalStorageUserId, _] = useLocalStorage<string>('userId', '');
 
   const navigate = useNavigate();
 
   useEffect(() => {
     console.log('LoggedInUserGuard: user', user);
+
+    const localStorageUserId: string = getLocalStorageUserId();
 
     if (
       window.location.pathname !== '/login' &&
@@ -33,7 +35,7 @@ const LoggedInUserGuard: FunctionComponent<LoggedInUserGuardProps> = (
 
       navigate('/login');
     }
-  }, [navigate, setUser, user, localStorageUserId]);
+  }, [getLocalStorageUserId, navigate, setUser, user]);
 
   return <>{props.children}</>;
 };

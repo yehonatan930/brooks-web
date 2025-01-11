@@ -39,7 +39,7 @@ const LoginScreen: React.FC = () => {
   const handleSetLoggedInUser = (userId: string) => {
     console.log('login: userId', userId);
     setLoggedInUser({ _id: userId } as User);
-    setLocalStorageUserId(loggedInUser._id);
+    setLocalStorageUserId(userId);
   };
 
   console.log('login: loggedInUser', loggedInUser);
