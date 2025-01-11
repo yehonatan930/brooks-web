@@ -9,11 +9,15 @@ import EditProfileScreen from './components/EditProfileScreen/EditProfileScreen'
 import FeedScreen from './components/FeedScreen/FeedScreen';
 import CreatePostScreen from './components/CreatePostScreen/CreatePostScreen';
 import LoggedInUserGuard from './components/LoggedInUserGuard/LoggedInUserGuard';
-import { Provider } from 'jotai';
+import { Provider, createStore } from 'jotai';
+// import { DevTools } from 'jotai-devtools';
+// import 'jotai-devtools/styles.css';
+
+const customStore = createStore();
 
 function App() {
   return (
-    <Provider>
+    <Provider store={customStore}>
       <div className="App">
         <LoggedInUserGuard>
           <Navbar />

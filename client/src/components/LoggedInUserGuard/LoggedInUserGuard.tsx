@@ -1,6 +1,6 @@
 import { useAtom } from 'jotai';
 import { FunctionComponent, ReactNode, useEffect } from 'react';
-import { loggedInUserAtom } from '../../context/UserAtom';
+import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import { useNavigate } from 'react-router-dom';
 import { User } from '../../types/user';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
@@ -14,11 +14,13 @@ const LoggedInUserGuard: FunctionComponent<LoggedInUserGuardProps> = (
 ) => {
   const [user, setUser] = useAtom(loggedInUserAtom);
 
-  const [localStorageUserId, _] = useLocalStorage<string>('userId');
+  const [localStorageUserId, _] = useLocalStorage<string>('userId', '');
 
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log('LoggedInUserGuard: user', user);
+
     if (
       window.location.pathname !== '/login' &&
       window.location.pathname !== '/register' &&

@@ -3,7 +3,7 @@ import './ProfileScreen.scss';
 import { useFetchUser } from '../../hooks/useFetchUser';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import { Link } from 'react-router-dom';
-import { loggedInUserAtom } from '../../context/UserAtom';
+import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import { useAtom } from 'jotai';
 
 const ProfileScreen: React.FC = () => {
@@ -14,9 +14,9 @@ const ProfileScreen: React.FC = () => {
 
   useEffect(() => {
     if (fetchSucceeded && fetchedUser) {
-      setUser(fetchedUser);
+      setUser({ ...fetchedUser, _id: user._id });
     }
-  }, [fetchSucceeded, fetchedUser, setUser]);
+  }, [fetchSucceeded, fetchedUser, setUser, user._id]);
 
   if (fetchedUser) {
     return (

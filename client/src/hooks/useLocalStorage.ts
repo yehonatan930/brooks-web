@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
 
-function getStorageValue<D>(key: string, defaultValue?: D): D | undefined {
-  // getting stored value
-  const saved = localStorage.getItem(key);
-  const initial = saved ? JSON.parse(saved) : null;
-  return initial || defaultValue;
+function getStorageValue<D>(key: string, defaultValue: D): D {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : defaultValue;
+  } catch (error) {
+    return defaultValue;
+  }
 }
 
 export const useLocalStorage = <T>(
   key: string,
-  defaultValue?: T
-): [T | undefined, React.Dispatch<React.SetStateAction<T | undefined>>] => {
-  const [value, setValue] = useState<T | undefined>(() => {
+  defaultValue: T
+): [T, React.Dispatch<React.SetStateAction<T>>] => {
+  const [value, setValue] = useState<T>(() => {
     return getStorageValue<T>(key, defaultValue);
   });
 
