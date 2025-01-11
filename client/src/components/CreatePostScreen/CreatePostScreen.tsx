@@ -2,16 +2,16 @@ import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { TextField, Tooltip } from '@mui/material';
+import { TextField } from '@mui/material';
 import BookIcon from '@mui/icons-material/Book';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import './CreatePostScreen.scss';
-import ChangeImageButton from './ChangeImageButton';
 import { NewPostFormData } from '../../types/post';
 import { useCreatePost } from '../../hooks/useCreatePost';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useAtomValue } from 'jotai';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
+import PhotoCameraBackIcon from '@mui/icons-material/PhotoCameraBack';
 
 interface CreatePostScreenProps {}
 
@@ -24,31 +24,24 @@ const schema = yup.object().shape({
 const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
   const user = useAtomValue(loggedInUserAtom);
 
-  const [postData, setPostData] = useState<NewPostFormData>({
-    bookTitle: '',
-    content: '',
-    imageUrl: '',
-  });
-
   const { isLoading, mutate: createPost } = useCreatePost();
 
   const {
     control,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isValid },
-  } = useForm({
+  } = useForm<NewPostFormData>({
     resolver: yupResolver(schema),
     mode: 'onChange',
   });
 
-  const onSubmit = (data: any) => {
-    console.log(data);
-    createPost({ userId: user._id, ...postData });
-  };
+  const watchBookTitle = watch('bookTitle');
 
-  const onChangeInFormData = (e: any) => {
-    console.log(e.target.name, e.target.value);
-    setPostData({ ...postData, [e.target.name]: e.target.value });
+  const onSubmit = (data: NewPostFormData) => {
+    console.log(data);
+    createPost({ userId: user._id, ...data });
   };
 
   const fetchBookCover = useCallback(
@@ -63,80 +56,89 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
       // }
 
       // This is a dummy implementation
-      setPostData({
-        ...postData,
-        imageUrl: 'https://cdn.candycode.com/jotai/jotai-mascot.png',
-      });
+      setValue('imageUrl', 'https://cdn.candycode.com/jotai/jotai-mascot.png');
     },
-    [postData]
+    [setValue]
   );
 
   useEffect(() => {
-    if (postData.bookTitle) {
-      fetchBookCover(postData.bookTitle);
+    if (watchBookTitle) {
+      fetchBookCover(watchBookTitle);
+    } else {
+      setValue('imageUrl', '');
     }
-  }, [fetchBookCover, postData.bookTitle]);
+  }, [fetchBookCover, setValue, watchBookTitle]);
 
   return (
-    <div className="pretty-card">
-      <form className="registration-form" onSubmit={handleSubmit(onSubmit)}>
+    <div className="pretty-card CreatePostScreen">
+      <form
+        className="CreatePostScreen__form"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <h2 className="title">New Post</h2>
-        <Tooltip title="Enter your book title" arrow>
-          <Controller
-            name="bookTitle"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <TextField
-                {...field}
-                className="input-field"
-                type="text"
-                placeholder="Your Book title"
-                margin={'normal'}
-                error={!!errors.bookTitle}
-                helperText={errors.bookTitle ? errors.bookTitle.message : ''}
-                InputProps={{
+        <Controller
+          name="bookTitle"
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <TextField
+              {...field}
+              className="input-field"
+              type="text"
+              placeholder="Your Book title"
+              margin={'normal'}
+              error={!!errors.bookTitle}
+              helperText={errors.bookTitle ? errors.bookTitle.message : ''}
+              slotProps={{
+                input: {
                   startAdornment: <BookIcon />,
-                }}
-                value={postData.bookTitle}
-                onChange={onChangeInFormData}
-              />
-            )}
-          />
-        </Tooltip>
-        <Tooltip title="What do you have to say?" arrow>
-          <Controller
-            name="content"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <TextField
-                margin={'normal'}
-                {...field}
-                className="input-field"
-                type="text"
-                placeholder="Your thoughts"
-                error={!!errors.content}
-                helperText={errors.content ? errors.content.message : ''}
-                InputProps={{
-                  startAdornment: <LightbulbIcon />,
-                }}
-                value={postData.content}
-                onChange={onChangeInFormData}
-              />
-            )}
-          />
-        </Tooltip>
-        {postData.imageUrl && (
-          <div className="CreatePostScreen__image-preview-container">
-            <ChangeImageButton onChange={() => {}} />
-            <img
-              src={postData.imageUrl}
-              alt="preview"
-              className="CreatePostScreen__image-preview"
+                },
+              }}
             />
-          </div>
-        )}
+          )}
+        />
+        <Controller
+          name="content"
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <TextField
+              margin={'normal'}
+              {...field}
+              className="input-field"
+              type="text"
+              placeholder="Your thoughts"
+              error={!!errors.content}
+              helperText={errors.content ? errors.content.message : ''}
+              slotProps={{
+                input: {
+                  startAdornment: <LightbulbIcon />,
+                },
+              }}
+            />
+          )}
+        />
+        <Controller
+          name="imageUrl"
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <TextField
+              margin={'normal'}
+              {...field}
+              className="input-field"
+              type="text"
+              placeholder="your image url"
+              error={!!errors.imageUrl}
+              helperText={errors.imageUrl ? errors.imageUrl.message : ''}
+              slotProps={{
+                input: {
+                  startAdornment: <PhotoCameraBackIcon />,
+                },
+              }}
+            />
+          )}
+        />
         <span>
           <LoadingButton
             disabled={!isValid}
@@ -149,6 +151,15 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
           </LoadingButton>
         </span>
       </form>
+      <div className="CreatePostScreen__image-preview-container">
+        {watch('imageUrl') && (
+          <img
+            src={watch('imageUrl')}
+            alt="preview"
+            className="CreatePostScreen__image-preview"
+          />
+        )}
+      </div>
     </div>
   );
 };

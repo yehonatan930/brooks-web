@@ -9,8 +9,8 @@ export interface Post {
 
 export interface NewPostFormData {
   bookTitle: string;
-  content: string;
-  imageUrl: string;
+  content?: string;
+  imageUrl?: string;
 }
 
 export interface NewPostData extends NewPostFormData {

@@ -1,5 +1,5 @@
 .CreatePostScreen__image-preview {
-  width: 100%;
+  width: 420px;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -10,13 +10,17 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  margin-bottom: 20px;
+  width: 420px;
+  height: 420px;
 }
 
-.CreatePostScreen__image-preview-change.MuiButton-root {
-  position: absolute;
-  top: 0;
-  right: 0;
-  text-transform: lowercase;
+.pretty-card.CreatePostScreen {
+  max-width: 80%;
+}
+
+.CreatePostScreen__form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
