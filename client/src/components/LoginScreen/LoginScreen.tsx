@@ -10,7 +10,8 @@ import './LoginScreen.scss';
 import { useAtom } from 'jotai';
 import { loggedInUserAtom } from '../../context/UserAtom';
 import useLogin from '../../hooks/useLogin';
-import { LoginData } from '../../types/user';
+import { LoginData, User } from '../../types/user';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 const schema = yup.object().shape({
   email: yup
@@ -32,9 +33,15 @@ const LoginScreen: React.FC = () => {
     resolver: yupResolver(schema),
     mode: 'onChange',
   });
-  const [user, setUser] = useAtom(loggedInUserAtom);
+  const [loggedInUser, setLoggedInUser] = useAtom(loggedInUserAtom);
+  const [_, setLocalStorageUserId] = useLocalStorage<string>('userId');
 
-  const { mutate } = useLogin(setUser);
+  const handleSetLoggedInUser = (userId: string) => {
+    setLoggedInUser({ _id: userId } as User);
+    setLocalStorageUserId(loggedInUser._id);
+  };
+
+  const { mutate } = useLogin(handleSetLoggedInUser);
 
   const onSubmit = (data: LoginData) => {
     mutate(data);

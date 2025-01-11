@@ -5,7 +5,7 @@ import { loginUser } from '../services/userService';
 import { useNavigate } from 'react-router-dom';
 import { LoginData, LoginResponse, User } from '../types/user';
 
-const useLogin = (setUser: (user: User) => void) => {
+const useLogin = (handleSetLoggedInUser: (userId: string) => void) => {
   const navigate = useNavigate();
 
   const { data: tokens, ...rest } = useMutation<
@@ -23,7 +23,7 @@ const useLogin = (setUser: (user: User) => void) => {
         origin: { y: 0.6 },
       });
 
-      setUser({ _id: data.userId } as User);
+      handleSetLoggedInUser(data.userId);
 
       navigate('/profile');
     },
