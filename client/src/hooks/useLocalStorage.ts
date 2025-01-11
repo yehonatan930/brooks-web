@@ -1,5 +1,3 @@
-import { useState, useEffect } from 'react';
-
 function getStorageValue<D>(key: string, defaultValue: D): D {
   try {
     const item = localStorage.getItem(key);
@@ -12,14 +10,12 @@ function getStorageValue<D>(key: string, defaultValue: D): D {
 export const useLocalStorage = <T>(
   key: string,
   defaultValue: T
-): [T, React.Dispatch<React.SetStateAction<T>>] => {
-  const [value, setValue] = useState<T>(() => {
-    return getStorageValue<T>(key, defaultValue);
-  });
+): [() => T, (value: T) => void] => {
+  const getFromLocalStorage = () => getStorageValue(key, defaultValue);
 
-  useEffect(() => {
+  const setInLocalStorage = (value: T) => {
     localStorage.setItem(key, JSON.stringify(value));
-  }, [key, value]);
+  };
 
-  return [value, setValue];
+  return [getFromLocalStorage, setInLocalStorage];
 };
