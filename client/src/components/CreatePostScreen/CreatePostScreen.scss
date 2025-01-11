@@ -1,5 +1,5 @@
 .CreatePostScreen__image-preview {
-  width: 420px;
+  width: 100%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -10,8 +10,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 420px;
-  height: 420px;
+  min-width: 420px;
+  min-height: 420px;
 }
 
 .pretty-card.CreatePostScreen {
