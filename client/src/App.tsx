@@ -11,8 +11,7 @@ import CreatePostScreen from './components/CreatePostScreen/CreatePostScreen';
 import LoggedInUserGuard from './components/LoggedInUserGuard/LoggedInUserGuard';
 import './styles/globalStyles.scss';
 import { Provider, createStore } from 'jotai';
-// import { DevTools } from 'jotai-devtools';
-// import 'jotai-devtools/styles.css';
+import PostDetailScreen from './components/PostDetailScreen/PostDetailScreen';
 
 const customStore = createStore();
 
@@ -29,7 +28,7 @@ function App() {
               <Route path="/profile" element={<ProfileScreen />} />
               <Route path="/post/create" element={<CreatePostScreen />} />
               <Route path="/feed" element={<FeedScreen />} />
-              {/*<Route path="/post/:id" element={<PostDetailScreen />} />*/}
+              <Route path="/post/:id" element={<PostDetailScreen />} />
               <Route path="/profile/edit" element={<EditProfileScreen />} />
             </Routes>
           </Suspense>

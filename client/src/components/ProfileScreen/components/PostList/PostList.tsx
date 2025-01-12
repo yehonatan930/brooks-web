@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { CircularProgress, Button } from '@mui/material';
+import { CircularProgress, Button, IconButton } from '@mui/material';
 import { useUserPosts } from '../../../../hooks/useUserPosts';
+import { Link } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import DeleteIcon from '@mui/icons-material/Delete';
 import './PostList.scss';
 import { Post } from '../../../../types/post';
 
@@ -26,6 +30,11 @@ const PostList: React.FC<PostListProps> = ({ userId }) => {
     }
   };
 
+  const handleDeletePost = (postId: string) => {
+    // Implement delete post functionality here
+    console.log(`Delete post with ID: ${postId}`);
+  };
+
   return (
     <div className="profile__posts">
       <h3>User Posts</h3>
@@ -45,6 +54,21 @@ const PostList: React.FC<PostListProps> = ({ userId }) => {
               <div className="profile__post-content">
                 <h4>{post.bookTitle}</h4>
                 <p>{post.content}</p>
+                <div className="profile__post-actions">
+                  <Link to={`/post/${post._id}`}>
+                    <IconButton>
+                      <VisibilityIcon />
+                    </IconButton>
+                  </Link>
+                  <Link to={`/post/edit/${post._id}`}>
+                    <IconButton>
+                      <EditIcon />
+                    </IconButton>
+                  </Link>
+                  <IconButton onClick={() => handleDeletePost(post._id)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </div>
               </div>
             </div>
           ))
