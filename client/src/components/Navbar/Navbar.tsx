@@ -32,7 +32,7 @@ const Navbar: React.FC<NavbarProps> = ({}) => {
         <ul className="navbar__list">
           <li className="navbar__item">
             <NavLink
-              to="/home"
+              to="/feed"
               className={({ isActive }) =>
                 isActive ? 'navbar__link navbar__link--active' : 'navbar__link'
               }
