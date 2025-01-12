@@ -36,7 +36,7 @@ export const unlikePost = async (id: string): Promise<void> => {
   await axiosInstance.delete(`/posts/${id}/like`);
 };
 
-export const getPostsByUserId = async (): Promise<Post[]> => {
-  const response = await axiosInstance.get(`/posts`);
+export const getPostsByUserId = async (page: number): Promise<{ posts: Post[], totalPages: number }> => {
+  const response = await axiosInstance.get(`/posts?page=${page}`);
   return response.data;
 };
