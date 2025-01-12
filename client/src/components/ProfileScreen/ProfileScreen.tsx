@@ -5,13 +5,11 @@ import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import { Link } from 'react-router-dom';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import { useAtom } from 'jotai';
-import { useUserPosts } from '../../hooks/useUserPosts';
-import { CircularProgress } from '@mui/material';
+import PostList from './components/PostList/PostList';
 
 const ProfileScreen: React.FC = () => {
   const [user, setUser] = useAtom(loggedInUserAtom);
   const { user: fetchedUser, isSuccess: fetchSucceeded } = useFetchUser(user._id);
-  const { data: posts, isLoading: postsLoading } = useUserPosts();
 
   useEffect(() => {
     if (fetchSucceeded && fetchedUser) {
@@ -43,28 +41,7 @@ const ProfileScreen: React.FC = () => {
             </Link>
           </div>
         )}
-        <div className="profile__posts">
-          <h3>User Posts</h3>
-          {postsLoading ? (
-            <CircularProgress />
-          ) : (
-            posts?.map((post) => (
-              <div key={post._id} className="profile__post">
-                {post.imageUrl && (
-                  <img
-                    src={post.imageUrl}
-                    alt="Post"
-                    className="profile__post-image"
-                  />
-                )}
-                <div className="profile__post-content">
-                  <h4>{post.bookTitle}</h4>
-                  <p>{post.content}</p>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+        <PostList userId={user._id} />
       </div>
     );
   } else {
