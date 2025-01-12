@@ -38,7 +38,7 @@ const Post = mongoose.model('Post', postSchema);
  *         description: Server error
  */
 router.get('/', async (req, res) => {
-  const { userId } = req.query;
+  const { userId } = req.user;
   if (!userId) {
     try {
       const posts: IPost[] = await Post.find();

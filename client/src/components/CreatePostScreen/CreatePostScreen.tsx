@@ -46,14 +46,15 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
   const watchBookTitle = watch('bookTitle');
 
   const onSubmit = (data: NewPostFormData) => {
-    console.log(data);
     createPost({ userId: user._id, ...data });
   };
 
   const findBestMatch = (bookInfos: BookVolumeInfo[], bookTitle: string) => {
     return bookInfos.reduce((bestMatch, bookInfo) => {
       const similarity = stringSimilarity.compareTwoStrings(bookInfo.title.toLowerCase(), bookTitle.toLowerCase());
-      return similarity > bestMatch.highestSimilarity
+      const shouldReplaceCurrentMatch = similarity > bestMatch.highestSimilarity && bookInfo.imageLinks?.thumbnail;
+
+      return shouldReplaceCurrentMatch
         ? { highestSimilarity: similarity, bestMatch: bookInfo }
         : bestMatch;
     }, { highestSimilarity: 0, bestMatch: {} as BookVolumeInfo}).bestMatch;

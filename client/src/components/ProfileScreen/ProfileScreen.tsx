@@ -5,12 +5,11 @@ import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import { Link } from 'react-router-dom';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import { useAtom } from 'jotai';
+import PostList from './components/PostList/PostList';
 
 const ProfileScreen: React.FC = () => {
   const [user, setUser] = useAtom(loggedInUserAtom);
-  const { user: fetchedUser, isSuccess: fetchSucceeded } = useFetchUser(
-    user._id
-  );
+  const { user: fetchedUser, isSuccess: fetchSucceeded } = useFetchUser(user._id);
 
   useEffect(() => {
     if (fetchSucceeded && fetchedUser) {
@@ -42,6 +41,7 @@ const ProfileScreen: React.FC = () => {
             </Link>
           </div>
         )}
+        <PostList userId={user._id} />
       </div>
     );
   } else {

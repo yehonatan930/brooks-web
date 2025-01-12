@@ -1,0 +1,40 @@
+.profile__posts {
+  /* existing styles */
+}
+
+.profile__post {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profile__post-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-right: 1rem;
+  border-radius: 8px;
+}
+
+.profile__post-content {
+  flex: 1;
+  overflow: hidden;
+}
+
+.profile__post-content h4 {
+  margin: 0 0 0.5rem 0;
+}
+
+.profile__post-content p {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* number of lines to show */
+  -webkit-box-orient: vertical;
+}
