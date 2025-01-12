@@ -1,5 +1,7 @@
 .CreatePostScreen__image-preview {
-  width: 420px;
+  width: 100%;
+  max-width: 90%;
+  max-height: 90%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -10,12 +12,18 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 420px;
-  height: 420px;
+  width: 100%;
+  height: auto;
 }
 
 .pretty-card.CreatePostScreen {
-  max-width: 80%;
+  max-width: 600px;
+  margin: 100px auto 50px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .CreatePostScreen__form {

@@ -16,3 +16,11 @@ export interface NewPostFormData {
 export interface NewPostData extends NewPostFormData {
   userId: string;
 }
+ export interface BookVolumeInfo {
+  title: string;
+  authors: string[];
+  description: string;
+  imageLinks: {
+    thumbnail: string;
+  };
+ }

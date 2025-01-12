@@ -1,4 +1,4 @@
-import { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -6,14 +6,17 @@ import { TextField } from '@mui/material';
 import BookIcon from '@mui/icons-material/Book';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import './CreatePostScreen.scss';
-import { NewPostFormData } from '../../types/post';
+import { BookVolumeInfo, NewPostFormData } from '../../types/post';
 import { useCreatePost } from '../../hooks/useCreatePost';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useAtomValue } from 'jotai';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import PhotoCameraBackIcon from '@mui/icons-material/PhotoCameraBack';
+import stringSimilarity from 'string-similarity';
+import debounce from 'lodash/debounce';
 
 interface CreatePostScreenProps {}
+const DEFAULT_IMAGE_URL: string = 'https://cdn.candycode.com/jotai/jotai-mascot.png';
 
 const schema = yup.object().shape({
   bookTitle: yup.string().required('book title is required'),
@@ -35,6 +38,9 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
   } = useForm<NewPostFormData>({
     resolver: yupResolver(schema),
     mode: 'onChange',
+    defaultValues: {
+      imageUrl: DEFAULT_IMAGE_URL
+    }
   });
 
   const watchBookTitle = watch('bookTitle');
@@ -44,28 +50,37 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
     createPost({ userId: user._id, ...data });
   };
 
-  const fetchBookCover = useCallback(
-    async (bookTitle: string) => {
-      // const response = await fetch(
-      //   `https://www.googleapis.com/books/v1/volumes?q=${bookTitle}`
-      // );
-      // const data = await response.json();
-      // if (data.items && data.items.length > 0) {
-      //   const imageUrl = data.items[0].volumeInfo.imageLinks.thumbnail;
-      //   setPostData({ ...postData, imageUrl });
-      // }
+  const findBestMatch = (bookInfos: BookVolumeInfo[], bookTitle: string) => {
+    return bookInfos.reduce((bestMatch, bookInfo) => {
+      const similarity = stringSimilarity.compareTwoStrings(bookInfo.title.toLowerCase(), bookTitle.toLowerCase());
+      return similarity > bestMatch.highestSimilarity
+        ? { highestSimilarity: similarity, bestMatch: bookInfo }
+        : bestMatch;
+    }, { highestSimilarity: 0, bestMatch: {} as BookVolumeInfo}).bestMatch;
+  }
 
-      // This is a dummy implementation
-      setValue('imageUrl', 'https://cdn.candycode.com/jotai/jotai-mascot.png');
-    },
+  const fetchBookCover = useCallback(
+    debounce(async (bookTitle: string) => {
+      const response = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=${bookTitle}`
+      );
+      const data: {items: {volumeInfo: BookVolumeInfo}[]} = await response.json();
+      const bookInfos = data ? data.items.map((item: any) => item.volumeInfo) : [];
+
+      if (bookInfos.length > 0) {
+        const imageUrl = findBestMatch(bookInfos, bookTitle)?.imageLinks?.thumbnail;
+
+        setValue('imageUrl', imageUrl);
+      } else {
+        setValue('imageUrl', DEFAULT_IMAGE_URL);
+      }
+    }, 300) as Function,
     [setValue]
   );
 
   useEffect(() => {
     if (watchBookTitle) {
       fetchBookCover(watchBookTitle);
-    } else {
-      setValue('imageUrl', '');
     }
   }, [fetchBookCover, setValue, watchBookTitle]);
 
