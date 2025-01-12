@@ -1,27 +1,31 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import './Navbar.scss';
 import { logoutUser } from '../../services/userService';
 import { useAtom } from 'jotai';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import { User } from '../../types/user';
+import * as _ from 'lodash';
 
 interface NavbarProps {}
 
 const Navbar: React.FC<NavbarProps> = ({}) => {
   const [user, setUser] = useAtom(loggedInUserAtom);
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
       await logoutUser();
       localStorage.removeItem('token');
       setUser({} as User);
+      navigate('/login');
+
     } catch (error) {
       console.error('Logout failed:', error);
     }
   };
 
-  return (
+  return !_.isEmpty(user) && (
     <nav className="navbar">
       <div className="navbar__container">
         <div className="navbar__brand">Brook</div>
