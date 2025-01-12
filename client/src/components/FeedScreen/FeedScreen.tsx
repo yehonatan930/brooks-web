@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CircularProgress, IconButton } from '@mui/material';
-import { getPosts, deletePost } from '../../services/postService';
+import { getPosts, deletePost, likePost } from '../../services/postService';
 import { Post as PostType } from '../../types/post';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -9,6 +9,7 @@ import './FeedScreen.scss';
 import { useAtomValue } from 'jotai/index';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import { Link } from 'react-router-dom';
+import PostLikes from './components/PostLikes/PostLikes';
 
 const FeedScreen: React.FC = () => {
   const [posts, setPosts] = useState<PostType[]>([]);
@@ -40,6 +41,19 @@ const FeedScreen: React.FC = () => {
     }
   };
 
+  const handleLike = async (postId: string) => {
+    try {
+      await likePost(postId);
+      setPosts(prevPosts =>
+        prevPosts.map(post =>
+          post._id === postId ? { ...post, likes: [...post.likes, userId] } : post
+        )
+      );
+    } catch (error) {
+      console.error('Error liking post:', error);
+    }
+  };
+
   const toggleExpandPost = (postId: string) => {
     setExpandedPosts(prev => {
       const newExpandedPosts = new Set(prev);
@@ -66,6 +80,13 @@ const FeedScreen: React.FC = () => {
       {posts.length > 0 ? (
         posts.map((post) => (
           <div key={post._id} className="feed__post">
+            <PostLikes
+              postId={post._id}
+              likesCount={post.likes?.length || 0}
+              userId={userId}
+              postUserId={post.userId}
+              onLike={handleLike}
+            />
             {post.imageUrl && <img src={post.imageUrl} alt={post.imageUrl} className="feed__post-image" />}
             <h2 className="feed__post-title">{post.bookTitle}</h2>
             <p className="feed__post-content">
