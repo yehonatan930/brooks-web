@@ -52,7 +52,9 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
   const findBestMatch = (bookInfos: BookVolumeInfo[], bookTitle: string) => {
     return bookInfos.reduce((bestMatch, bookInfo) => {
       const similarity = stringSimilarity.compareTwoStrings(bookInfo.title.toLowerCase(), bookTitle.toLowerCase());
-      return similarity > bestMatch.highestSimilarity
+      const shouldReplaceCurrentMatch = similarity > bestMatch.highestSimilarity && bookInfo.imageLinks?.thumbnail;
+
+      return shouldReplaceCurrentMatch
         ? { highestSimilarity: similarity, bestMatch: bookInfo }
         : bestMatch;
     }, { highestSimilarity: 0, bestMatch: {} as BookVolumeInfo}).bestMatch;
