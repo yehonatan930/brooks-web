@@ -6,7 +6,7 @@ import { TextField } from '@mui/material';
 import BookIcon from '@mui/icons-material/Book';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import './CreatePostScreen.scss';
-import { NewPostFormData } from '../../types/post';
+import { BookVolumeInfo, NewPostFormData } from '../../types/post';
 import { useCreatePost } from '../../hooks/useCreatePost';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useAtomValue } from 'jotai';
@@ -50,19 +50,13 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
     createPost({ userId: user._id, ...data });
   };
 
-  const findBestMatch = (bookTitles: [string], bookTitle: string) => {
-    let bestMatch = null;
-    let highestSimilarity = 0;
-
-    bookTitles.forEach((title) => {
-      const similarity = stringSimilarity.compareTwoStrings(title.toLowerCase(), bookTitle.toLowerCase());
-      if (similarity > highestSimilarity) {
-        highestSimilarity = similarity;
-        bestMatch = title;
-      }
-    });
-
-    return bestMatch;
+  const findBestMatch = (bookInfos: BookVolumeInfo[], bookTitle: string) => {
+    return bookInfos.reduce((bestMatch, bookInfo) => {
+      const similarity = stringSimilarity.compareTwoStrings(bookInfo.title.toLowerCase(), bookTitle.toLowerCase());
+      return similarity > bestMatch.highestSimilarity
+        ? { highestSimilarity: similarity, bestMatch: bookInfo }
+        : bestMatch;
+    }, { highestSimilarity: 0, bestMatch: {} as BookVolumeInfo}).bestMatch;
   }
 
   const fetchBookCover = useCallback(
@@ -70,9 +64,12 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=${bookTitle}`
       );
-      const data = await response.json();
-      if (data.items && data.items.length > 0) {
-        const imageUrl: string = data.items[0].volumeInfo.imageLinks.thumbnail;
+      const data: {items: {volumeInfo: BookVolumeInfo}[]} = await response.json();
+      const bookInfos = data ? data.items.map((item: any) => item.volumeInfo) : [];
+
+      if (bookInfos.length > 0) {
+        const imageUrl = findBestMatch(bookInfos, bookTitle)?.imageLinks?.thumbnail;
+
         setValue('imageUrl', imageUrl);
       } else {
         setValue('imageUrl', DEFAULT_IMAGE_URL);
