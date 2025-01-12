@@ -212,4 +212,39 @@ router.post('/', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /posts/{id}:
+ *   delete:
+ *     summary: Delete a post
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the post
+ *     responses:
+ *       204:
+ *         description: Post deleted successfully
+ *       404:
+ *         description: Post not found
+ */
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    const deletedPost = await Post.findByIdAndDelete(id);
+    if (!deletedPost) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    res.status(204).end();
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;
