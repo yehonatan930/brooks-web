@@ -39,20 +39,20 @@ const Post = mongoose.model('Post', postSchema);
  */
 router.get('/', async (req, res) => {
   const { userId } = req.user;
-  if (!userId) {
-    try {
-      const posts: IPost[] = await Post.find();
-      res.status(200).json(posts);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
-  } else {
-    try {
-      const posts: IPost[] = await Post.find({ userId });
-      res.status(200).json(posts);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = 10; // Number of posts per page
+
+  try {
+    const query = userId ? { userId } : {};
+    const totalPosts = await Post.countDocuments(query);
+    const totalPages = Math.ceil(totalPosts / limit);
+    const posts = await Post.find(query)
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.status(200).json({ posts, totalPages });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
 });
 
