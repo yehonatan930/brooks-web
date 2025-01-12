@@ -44,6 +44,21 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
     createPost({ userId: user._id, ...data });
   };
 
+  const findBestMatch = (bookTitles: [string], bookTitle: string) => {
+    let bestMatch = null;
+    let highestSimilarity = 0;
+
+    bookTitles.forEach((title) => {
+      const similarity = stringSimilarity.compareTwoStrings(title.toLowerCase(), bookTitle.toLowerCase());
+      if (similarity > highestSimilarity) {
+        highestSimilarity = similarity;
+        bestMatch = title;
+      }
+    });
+
+    return bestMatch;
+  }
+
   const fetchBookCover = useCallback(
     async (bookTitle: string) => {
       // const response = await fetch(
