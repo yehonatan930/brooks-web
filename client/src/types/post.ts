@@ -5,6 +5,7 @@ export interface Post {
   imageUrl: string;
   createdAt: Date;
   userId: string;
+  likes: string[];
 }
 
 export interface NewPostFormData {

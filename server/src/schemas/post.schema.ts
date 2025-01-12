@@ -14,6 +14,7 @@ export interface IPost
   userId: string;
   imageUrl: string;
   createdAt: Date;
+  likes: string[];
 }
 
 export const postSchema = new mongoose.Schema<IPost>({
@@ -23,4 +24,5 @@ export const postSchema = new mongoose.Schema<IPost>({
   userId: { type: String, required: true, ref: 'User' },
   imageUrl: { type: String, required: true },
   createdAt: { type: Date, required: true, default: new Date() },
+  likes: { type: [String], required: true, default: [] },
 });
