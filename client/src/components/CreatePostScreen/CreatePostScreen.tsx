@@ -46,7 +46,6 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
   const watchBookTitle = watch('bookTitle');
 
   const onSubmit = (data: NewPostFormData) => {
-    console.log(data);
     createPost({ userId: user._id, ...data });
   };
 

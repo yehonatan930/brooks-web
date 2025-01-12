@@ -35,3 +35,8 @@ export const likePost = async (id: string): Promise<void> => {
 export const unlikePost = async (id: string): Promise<void> => {
   await axiosInstance.delete(`/posts/${id}/like`);
 };
+
+export const getPostsByUserId = async (): Promise<Post[]> => {
+  const response = await axiosInstance.get(`/posts`);
+  return response.data;
+};
