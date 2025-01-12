@@ -6,9 +6,10 @@ export const createPost = async (data: NewPostData): Promise<Post> => {
   return response.data;
 };
 
-export const getPosts = async (): Promise<Post[]> => {
-  const response = await axiosInstance.get<Post[]>('/posts');
+export const getPosts = async (): Promise<{ posts: Post[], totalPages: number }> => {
+  const response = await axiosInstance.get('/posts');
   return response.data;
+
 };
 
 export const getPost = async (id: string): Promise<Post> => {
