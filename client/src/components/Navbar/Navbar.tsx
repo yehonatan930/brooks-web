@@ -18,10 +18,10 @@ const Navbar: React.FC<NavbarProps> = ({}) => {
       await logoutUser();
       localStorage.removeItem('token');
       setUser({} as User);
-      navigate('/login');
-
     } catch (error) {
       console.error('Logout failed:', error);
+    } finally {
+      navigate('/login');
     }
   };
 

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
-import { getPost } from '../../services/postService';
+import EditIcon from '@mui/icons-material/Edit';
+import { getPost, updatePost } from '../../services/postService';
 import { Post } from '../../types/post';
 import './PostDetailScreen.scss';
 
@@ -98,7 +99,15 @@ const PostDetailScreen: React.FC = () => {
       )}
       <div className="post-detail__content">
         <h2>{post.bookTitle}</h2>
-        <p>{post.content}</p>
+        {isEditMode ? (
+          <textarea
+            rows={8}
+            value={postContent}
+            onChange={(e) => setPostContent(e.target.value)}
+          />
+        ) : (
+          <p>{post.content}</p>
+        )}
       </div>
     </div>
   );
