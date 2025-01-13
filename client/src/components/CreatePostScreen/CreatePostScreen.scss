@@ -31,4 +31,12 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
+
+  & .input-field {
+    font-size: 1.2rem; /* Increase the font size */
+    margin-bottom: 20px;
+  }
+}
+textarea, input {
+  box-shadow: none !important;
 }

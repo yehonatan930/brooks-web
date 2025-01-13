@@ -6,12 +6,16 @@ export interface Post {
   createdAt: Date;
   userId: string;
   likes: string[];
+  readingProgress?: string; // Optional field
+  authorName?: string; // Optional field
 }
 
 export interface NewPostFormData {
   bookTitle: string;
   content?: string;
   imageUrl?: string;
+  readingProgress?: string; // Optional field
+  authorName?: string;
 }
 
 export interface NewPostData extends NewPostFormData {
