@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { CircularProgress, IconButton } from '@mui/material';
-import { getPosts, deletePost, likePost } from '../../services/postService';
-import { Post as PostType } from '../../types/post';
+import { getPosts, deletePost } from '../../services/postService';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -16,25 +15,18 @@ import { Post as PostType } from '../../types/post';
 import PaginationControls from './components/PaginationControls/PaginationControls';
 
 const FeedScreen: React.FC = () => {
-  const [posts, setPosts] = useState<PostType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  let [posts, setPosts] = useState<PostType[]>([]);
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
   const { _id: userId } = useAtomValue(loggedInUserAtom);
+  const { mutate: likePost } = useLikePost();
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const fetchedPosts = await getPosts();
-        setPosts(fetchedPosts.posts);
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const { data, isLoading } = useQuery(['posts', page], () => getPosts(page), {
+    keepPreviousData: true,
+  });
 
-    fetchPosts();
-  }, []);
+  posts = data?.posts || [];
+  const totalPages = data?.totalPages || 1;
 
   const handleDeletePost = async (postId: string) => {
     try {
@@ -45,17 +37,8 @@ const FeedScreen: React.FC = () => {
     }
   };
 
-  const handleLike = async (postId: string) => {
-    try {
-      await likePost(postId);
-      setPosts(prevPosts =>
-        prevPosts.map(post =>
-          post._id === postId ? { ...post, likes: [...post.likes, userId] } : post
-        )
-      );
-    } catch (error) {
-      console.error('Error liking post:', error);
-    }
+  const handleLike = (postId: string) => {
+    likePost({ postId, userId, page });
   };
 
   const toggleExpandPost = (postId: string) => {
