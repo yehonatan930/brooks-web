@@ -10,6 +10,10 @@ import { useAtomValue } from 'jotai/index';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import { Link } from 'react-router-dom';
 import PostLikes from './components/PostLikes/PostLikes';
+import useLikePost from '../../hooks/useLikePost';
+import { useQuery } from 'react-query';
+import { Post as PostType } from '../../types/post';
+import PaginationControls from './components/PaginationControls/PaginationControls';
 
 const FeedScreen: React.FC = () => {
   const [posts, setPosts] = useState<PostType[]>([]);
@@ -119,6 +123,10 @@ const FeedScreen: React.FC = () => {
       ) : (
         <p>No posts available</p>
       )}
+      <PaginationControls
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
     </div>
   );
 };
