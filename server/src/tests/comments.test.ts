@@ -58,7 +58,7 @@ describe('POST /comments', () => {
     const newComment = {
       content: 'This is a test comment',
       postId,
-      author: commentAuthor,
+      userId: commentAuthor,
     };
 
     const response = await request(app)
@@ -69,7 +69,7 @@ describe('POST /comments', () => {
     expect(response.status).toBe(201);
     expect(response.body.content).toBe(newComment.content);
     expect(response.body.postId).toBe(newComment.postId);
-    expect(response.body.author).toBe(newComment.author);
+    expect(response.body.userId).toBe(newComment.userId);
     expect(response.body._id).toBeDefined();
   });
 
@@ -123,7 +123,7 @@ describe('GET /comments', () => {
     expect(response.body).toBeInstanceOf(Array);
     response.body.forEach((comment: IComment) => {
       expect(comment._id).toBeDefined();
-      expect(comment.author).toBeDefined();
+      expect(comment.userId).toBeDefined();
       expect(comment.content).toBeDefined();
     });
   });
@@ -138,7 +138,7 @@ describe('GET /comments/:postId', () => {
     expect(response.body).toBeInstanceOf(Array);
     response.body.forEach((comment: IComment) => {
       expect(comment._id).toBeDefined();
-      expect(comment.author).toBeDefined();
+      expect(comment.userId).toBeDefined();
       expect(comment.content).toBeDefined();
       expect(comment.postId).toBe(postId);
     });
@@ -165,7 +165,7 @@ describe('PUT /comments/:id', () => {
     expect(commentResponse.status).toBe(200);
     expect(commentResponse.body.content).toBe(updatedComment.content);
     expect(commentResponse.body.postId).toBe(updatedComment.postId);
-    expect(commentResponse.body.author).toBe(updatedComment.author);
+    expect(commentResponse.body.userId).toBe(updatedComment.userId);
     expect(commentResponse.body._id).toBe(commentId);
   });
 });
