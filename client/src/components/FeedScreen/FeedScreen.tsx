@@ -84,23 +84,19 @@ const FeedScreen: React.FC = () => {
                 </span>
               )}
             </p>
-            {post.userId === userId && (
+
               <div className="feed__post-actions">
                 <Link to={`/post/${post._id}`}>
                   <IconButton>
                     <VisibilityIcon fontSize="inherit" />
                   </IconButton>
                 </Link>
-                <Link to={`/post/edit/${post._id}`}>
-                  <IconButton>
-                    <EditIcon fontSize="inherit" />
-                  </IconButton>
-                </Link>
+                {post.userId === userId && (
                 <IconButton onClick={() => handleDeletePost(post._id)}>
                   <DeleteIcon fontSize="inherit" />
-                </IconButton>
+                </IconButton>)}
               </div>
-            )}
+
           </div>
         ))
       ) : (

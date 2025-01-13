@@ -5,6 +5,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import { getPost, updatePost } from '../../services/postService';
 import { Post } from '../../types/post';
 import './PostDetailScreen.scss';
+import { useAtomValue } from 'jotai/index';
+import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 
 const PostDetailScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,6 +16,7 @@ const PostDetailScreen: React.FC = () => {
   const [postContent, setPostContent] = useState('');
   const [readingProgress, setReadingProgress] = useState('');
   const [authorName, setAuthorName] = useState('');
+  const { _id: userId } = useAtomValue(loggedInUserAtom);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -60,13 +63,15 @@ const PostDetailScreen: React.FC = () => {
 
   return (
     <div className="post-detail">
-      <button
-        className="edit-button"
-        onClick={isEditMode ? handleSaveClick : handleEditClick}
-      >
-        <EditIcon />
-        {isEditMode ? 'Save' : 'Edit'}
-      </button>
+      {post.userId === userId && (
+        <button
+          className="edit-button"
+          onClick={isEditMode ? handleSaveClick : handleEditClick}
+        >
+          <EditIcon />
+          {isEditMode ? 'Save' : 'Edit'}
+        </button>)
+      }
       <div className="post-detail__left">
         {isEditMode ? (
           <>
