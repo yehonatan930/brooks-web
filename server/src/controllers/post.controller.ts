@@ -155,13 +155,13 @@ router.get('/:id', async (req, res) => {
  *       404:
  *         description: Post not found
  */
-router.put('/', async (req, res) => {
+router.put('/:id', async (req, res) => {
   if (!mongoose.isValidObjectId(req.body._id)) {
     return res.status(404).json({ error: 'Post not found' });
   }
   try {
     const updatedPost: IPost = await Post.findByIdAndUpdate(
-      req.body._id,
+      req.params.id,
       req.body,
       {
         new: true,
