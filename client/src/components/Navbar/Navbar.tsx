@@ -9,7 +9,7 @@ import * as _ from 'lodash';
 
 interface NavbarProps {}
 
-const Navbar: React.FC<NavbarProps> = ({}) => {
+const Navbar: React.FC<NavbarProps> = () => {
   const [user, setUser] = useAtom(loggedInUserAtom);
   const navigate = useNavigate();
 

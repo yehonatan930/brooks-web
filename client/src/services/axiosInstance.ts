@@ -1,4 +1,4 @@
-import axios, { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import axios, { InternalAxiosRequestConfig } from 'axios';
 
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:8080',

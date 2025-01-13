@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CircularProgress, Button, IconButton } from '@mui/material';
+import { Button, CircularProgress, IconButton } from '@mui/material';
 import { useUserPosts } from '../../../../hooks/useUserPosts';
 import { Link } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';

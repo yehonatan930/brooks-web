@@ -1,5 +1,5 @@
 import axiosInstance from './axiosInstance';
-import { Post, NewPostData } from '../types/post';
+import { NewPostData, Post } from '../types/post';
 
 export const createPost = async (data: NewPostData): Promise<Post> => {
   const response = await axiosInstance.post<Post>('/posts', data);

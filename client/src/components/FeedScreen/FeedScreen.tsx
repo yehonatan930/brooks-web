@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { CircularProgress, IconButton } from '@mui/material';
-import { getPosts, deletePost } from '../../services/postService';
+import { deletePost, getPosts } from '../../services/postService';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import './FeedScreen.scss';
 import { useAtomValue } from 'jotai/index';
