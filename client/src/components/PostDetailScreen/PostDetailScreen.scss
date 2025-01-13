@@ -11,8 +11,16 @@
   border: 1px solid #ccc;
   position: relative;
 
+  &__left {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    width: 50%;
+  }
+
   &__image {
     max-width: 100%;
+    width: 35%;
     height: auto;
     border-radius: 8px;
     margin-bottom: 20px;
@@ -20,6 +28,7 @@
 
   &__content {
     text-align: center;
+    width: 100%;
 
     h2 {
       font-size: 24px;
@@ -76,6 +85,6 @@ textarea, input {
 }
 
 textarea {
-  resize: vertical; /* Allow vertical resizing */
-  min-height: 100px; /* Set a minimum height */
+  resize: vertical;
+  min-height: 100px;
 }

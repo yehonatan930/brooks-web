@@ -14,6 +14,8 @@ import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import PhotoCameraBackIcon from '@mui/icons-material/PhotoCameraBack';
 import stringSimilarity from 'string-similarity';
 import debounce from 'lodash/debounce';
+import PersonIcon from '@mui/icons-material/Person';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 
 interface CreatePostScreenProps {}
 const DEFAULT_IMAGE_URL: string = 'https://cdn.candycode.com/jotai/jotai-mascot.png';
@@ -22,6 +24,8 @@ const schema = yup.object().shape({
   bookTitle: yup.string().required('book title is required'),
   content: yup.string(),
   imageUrl: yup.string(),
+  readingProgress: yup.string(),
+  authorName: yup.string()
 });
 
 const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
@@ -66,7 +70,7 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
         `https://www.googleapis.com/books/v1/volumes?q=${bookTitle}`
       );
       const data: {items: {volumeInfo: BookVolumeInfo}[]} = await response.json();
-      const bookInfos = data ? data.items.map((item: any) => item.volumeInfo) : [];
+      const bookInfos = data?.items ? data.items.map((item: any) => item.volumeInfo) : [];
 
       if (bookInfos.length > 0) {
         const imageUrl = findBestMatch(bookInfos, bookTitle)?.imageLinks?.thumbnail;
@@ -150,6 +154,48 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
               slotProps={{
                 input: {
                   startAdornment: <PhotoCameraBackIcon />,
+                },
+              }}
+            />
+          )}
+        />
+        <Controller
+          name="readingProgress"
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <TextField
+              margin={'normal'}
+              {...field}
+              className="input-field"
+              type="text"
+              placeholder="Your progress (e.g. 50 pages)"
+              error={!!errors.readingProgress}
+              helperText={errors.readingProgress ? errors.readingProgress.message : ''}
+              slotProps={{
+                input: {
+                  startAdornment: <MenuBookIcon />,
+                },
+              }}
+            />
+          )}
+        />
+        <Controller
+          name="authorName"
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <TextField
+              margin={'normal'}
+              {...field}
+              placeholder="Author name"
+              className="input-field"
+              type="text"
+              error={!!errors.authorName}
+              helperText={errors.authorName ? errors.authorName.message : ''}
+              slotProps={{
+                input: {
+                  startAdornment: <PersonIcon />,
                 },
               }}
             />

@@ -9,7 +9,7 @@ import * as _ from 'lodash';
 
 interface NavbarProps {}
 
-const Navbar: React.FC<NavbarProps> = ({}) => {
+const Navbar: React.FC<NavbarProps> = () => {
   const [user, setUser] = useAtom(loggedInUserAtom);
   const navigate = useNavigate();
 
@@ -18,10 +18,10 @@ const Navbar: React.FC<NavbarProps> = ({}) => {
       await logoutUser();
       localStorage.removeItem('token');
       setUser({} as User);
-      navigate('/login');
-
     } catch (error) {
       console.error('Logout failed:', error);
+    } finally {
+      navigate('/login');
     }
   };
 

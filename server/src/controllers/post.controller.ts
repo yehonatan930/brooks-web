@@ -132,17 +132,23 @@ router.get('/:id', async (req, res) => {
  *             properties:
  *               id:
  *                 type: string
- *               :
+ *               bookTitle:
  *                 type: string
  *               content:
  *                 type: string
- *               userId:
+ *               imageUrl:
+ *                 type: string
+ *               readingProgress:
+ *                 type: string
+ *               authorName:
  *                 type: string
  *             example:
  *               id: "64d2f8b0b9f8c9a1a5f8b3c3"
- *               : "Updated Title"
+ *               bookTitle: "Updated Title"
  *               content: "Updated content"
- *               userId: "12345"
+ *               imageUrl: "http://example.com/image.jpg"
+ *               readingProgress: "75%"
+ *               authorName: "Jane Doe"
  *     responses:
  *       200:
  *         description: Updated post
@@ -191,18 +197,18 @@ router.put('/:id', async (req, res) => {
  *           schema:
  *             type: object
  *             required:
- *               -
+ *               - bookTitle
  *               - content
  *               - userId
  *             properties:
- *               :
+ *               bookTitle:
  *                 type: string
  *               content:
  *                 type: string
  *               userId:
  *                 type: string
  *             example:
- *               : "Sample Post"
+ *               bookTitle: "Sample Post"
  *               content: "This is a sample post."
  *               userId: "12345"
  *     responses:

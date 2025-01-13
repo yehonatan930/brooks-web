@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
-import { getPost } from '../../services/postService';
+import EditIcon from '@mui/icons-material/Edit';
+import { getPost, updatePost } from '../../services/postService';
 import { Post } from '../../types/post';
 import './PostDetailScreen.scss';
+import { useAtomValue } from 'jotai/index';
+import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 
 const PostDetailScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +16,7 @@ const PostDetailScreen: React.FC = () => {
   const [postContent, setPostContent] = useState('');
   const [readingProgress, setReadingProgress] = useState('');
   const [authorName, setAuthorName] = useState('');
+  const { _id: userId } = useAtomValue(loggedInUserAtom);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -59,13 +63,15 @@ const PostDetailScreen: React.FC = () => {
 
   return (
     <div className="post-detail">
-      <button
-        className="edit-button"
-        onClick={isEditMode ? handleSaveClick : handleEditClick}
-      >
-        <EditIcon />
-        {isEditMode ? 'Save' : 'Edit'}
-      </button>
+      {post.userId === userId && (
+        <button
+          className="edit-button"
+          onClick={isEditMode ? handleSaveClick : handleEditClick}
+        >
+          <EditIcon />
+          {isEditMode ? 'Save' : 'Edit'}
+        </button>)
+      }
       <div className="post-detail__left">
         {isEditMode ? (
           <>
@@ -98,7 +104,15 @@ const PostDetailScreen: React.FC = () => {
       )}
       <div className="post-detail__content">
         <h2>{post.bookTitle}</h2>
-        <p>{post.content}</p>
+        {isEditMode ? (
+          <textarea
+            rows={8}
+            value={postContent}
+            onChange={(e) => setPostContent(e.target.value)}
+          />
+        ) : (
+          <p>{post.content}</p>
+        )}
       </div>
     </div>
   );

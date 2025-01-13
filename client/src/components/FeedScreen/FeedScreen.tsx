@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { CircularProgress, IconButton } from '@mui/material';
-import { getPosts, deletePost } from '../../services/postService';
+import { deletePost, getPosts } from '../../services/postService';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import './FeedScreen.scss';
 import { useAtomValue } from 'jotai/index';
@@ -84,23 +83,19 @@ const FeedScreen: React.FC = () => {
                 </span>
               )}
             </p>
-            {post.userId === userId && (
+
               <div className="feed__post-actions">
                 <Link to={`/post/${post._id}`}>
                   <IconButton>
                     <VisibilityIcon fontSize="inherit" />
                   </IconButton>
                 </Link>
-                <Link to={`/post/edit/${post._id}`}>
-                  <IconButton>
-                    <EditIcon fontSize="inherit" />
-                  </IconButton>
-                </Link>
+                {post.userId === userId && (
                 <IconButton onClick={() => handleDeletePost(post._id)}>
                   <DeleteIcon fontSize="inherit" />
-                </IconButton>
+                </IconButton>)}
               </div>
-            )}
+
           </div>
         ))
       ) : (

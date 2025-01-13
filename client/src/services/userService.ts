@@ -1,12 +1,6 @@
 import { AxiosResponse } from 'axios';
 import axiosInstance from './axiosInstance';
-import {
-  LoginData,
-  LoginResponse,
-  RegisterData,
-  UpdateUserData,
-  User,
-} from '../types/user';
+import { LoginData, LoginResponse, RegisterData, UpdateUserData, User } from '../types/user';
 
 export const registerUser = async (data: RegisterData): Promise<void> => {
   await axiosInstance.post('/auth/register', data);

@@ -10,7 +10,7 @@ import FeedScreen from './components/FeedScreen/FeedScreen';
 import CreatePostScreen from './components/CreatePostScreen/CreatePostScreen';
 import LoggedInUserGuard from './components/LoggedInUserGuard/LoggedInUserGuard';
 import './styles/globalStyles.scss';
-import { Provider, createStore } from 'jotai';
+import { createStore, Provider } from 'jotai';
 import PostDetailScreen from './components/PostDetailScreen/PostDetailScreen';
 
 const customStore = createStore();
