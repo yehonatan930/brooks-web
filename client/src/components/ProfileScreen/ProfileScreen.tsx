@@ -5,7 +5,7 @@ import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import { Link } from 'react-router-dom';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import { useAtom } from 'jotai';
-import PostList from './components/PostList/PostList';
+import UserPostList from './components/UserPostList/UserPostList';
 
 const ProfileScreen: React.FC = () => {
   const [user, setUser] = useAtom(loggedInUserAtom);
@@ -41,7 +41,7 @@ const ProfileScreen: React.FC = () => {
             </Link>
           </div>
         )}
-        <PostList userId={user._id} />
+        <UserPostList userId={user._id} />
       </div>
     );
   } else {

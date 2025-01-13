@@ -5,14 +5,14 @@ import { Link } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
-import './PostList.scss';
+import './UserPostList.scss';
 import { Post } from '../../../../types/post';
 
-interface PostListProps {
+interface UserPostListProps {
   userId: string;
 }
 
-const PostList: React.FC<PostListProps> = ({ userId }) => {
+const UserPostList: React.FC<UserPostListProps> = ({ userId }) => {
   const [page, setPage] = useState(1);
   const { data, isLoading } = useUserPosts(userId, page);
   const posts: Post[] = data?.posts || [];
@@ -89,4 +89,4 @@ const PostList: React.FC<PostListProps> = ({ userId }) => {
   );
 };
 
-export default PostList;
+export default UserPostList;
