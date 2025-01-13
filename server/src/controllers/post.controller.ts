@@ -56,6 +56,24 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/all', async (req, res) => {
+  const { userId } = req.user;
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = 10; // Number of posts per page
+
+  try {
+    const totalPosts = await Post.countDocuments({});
+    const totalPages = Math.ceil(totalPosts / limit);
+    const posts = await Post.find()
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.status(200).json({ posts, totalPages });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 /**
  * @swagger
  * /posts/{id}:
@@ -242,6 +260,58 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Post not found' });
     }
     res.status(204).end();
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * @swagger
+ * /posts/{id}/like:
+ *   delete:
+ *     summary: Unlike a post
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the post
+ *     responses:
+ *       204:
+ *         description: Post unliked successfully
+ *       404:
+ *         description: Post not found
+ */
+router.post('/:id/like', async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.userId; // Assuming user ID is available in req.user
+
+  try {
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    const post: IPost = await Post.findById(id);
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    if (post.userId === userId) {
+      return res.status(400).json({ error: 'You cannot like your own post' });
+    }
+
+    if (post.likes.includes(userId)) {
+      post.likes = post.likes.filter((id: string) => id !== userId);
+      await post.save();
+      return res.status(200).json({ message: 'Post unliked successfully' });
+    }
+
+    post.likes.push(userId);
+    await post.save();
+
+    res.status(200).json({ message: 'Post liked successfully' });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
