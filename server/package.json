@@ -9,7 +9,7 @@
     "dev": "nodemon",
     "test": "jest --detectOpenHandles --coverage --forceExit --runInBand",
     "clean": "rm -rf dist",
-    "prod": "cross-env NODE_ENV=production node dist/main.js"
+    "prod": "npm run clean && cross-env NODE_ENV=production node dist/main.js"
   },
   "author": "",
   "license": "ISC",
