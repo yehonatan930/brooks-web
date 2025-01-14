@@ -16,9 +16,7 @@ const serverPromise: Promise<Express> = new Promise((resolve, reject) => {
   console.log('mongoURI ', mongoURI);
 
   mongoose
-    .connect(mongoURI, {
-      useNewUrlParser: true,
-    } as mongoose.ConnectOptions)
+    .connect(mongoURI)
     .then(() => {
       console.log('Connected to MongoDB');
       const app: Express = express();
