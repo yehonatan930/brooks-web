@@ -1,16 +1,10 @@
-import dotenv from "dotenv";
-import serverPromise from "./server";
-
-// if (process.env.NODE_ENV === "test") {
-//   dotenv.config({ path: "./.test.env" });
-// } else {
+import dotenv from 'dotenv';
+import serverPromise from './server';
+import { ServerWithPort } from './types/types';
 dotenv.config();
-// }
 
-const PORT = process.env.PORT;
-
-serverPromise.then((app) => {
-  app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+serverPromise.then(({ server, port }: ServerWithPort) => {
+  server.listen(port, () => {
+    console.log(`Server is running on https://localhost:${port}`);
   });
 });
