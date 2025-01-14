@@ -1,18 +1,18 @@
 import request from 'supertest';
-import { Express } from 'express';
+import { Server as HttpServer } from 'http';
 import mongoose from 'mongoose';
 import { IPost } from '../schemas/post.schema';
 import serverPromise from '../server';
 
 describe('posts tests', () => {
-  let app: Express;
+  let app: HttpServer;
 
   let postSender: string;
   let accessToken: string;
   const email = `${Math.floor(Math.random() * 1000)}@yeah`;
 
   beforeAll(async () => {
-    app = await serverPromise;
+    app = (await serverPromise).server;
 
     const res = await request(app).post('/auth/register').send({
       email,
