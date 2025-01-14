@@ -1,5 +1,5 @@
 {
-  "name": "assignment1",
+  "name": "brook",
   "version": "1.0.0",
   "description": "",
   "main": "dist/main.js",
@@ -9,7 +9,13 @@
     "dev": "nodemon",
     "test": "jest --detectOpenHandles --coverage --forceExit --runInBand",
     "clean": "rm -rf dist",
-    "prod": "npm run clean && cross-env NODE_ENV=production node dist/main.js"
+    "pm2start": "pm2 start dist/main.js --name brook",
+    "pm2stop": "pm2 stop brook",
+    "pm2restart": "pm2 restart brook",
+    "pm2logs": "pm2 logs brook",
+    "pm2delete": "pm2 delete brook",
+    "pm2restart:prod": "pm2 restart ecosystem.config.js --env production",
+    "prod": "cross-env NODE_ENV=production && npm run build && npm run pm2restart:prod"
   },
   "author": "",
   "license": "ISC",
@@ -22,6 +28,7 @@
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "mongoose": "^8.8.4",
+    "pm2": "^5.4.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^11.0.3"
