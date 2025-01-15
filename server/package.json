@@ -15,7 +15,7 @@
     "pm2logs": "pm2 logs brook",
     "pm2delete": "pm2 delete brook",
     "pm2restart:prod": "pm2 restart ecosystem.config.js --env production",
-    "prod": "cross-env NODE_ENV=production && npm run build && npm run pm2restart:prod"
+    "prod": "npm run clean && cross-env NODE_ENV=production && npm run build && npm run pm2restart:prod"
   },
   "author": "",
   "license": "ISC",
