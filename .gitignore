@@ -134,3 +134,7 @@ dist
 *.crt
 *.key
 *.pem
+
+# builds
+build/
+dist/

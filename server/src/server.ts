@@ -5,13 +5,14 @@ import commentsController from './controllers/comment.controller';
 import authenticate from './middlewares/auth.middleware';
 import authController from './controllers/auth.controller';
 import usersController from './controllers/user.controller';
-import { setupSwagger } from './swagger';
+import { swaggerSpec } from './swagger';
 import cors from 'cors';
 import https, { Server as HttpsServer } from 'https';
 import http, { Server as HttpServer } from 'http';
 import fs from 'fs';
 import path from 'path';
 import { ServerWithPort } from './types/types';
+import swaggerUi from 'swagger-ui-express';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -40,14 +41,28 @@ const serverPromise: Promise<ServerWithPort> = new Promise(
         console.log('Connected to MongoDB');
         const app: Express = express();
 
+        const prefix = '/api';
+
         app.use(cors());
-        setupSwagger(app);
         app.use(express.json());
-        app.use(authenticate);
-        app.use('/auth', authController);
-        app.use('/posts', postsController);
-        app.use('/comments', commentsController);
-        app.use('/users', usersController);
+        app.use(
+          `${prefix}/docs`,
+          swaggerUi.serve,
+          swaggerUi.setup(swaggerSpec)
+        );
+        app.use(prefix, authenticate);
+        app.use(`${prefix}/auth`, authController);
+        app.use(`${prefix}/posts`, postsController);
+        app.use(`${prefix}/comments`, commentsController);
+        app.use(`${prefix}/users`, usersController);
+
+        // CLIENT -> Serve static files from the build directory
+        app.use(express.static(path.join(__dirname, 'build')));
+
+        // CLIENT -> Serve index.html from the build directory for all other routes
+        app.get('*', (req, res) => {
+          res.sendFile(path.join(__dirname, 'build', 'index.html'));
+        });
 
         if (process.env.NODE_ENV === 'production') {
           console.log('Production mode');
