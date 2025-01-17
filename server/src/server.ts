@@ -31,9 +31,13 @@ try {
   process.exit(1);
 }
 
-const mongoURI = process.env.MONGO_URI;
-
 const serverPromise: Promise<ServerInfo> = new Promise((resolve, reject) => {
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  const mongoURI: string = isProduction
+    ? process.env.PROD_MONGO_URI
+    : process.env.MONGO_URI;
+
   mongoose
     .connect(mongoURI)
     .then(() => {
@@ -59,7 +63,7 @@ const serverPromise: Promise<ServerInfo> = new Promise((resolve, reject) => {
         res.sendFile(path.join(__dirname, '../build', 'index.html'));
       });
 
-      if (process.env.NODE_ENV === 'production') {
+      if (isProduction) {
         console.log('Production mode');
         const server: HttpsServer = https.createServer(
           {
