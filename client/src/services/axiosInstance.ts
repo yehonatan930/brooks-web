@@ -1,7 +1,10 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL:
+    process.env.NODE_ENV === 'production'
+      ? process.env.REACT_APP_API_HTTPS_URL
+      : process.env.REACT_APP_API_HTTP_URL,
 });
 
 axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
