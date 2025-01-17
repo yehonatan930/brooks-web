@@ -6,6 +6,6 @@ dotenv.config();
 serverPromise.then(({ server, port, link }: ServerInfo) => {
   server.listen(port, () => {
     console.log(`Server is running on ${link}/api`);
-    console.log(`Client is running on ${link}}`);
+    console.log(`Client is running on ${link}`);
   });
 });

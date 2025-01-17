@@ -52,11 +52,11 @@ const serverPromise: Promise<ServerInfo> = new Promise((resolve, reject) => {
       app.use(`${prefix}/users`, usersController);
 
       // CLIENT -> Serve static files from the build directory
-      app.use(express.static(path.join(__dirname, 'build')));
+      app.use(express.static(path.join(__dirname, '../build')));
 
       // CLIENT -> Serve index.html from the build directory for all other routes
       app.get('*', (req, res) => {
-        res.sendFile(path.join(__dirname, 'build', 'index.html'));
+        res.sendFile(path.join(__dirname, '../build', 'index.html'));
       });
 
       if (process.env.NODE_ENV === 'production') {
