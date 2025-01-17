@@ -12,4 +12,4 @@ declare global {
 }
 
 export type ServerType = HttpsServer | HttpServer;
-export type ServerWithPort = { server: ServerType; port: number };
+export type ServerInfo = { server: ServerType; port: number; link: string };
