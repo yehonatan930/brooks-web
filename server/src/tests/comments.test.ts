@@ -1,11 +1,11 @@
 import request from 'supertest';
 import serverPromise from '../server';
-import { Express } from 'express';
+import { Server as HttpServer } from 'http';
 import mongoose from 'mongoose';
 import { IPost } from '../schemas/post.schema';
 import { IComment } from '../schemas/comment.schema';
 
-let app: Express;
+let app: HttpServer;
 
 let commentAuthor: string;
 let accessToken: string;
@@ -14,7 +14,7 @@ let postId: string;
 const email = `${Math.floor(Math.random() * 1000)}@yeah`;
 
 beforeAll(async () => {
-  app = await serverPromise;
+  app = (await serverPromise).server;
 
   const res = await request(app).post('/auth/register').send({
     email,

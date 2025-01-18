@@ -1,11 +1,11 @@
-import request from "supertest";
-import { Express } from "express";
-import mongoose from "mongoose";
-import serverPromise from "../server";
-import { IUser } from "../schemas/user.schema";
+import request from 'supertest';
+import { Server as HttpServer } from 'http';
+import mongoose from 'mongoose';
+import serverPromise from '../server';
+import { IUser } from '../schemas/user.schema';
 
-describe("User tests", () => {
-  let app: Express;
+describe('User tests', () => {
+  let app: HttpServer;
 
   let accessToken: string;
 
@@ -13,21 +13,21 @@ describe("User tests", () => {
   const email = `anEmail@o`;
 
   beforeAll(async () => {
-    app = await serverPromise;
+    app = (await serverPromise).server;
 
-    const res = await request(app).post("/auth/register").send({
+    const res = await request(app).post('/auth/register').send({
       email,
-      username: "test user",
-      password: "password",
+      username: 'test user',
+      password: 'password',
     });
 
     userId = res.body._id;
   });
 
   async function login() {
-    const res = await request(app).post("/auth/login").send({
-      email: "yeah@oo",
-      password: "password",
+    const res = await request(app).post('/auth/login').send({
+      email: 'yeah@oo',
+      password: 'password',
     });
 
     accessToken = res.body.accessToken;
@@ -40,17 +40,17 @@ describe("User tests", () => {
   afterAll(async () => {
     const response = await request(app)
       .delete(`/users/${userId}`)
-      .set("Authorization", `JWT ${accessToken}`);
+      .set('Authorization', `JWT ${accessToken}`);
     expect(response.status).toBe(200);
 
     await mongoose.connection.close();
   });
 
-  describe("GET /users", () => {
-    it("should return all users", async () => {
+  describe('GET /users', () => {
+    it('should return all users', async () => {
       const response = await request(app)
-        .get("/users")
-        .set("Authorization", `JWT ${accessToken}`);
+        .get('/users')
+        .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
       expect(response.body).toBeInstanceOf(Array);
 
@@ -63,11 +63,11 @@ describe("User tests", () => {
     });
   });
 
-  describe("GET /users/:id", () => {
-    it("should return a user by ID", async () => {
+  describe('GET /users/:id', () => {
+    it('should return a user by ID', async () => {
       const response = await request(app)
         .get(`/users/${userId}`)
-        .set("Authorization", `JWT ${accessToken}`);
+        .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
       expect(response.body._id).toBe(userId);
       expect(response.body.username).toBeDefined();
@@ -76,20 +76,20 @@ describe("User tests", () => {
     });
   });
 
-  describe("PUT /users/:id", () => {
-    it("should update a user", async () => {
+  describe('PUT /users/:id', () => {
+    it('should update a user', async () => {
       const updatedUser = {
-        username: "Updated User",
-        email: "email@email.com",
-        password: "updatedpassword",
+        username: 'Updated User',
+        email: 'email@email.com',
+        password: 'updatedpassword',
         tokens: [],
       } as IUser;
 
       const response = await request(app)
         .put(`/users/${userId}`)
         .send(updatedUser)
-        .set("Accept", "application/json")
-        .set("Authorization", `JWT ${accessToken}`);
+        .set('Accept', 'application/json')
+        .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(201);
       expect(response.body.username).toBe(updatedUser.username);
       expect(response.body.email).toBe(updatedUser.email);
@@ -98,17 +98,17 @@ describe("User tests", () => {
     });
   });
 
-  describe("DELETE /users/:id", () => {
-    it("should delete a user by ID", async () => {
+  describe('DELETE /users/:id', () => {
+    it('should delete a user by ID', async () => {
       const response = await request(app)
         .delete(`/users/${userId}`)
-        .set("Authorization", `JWT ${accessToken}`);
+        .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
       expect(response.body._id).toBe(userId);
 
       const userResponse = await request(app)
         .get(`/users/${userId}`)
-        .set("Authorization", `JWT ${accessToken}`);
+        .set('Authorization', `JWT ${accessToken}`);
       expect(userResponse.status).toBe(404);
     });
   });
