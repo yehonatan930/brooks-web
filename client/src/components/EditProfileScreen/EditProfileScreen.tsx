@@ -1,8 +1,10 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import './EditProfileScreen.scss';
 import { useUpdateUser } from '../../hooks/api/useUpdateUser';
+import { useUploadImage } from '../../hooks/api/useUploadImage';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import { useAtomValue } from 'jotai';
+import { UploadImageButton } from '../UploadImageButton/UploadImageButton';
 
 const EditProfileScreen: React.FC = () => {
   const loggedInUser = useAtomValue(loggedInUserAtom);
@@ -13,7 +15,10 @@ const EditProfileScreen: React.FC = () => {
   const [profilePicture, setProfilePicture] = useState<string>(
     loggedInUser?.profilePicture || ''
   );
-  const { mutate } = useUpdateUser();
+  const [profileImageFile, setProfileImageFile] = useState<File | undefined>();
+
+  const { mutate: updateUser } = useUpdateUser();
+  const { mutate: uploadImage } = useUploadImage();
 
   useEffect(() => {
     if (loggedInUser) {
@@ -24,12 +29,11 @@ const EditProfileScreen: React.FC = () => {
   }, [loggedInUser]);
 
   const handleSave = () => {
-    if (loggedInUser) {
-      mutate({ id: loggedInUser._id, username, email, profilePicture });
-    }
+    updateUser({ id: loggedInUser._id, username, email, profilePicture });
+    profileImageFile && uploadImage(profileImageFile);
   };
 
-  const handleChange =
+  const handleInputChange =
     (setter: React.Dispatch<React.SetStateAction<string>>) =>
     (e: ChangeEvent<HTMLInputElement>) => {
       setter(e.target.value);
@@ -43,20 +47,25 @@ const EditProfileScreen: React.FC = () => {
         <input
           type="text"
           value={username}
-          onChange={handleChange(setUsername)}
+          onChange={handleInputChange(setUsername)}
         />
       </div>
       <div className="form-group">
         <label>Email</label>
-        <input type="email" value={email} onChange={handleChange(setEmail)} />
+        <input
+          type="email"
+          value={email}
+          onChange={handleInputChange(setEmail)}
+        />
       </div>
       <div className="form-group">
         <label>Profile Picture URL</label>
         <input
           type="text"
           value={profilePicture}
-          onChange={handleChange(setProfilePicture)}
+          onChange={handleInputChange(setProfilePicture)}
         />
+        <UploadImageButton onUploadImage={setProfileImageFile} />
       </div>
       <button onClick={handleSave}>Save</button>
     </div>

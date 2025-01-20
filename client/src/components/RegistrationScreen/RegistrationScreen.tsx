@@ -31,7 +31,7 @@ const schema = yup.object().shape({
     .required('Confirm Password is required'),
 });
 
-const RegistrationScreen: React.FC<RegistrationScreenProps> = ({}) => {
+const RegistrationScreen: React.FC<RegistrationScreenProps> = () => {
   const {
     control,
     handleSubmit,
