@@ -4,13 +4,9 @@
     "target": "ES6",
     "module": "CommonJS",
     "esModuleInterop": true,
-    "skipLibCheck": true,
     "outDir": "./dist",
-    "rootDir": "./src",
-    "useUnknownInCatchVariables": false,
-    "strictNullChecks": false,
-    "sourceMap": true
+    "rootDir": "./src"
   },
-  "include": ["src/**/*.ts", "src/tests/**/*", "src/types/**/*.d.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
