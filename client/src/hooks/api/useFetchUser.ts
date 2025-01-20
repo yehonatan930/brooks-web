@@ -1,8 +1,8 @@
 import { useQuery } from 'react-query';
-import { getUser } from '../services/userService';
+import { getUser } from '../../services/userService';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { User } from '../types/user';
+import { User } from '../../types/user';
 
 export const useFetchUser = (id: string | undefined) => {
   const navigate = useNavigate();

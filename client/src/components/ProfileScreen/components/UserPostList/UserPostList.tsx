@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, CircularProgress, IconButton } from '@mui/material';
-import { useGetMyPosts } from '../../../../hooks/useGetMyPosts';
+import { useGetMyPosts } from '../../../../hooks/api/useGetMyPosts';
 import { Link } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';

@@ -1,9 +1,9 @@
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import confetti from 'canvas-confetti';
-import { loginUser } from '../services/userService';
+import { loginUser } from '../../services/userService';
 import { useNavigate } from 'react-router-dom';
-import { LoginData, LoginResponse } from '../types/user';
+import { LoginData, LoginResponse } from '../../types/user';
 
 const useLogin = (handleSetLoggedInUser: (userId: string) => void) => {
   const navigate = useNavigate();

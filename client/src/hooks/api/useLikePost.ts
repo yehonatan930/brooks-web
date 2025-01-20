@@ -1,11 +1,19 @@
 import { useMutation, useQueryClient } from 'react-query';
-import { likePost } from '../services/postService';
+import { likePost } from '../../services/postService';
 
 const useLikePost = () => {
   const queryClient = useQueryClient();
 
   return useMutation(
-    async ({ postId, userId, page }: { postId: string; userId: string; page: number }) => {
+    async ({
+      postId,
+      userId,
+      page,
+    }: {
+      postId: string;
+      userId: string;
+      page: number;
+    }) => {
       await likePost(postId);
     },
     {
@@ -22,27 +30,34 @@ const useLikePost = () => {
             posts: old.posts.map((post: any) =>
               post._id === postId
                 ? {
-                  ...post,
-                  likes: post.likes.includes(userId)
-                    ? post.likes.filter((id: string) => id !== userId)
-                    : [...post.likes, userId],
-                }
-                : post,
+                    ...post,
+                    likes: post.likes.includes(userId)
+                      ? post.likes.filter((id: string) => id !== userId)
+                      : [...post.likes, userId],
+                  }
+                : post
             ),
           };
         });
 
         return { previousPosts };
       },
-      onError: (err, variables, context: { previousPosts: unknown } | undefined) => {
+      onError: (
+        err,
+        variables,
+        context: { previousPosts: unknown } | undefined
+      ) => {
         if (context?.previousPosts) {
-          queryClient.setQueryData(['posts', variables.page], context.previousPosts);
+          queryClient.setQueryData(
+            ['posts', variables.page],
+            context.previousPosts
+          );
         }
       },
       onSettled: (data, error, variables) => {
         queryClient.invalidateQueries(['posts', variables.page]);
       },
-    },
+    }
   );
 };
 

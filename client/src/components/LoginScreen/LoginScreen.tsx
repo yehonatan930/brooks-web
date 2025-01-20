@@ -8,7 +8,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import './LoginScreen.scss';
 import { useAtom } from 'jotai';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
-import useLogin from '../../hooks/useLogin';
+import useLogin from '../../hooks/api/useLogin';
 import { LoginData, User } from '../../types/user';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 

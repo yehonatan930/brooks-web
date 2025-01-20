@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import './EditProfileScreen.scss';
-import { useUpdateUser } from '../../hooks/useUpdateUser';
+import { useUpdateUser } from '../../hooks/api/useUpdateUser';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import { useAtomValue } from 'jotai';
 

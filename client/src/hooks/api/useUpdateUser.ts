@@ -1,9 +1,9 @@
 import { useMutation } from 'react-query';
-import { updateUser } from '../services/userService';
+import { updateUser } from '../../services/userService';
 import { toast } from 'react-toastify';
 import confetti from 'canvas-confetti';
 import { useNavigate } from 'react-router-dom';
-import { UpdateUserData, User } from '../types/user';
+import { UpdateUserData, User } from '../../types/user';
 
 export const useUpdateUser = () => {
   const navigate = useNavigate();

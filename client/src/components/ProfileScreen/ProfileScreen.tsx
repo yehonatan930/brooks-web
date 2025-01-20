@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import './ProfileScreen.scss';
-import { useFetchUser } from '../../hooks/useFetchUser';
+import { useFetchUser } from '../../hooks/api/useFetchUser';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import { Link } from 'react-router-dom';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
@@ -9,7 +9,9 @@ import UserPostList from './components/UserPostList/UserPostList';
 
 const ProfileScreen: React.FC = () => {
   const [user, setUser] = useAtom(loggedInUserAtom);
-  const { user: fetchedUser, isSuccess: fetchSucceeded } = useFetchUser(user._id);
+  const { user: fetchedUser, isSuccess: fetchSucceeded } = useFetchUser(
+    user._id
+  );
 
   useEffect(() => {
     if (fetchSucceeded && fetchedUser) {

@@ -2,8 +2,8 @@ import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import confetti from 'canvas-confetti';
-import { registerUser } from '../services/userService';
-import { RegisterData } from '../types/user';
+import { registerUser } from '../../services/userService';
+import { RegisterData } from '../../types/user';
 
 const useRegister = () => {
   const navigate = useNavigate();
