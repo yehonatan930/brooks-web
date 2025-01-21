@@ -31,6 +31,7 @@ const EditProfileScreen: React.FC = () => {
   const handleSave = () => {
     updateUser({ id: loggedInUser._id, username, email, profilePicture });
     profileImageFile && uploadImage(profileImageFile);
+    // http://localhost/media/q018.jpg
   };
 
   const handleInputChange =
