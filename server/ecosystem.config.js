@@ -1,4 +1,4 @@
-export const apps = [
+module.exports.apps = [
   {
     name: 'brook',
     script: './dist/main.js',
