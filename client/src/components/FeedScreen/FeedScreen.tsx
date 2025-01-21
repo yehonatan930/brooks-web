@@ -23,7 +23,7 @@ const FeedScreen: React.FC = () => {
   const { mutate: likePost } = useLikePost();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [summary, setSummary] = useState<string>('');
-  const openai = new OpenAI({ apiKey: `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`, dangerouslyAllowBrowser: true });
+  const openai = new OpenAI({ apiKey: process.env.REACT_APP_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
 
   const { data, isLoading } = useQuery(['posts', page], () => getPosts(page), {
     keepPreviousData: true,
