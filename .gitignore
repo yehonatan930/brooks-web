@@ -131,6 +131,7 @@ dist
 /.idea
 
 # cert files
+cert/
 *.crt
 *.key
 *.pem

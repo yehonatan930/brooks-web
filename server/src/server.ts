@@ -14,22 +14,8 @@ import path from 'path';
 import { ServerInfo } from './types/types';
 import swaggerUi from 'swagger-ui-express';
 import dotenv from 'dotenv';
+import readCertificates from './utils/readCertificates';
 dotenv.config();
-
-let privateKey: string, certificate: string;
-try {
-  privateKey = fs.readFileSync(
-    path.join(__dirname, '../cert/client-key.pem'),
-    'utf8'
-  );
-  certificate = fs.readFileSync(
-    path.join(__dirname, '../cert/client-cert.pem'),
-    'utf8'
-  );
-} catch (error) {
-  console.error('Error reading certificate files:', error);
-  process.exit(1);
-}
 
 const serverPromise: Promise<ServerInfo> = new Promise((resolve, reject) => {
   const isProduction = process.env.NODE_ENV === 'production';
@@ -65,6 +51,9 @@ const serverPromise: Promise<ServerInfo> = new Promise((resolve, reject) => {
 
       if (isProduction) {
         console.log('Production mode');
+
+        const { privateKey, certificate } = readCertificates();
+
         const server: HttpsServer = https.createServer(
           {
             key: privateKey,
