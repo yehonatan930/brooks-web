@@ -12,6 +12,7 @@ import useLikePost from '../../hooks/useLikePost';
 import { useQuery } from 'react-query';
 import { Post as PostType } from '../../types/post';
 import PaginationControls from './components/PaginationControls/PaginationControls';
+import CommentSection from './components/CommentSection/CommentSection';
 
 const FeedScreen: React.FC = () => {
   const [page, setPage] = useState(1);
@@ -83,19 +84,18 @@ const FeedScreen: React.FC = () => {
                 </span>
               )}
             </p>
-
-              <div className="feed__post-actions">
-                <Link to={`/post/${post._id}`}>
-                  <IconButton>
-                    <VisibilityIcon fontSize="inherit" />
-                  </IconButton>
-                </Link>
-                {post.userId === userId && (
+            <CommentSection postId={post._id} />
+            <div className="feed__post-actions">
+              <Link to={`/post/${post._id}`}>
+                <IconButton>
+                  <VisibilityIcon fontSize="inherit" />
+                </IconButton>
+              </Link>
+              {post.userId === userId && (
                 <IconButton onClick={() => handleDeletePost(post._id)}>
                   <DeleteIcon fontSize="inherit" />
                 </IconButton>)}
-              </div>
-
+            </div>
           </div>
         ))
       ) : (
