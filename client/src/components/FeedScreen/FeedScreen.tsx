@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CircularProgress, IconButton, Popover, Typography } from '@mui/material';
+import { CircularProgress, IconButton, Popper } from '@mui/material';
 import { deletePost, getPosts } from '../../services/postService';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -12,8 +12,8 @@ import useLikePost from '../../hooks/useLikePost';
 import { useQuery } from 'react-query';
 import { Post as PostType } from '../../types/post';
 import PaginationControls from './components/PaginationControls/PaginationControls';
-import OpenAI from "openai";
-
+import { HfInference } from "@huggingface/inference";
+import debounce from 'lodash/debounce';
 
 const FeedScreen: React.FC = () => {
   const [page, setPage] = useState(1);
@@ -23,7 +23,7 @@ const FeedScreen: React.FC = () => {
   const { mutate: likePost } = useLikePost();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [summary, setSummary] = useState<string>('');
-  const openai = new OpenAI({ apiKey: process.env.REACT_APP_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
+  const [loadingSummary, setLoadingSummary] = useState<boolean>(false);
 
   const { data, isLoading } = useQuery(['posts', page], () => getPosts(page), {
     keepPreviousData: true,
@@ -45,41 +45,29 @@ const FeedScreen: React.FC = () => {
     likePost({ postId, userId, page });
   };
 
-  const toggleExpandPost = (postId: string) => {
-    setExpandedPosts(prev => {
-      const newExpandedPosts = new Set(prev);
-      if (newExpandedPosts.has(postId)) {
-        newExpandedPosts.delete(postId);
-      } else {
-        newExpandedPosts.add(postId);
+  const fetchBookSummary = debounce(async (bookTitle: string, event: React.MouseEvent<HTMLElement>) => {
+    if (!summary || summary === '') {
+      setAnchorEl(event.target as HTMLElement);
+      setLoadingSummary(true);
+      const hf = new HfInference(process.env.REACT_APP_HUGGINGFACE_API_KEY || '');
+
+      try {
+        const response = await hf.textGeneration({
+          model: 'EleutherAI/gpt-neo-1.3B',
+          inputs: `What is the book ${bookTitle} about?`,
+          parameters: { max_length: 400 },
+        });
+        setSummary(response.generated_text as string);
+      } catch (error) {
+        console.error('Error fetching book summary:', error);
+        setSummary('Failed to fetch summary.');
+      } finally {
+        setLoadingSummary(false);
       }
-      return newExpandedPosts;
-    });
-  };
-
-  const truncateContent = (content: string, limit: number) => {
-    if (content.length <= limit) return content;
-    return content.substring(0, limit) + '...';
-  };
-
-  const fetchBookSummary = async (bookTitle: string, event: React.MouseEvent<HTMLElement>) => {
-    try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        store: true,
-        messages: [
-          { role: 'user', content: `Hi chat, please give me a couple sentences summary of the book ${bookTitle}` },
-        ], max_tokens: 100
-      });
-
-      setSummary(response.choices[0].message.content as string);
-      setAnchorEl(event.currentTarget);
-    } catch (error) {
-      console.error('Error fetching book summary:', error);
     }
-  };
+  }, 500);
 
-  const handlePopoverClose = () => {
+  const handlePopoverClose = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(null);
     setSummary('');
   };
@@ -111,14 +99,6 @@ const FeedScreen: React.FC = () => {
             >
               {post.bookTitle}
             </h2>
-            <p className="feed__post-content">
-              {expandedPosts.has(post._id) ? post.content : truncateContent(post.content, 100)}
-              {post.content.length > 100 && (
-                <span onClick={() => toggleExpandPost(post._id)} className="feed__post-readmore">
-                  {expandedPosts.has(post._id) ? ' Show less' : ' Read more'}
-                </span>
-              )}
-            </p>
 
             <div className="feed__post-actions">
               <Link to={`/post/${post._id}`}>
@@ -131,23 +111,24 @@ const FeedScreen: React.FC = () => {
                   <DeleteIcon fontSize="inherit" />
                 </IconButton>)}
             </div>
-
-            <Popover
-              id={id}
-              open={open}
+            <Popper
+              open={Boolean(anchorEl)}
               anchorEl={anchorEl}
-              onClose={handlePopoverClose}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-              }}
+              placement="bottom"
+              disablePortal={false}
+              modifiers={[
+                {
+                  name: 'preventOverflow',
+                  options: {
+                    boundary: 'window',
+                  },
+                },
+              ]}
             >
-              <Typography sx={{ p: 2 }}>{summary}</Typography>
-            </Popover>
+              <div className="summary-box" style={{ background: 'white', padding: '10px', borderRadius: '5px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
+                {loadingSummary ? <CircularProgress size={20} /> : summary || 'Hover over a title to see the summary'}
+              </div>
+            </Popper>
           </div>
         ))
       ) : (
