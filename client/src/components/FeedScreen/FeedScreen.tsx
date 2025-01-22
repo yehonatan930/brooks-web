@@ -53,7 +53,7 @@ const FeedScreen: React.FC = () => {
 
       try {
         const response = await hf.textGeneration({
-          model: 'EleutherAI/gpt-neo-1.3B',
+          model: 'openai-community/gpt2-xl',
           inputs: `What is the book ${bookTitle} about?`,
           parameters: { max_length: 400 },
         });
