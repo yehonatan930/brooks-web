@@ -48,6 +48,7 @@
   left: 10px;
   display: flex;
   gap: 10px;
+  margin-top: 10px;
 }
 
 .feed__post-actions .MuiIconButton-root {
@@ -73,4 +74,5 @@
   justify-content: center;
   align-items: center;
   margin-top: 20px; /* Add some space above the controls */
+  grid-column: 1 / -1; /* Span across all columns to take a full row */
 }
