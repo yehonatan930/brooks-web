@@ -1,37 +1,39 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import './EditProfileScreen.scss';
 import { useUpdateUser } from '../../hooks/api/useUpdateUser';
-import { useUploadImage } from '../../hooks/api/useUploadImage';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import { useAtomValue } from 'jotai';
 import { UploadImageButton } from '../UploadImageButton/UploadImageButton';
+import { makeFileUrl } from '../../utils/makeFileUrl';
 
 const EditProfileScreen: React.FC = () => {
   const loggedInUser = useAtomValue(loggedInUserAtom);
   const [username, setUsername] = useState<string>(
     loggedInUser?.username || ''
   );
-  const [email, setEmail] = useState<string>(loggedInUser?.email || '');
-  const [profilePicture, setProfilePicture] = useState<string>(
-    loggedInUser?.profilePicture || ''
-  );
   const [profileImageFile, setProfileImageFile] = useState<File | undefined>();
 
+  const [previewImgSrc, setPreviewImgSrc] = useState<string>(
+    loggedInUser?.profilePicture || ''
+  );
+
   const { mutate: updateUser } = useUpdateUser();
-  const { mutate: uploadImage } = useUploadImage();
 
   useEffect(() => {
     if (loggedInUser) {
       setUsername(loggedInUser.username);
-      setEmail(loggedInUser.email);
-      setProfilePicture(loggedInUser.profilePicture);
+      const loggedInUserImageUrl = makeFileUrl(loggedInUser.profilePicture);
+      setPreviewImgSrc(loggedInUserImageUrl);
     }
   }, [loggedInUser]);
 
   const handleSave = () => {
-    updateUser({ id: loggedInUser._id, username, email, profilePicture });
-    profileImageFile && uploadImage(profileImageFile);
-    // http://localhost/media/q018.jpg
+    updateUser({
+      userId: loggedInUser?._id,
+      profilePictureFile: profileImageFile,
+      username,
+    });
+    // http://localhost/media/<>
   };
 
   const handleInputChange =
@@ -39,6 +41,17 @@ const EditProfileScreen: React.FC = () => {
     (e: ChangeEvent<HTMLInputElement>) => {
       setter(e.target.value);
     };
+
+  const onUploadImage = (image: File) => {
+    setProfileImageFile(image);
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setPreviewImgSrc(e.target?.result as string);
+    };
+
+    reader.readAsDataURL(image as Blob);
+  };
 
   return (
     <div className="edit-profile">
@@ -52,21 +65,10 @@ const EditProfileScreen: React.FC = () => {
         />
       </div>
       <div className="form-group">
-        <label>Email</label>
-        <input
-          type="email"
-          value={email}
-          onChange={handleInputChange(setEmail)}
-        />
-      </div>
-      <div className="form-group">
-        <label>Profile Picture URL</label>
-        <input
-          type="text"
-          value={profilePicture}
-          onChange={handleInputChange(setProfilePicture)}
-        />
-        <UploadImageButton onUploadImage={setProfileImageFile} />
+        <UploadImageButton onUploadImage={onUploadImage} />
+        <div className="profile-picture">
+          <img src={previewImgSrc} alt="profile" />
+        </div>
       </div>
       <button onClick={handleSave}>Save</button>
     </div>

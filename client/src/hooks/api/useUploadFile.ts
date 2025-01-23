@@ -1,15 +1,15 @@
 import { useMutation } from 'react-query';
 import { uploadFile, UploadFileResponse } from '../../services/fileService';
 
-const useUploadImage = () => {
+const useUploadFile = () => {
   return useMutation<UploadFileResponse, any, File>(uploadFile, {
     onSuccess: (data: UploadFileResponse) => {
-      console.log('Image uploaded successfully', data);
+      console.log('File uploaded successfully', data);
     },
     onError: (error) => {
-      console.error('Image upload failed', error);
+      console.error('File upload failed', error);
     },
   });
 };
 
-export { useUploadImage };
+export { useUploadFile };

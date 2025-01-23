@@ -1,6 +1,11 @@
-import { AxiosResponse } from 'axios';
 import axiosInstance from './axiosInstance';
-import { LoginData, LoginResponse, RegisterData, UpdateUserData, User } from '../types/user';
+import {
+  LoginData,
+  LoginResponse,
+  RegisterData,
+  UpdateUserVariables,
+  User,
+} from '../types/user';
 
 export const registerUser = async (data: RegisterData): Promise<void> => {
   await axiosInstance.post('/auth/register', data);
@@ -21,10 +26,19 @@ export const logoutUser = async () => {
   return response.data;
 };
 
-export const updateUser = async (data: UpdateUserData): Promise<User> => {
-  const response: AxiosResponse<User> = await axiosInstance.put<User>(
-    `/users/${data.id}`,
-    data
-  );
+export const updateUser = async ({
+  userId,
+  username,
+  profilePictureFile: profilePicture,
+}: UpdateUserVariables): Promise<User> => {
+  const formData = new FormData();
+  if (username) formData.append('username', username);
+  if (profilePicture) formData.append('profilePicture', profilePicture);
+
+  const response = await axiosInstance.put(`/users/${userId}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
   return response.data;
 };

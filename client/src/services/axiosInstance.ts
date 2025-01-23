@@ -1,10 +1,7 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL:
-    process.env.NODE_ENV === 'production'
-      ? process.env.REACT_APP_API_HTTPS_URL
-      : process.env.REACT_APP_API_HTTP_URL,
+  baseURL: process.env.REACT_APP_API_URL,
 });
 
 axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
@@ -12,6 +9,7 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   if (token) {
     config.headers.Authorization = `jwt ${token}`;
   }
+
   return config;
 });
 

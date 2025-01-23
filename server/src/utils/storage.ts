@@ -5,7 +5,7 @@ export const storage = multer.diskStorage({
     cb(null, 'public/');
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname);
+    cb(null, `${Date.now()}-${file.originalname}`);
   },
 });
 

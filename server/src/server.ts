@@ -58,7 +58,10 @@ const serverPromise: Promise<ServerInfo> = new Promise((resolve, reject) => {
       app.use(`${prefix}/files`, filesRouter);
 
       // Serve static files from the public directory
-      app.use('/media', express.static(path.join(__dirname, '../public')));
+      app.use(
+        `${prefix}/media`,
+        express.static(path.join(__dirname, '../public'))
+      );
 
       // CLIENT -> Serve static files from the build directory
       app.use(express.static(path.join(__dirname, '../build')));

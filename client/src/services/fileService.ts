@@ -12,7 +12,6 @@ export const uploadFile = async (file: File): Promise<UploadFileResponse> => {
     '/files/upload',
     formData,
     {
-      params: { file: file.name },
       headers: { 'Content-Type': 'multipart/form-data' },
     }
   );

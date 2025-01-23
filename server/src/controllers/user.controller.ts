@@ -1,7 +1,8 @@
 import express, { Request, Response } from 'express';
-import mongoose from 'mongoose';
+import mongoose, { UpdateQuery } from 'mongoose';
 import { IUser, userSchema } from '../schemas/user.schema';
 import * as _ from 'lodash';
+import { upload } from '../utils/storage';
 
 const router = express.Router();
 
@@ -125,20 +126,35 @@ router.get('/:id', async (req: Request, res: Response) => {
  *       500:
  *         description: Error updating user
  */
-router.put('/:id', async (req: Request, res: Response) => {
-  try {
-    const { username, email, password, profilePicture } = req.body;
-    const user: IUser = await User.findByIdAndUpdate(
-      req.user.userId,
-      { username, email, password, profilePicture },
-      { new: true }
-    );
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    res.status(201).json(user);
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating user', error });
+router.put(
+  '/:id',
+  upload.single('profilePicture'),
+  async (req: Request, res: Response) => {
+    try {
+      const userId = req.params.id;
+
+      const { username } = req.body;
+
+      const profilePicturePath = req.file
+        ? `/media/${req.file.filename}` // Public URL for the file
+        : undefined;
+
+      const updateData: UpdateQuery<IUser> = {};
+      if (username) updateData.username = username;
+      if (profilePicturePath) updateData.profilePicture = profilePicturePath;
+
+      const user: IUser = await User.findByIdAndUpdate(userId, updateData, {
+        new: true,
+      });
+
+      if (!user) return res.status(404).json({ message: 'User not found' });
+
+      res.status(201).json(user);
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating user', error });
+    }
   }
-});
+);
 
 /**
  * @swagger

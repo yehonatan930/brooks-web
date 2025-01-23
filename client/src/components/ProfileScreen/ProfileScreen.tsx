@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import { useAtom } from 'jotai';
 import UserPostList from './components/UserPostList/UserPostList';
+import { makeFileUrl } from '../../utils/makeFileUrl';
 
 const ProfileScreen: React.FC = () => {
   const [user, setUser] = useAtom(loggedInUserAtom);
@@ -27,7 +28,7 @@ const ProfileScreen: React.FC = () => {
           <div className="profile__details">
             {user.profilePicture && (
               <img
-                src={user.profilePicture}
+                src={makeFileUrl(user.profilePicture)}
                 alt="Profile"
                 className="profile__picture"
               />
