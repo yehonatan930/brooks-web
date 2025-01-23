@@ -9,7 +9,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PersonIcon from '@mui/icons-material/Person';
 import './RegistrationScreen.scss';
-import useRegister from '../../hooks/useRegister';
+import useRegister from '../../hooks/api/useRegister';
 import { RegisterData } from '../../types/user';
 import { LoadingButton } from '@mui/lab';
 
@@ -31,7 +31,7 @@ const schema = yup.object().shape({
     .required('Confirm Password is required'),
 });
 
-const RegistrationScreen: React.FC<RegistrationScreenProps> = ({}) => {
+const RegistrationScreen: React.FC<RegistrationScreenProps> = () => {
   const {
     control,
     handleSubmit,

@@ -1,15 +1,18 @@
 import React, { useEffect } from 'react';
 import './ProfileScreen.scss';
-import { useFetchUser } from '../../hooks/useFetchUser';
+import { useFetchUser } from '../../hooks/api/useFetchUser';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import { Link } from 'react-router-dom';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import { useAtom } from 'jotai';
 import UserPostList from './components/UserPostList/UserPostList';
+import { makeFileUrl } from '../../utils/makeFileUrl';
 
 const ProfileScreen: React.FC = () => {
   const [user, setUser] = useAtom(loggedInUserAtom);
-  const { user: fetchedUser, isSuccess: fetchSucceeded } = useFetchUser(user._id);
+  const { user: fetchedUser, isSuccess: fetchSucceeded } = useFetchUser(
+    user._id
+  );
 
   useEffect(() => {
     if (fetchSucceeded && fetchedUser) {
@@ -25,7 +28,7 @@ const ProfileScreen: React.FC = () => {
           <div className="profile__details">
             {user.profilePicture && (
               <img
-                src={user.profilePicture}
+                src={makeFileUrl(user.profilePicture)}
                 alt="Profile"
                 className="profile__picture"
               />

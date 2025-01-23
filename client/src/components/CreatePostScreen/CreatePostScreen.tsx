@@ -7,7 +7,7 @@ import BookIcon from '@mui/icons-material/Book';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import './CreatePostScreen.scss';
 import { BookVolumeInfo, NewPostFormData } from '../../types/post';
-import { useCreatePost } from '../../hooks/useCreatePost';
+import { useCreatePost } from '../../hooks/api/useCreatePost';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useAtomValue } from 'jotai';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
@@ -18,14 +18,15 @@ import PersonIcon from '@mui/icons-material/Person';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 
 interface CreatePostScreenProps {}
-const DEFAULT_IMAGE_URL: string = 'https://cdn.candycode.com/jotai/jotai-mascot.png';
+const DEFAULT_IMAGE_URL: string =
+  'https://cdn.candycode.com/jotai/jotai-mascot.png';
 
 const schema = yup.object().shape({
   bookTitle: yup.string().required('book title is required'),
   content: yup.string(),
   imageUrl: yup.string(),
   readingProgress: yup.string(),
-  authorName: yup.string()
+  authorName: yup.string(),
 });
 
 const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
@@ -43,8 +44,8 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
     resolver: yupResolver(schema),
     mode: 'onChange',
     defaultValues: {
-      imageUrl: DEFAULT_IMAGE_URL
-    }
+      imageUrl: DEFAULT_IMAGE_URL,
+    },
   });
 
   const watchBookTitle = watch('bookTitle');
@@ -54,26 +55,38 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
   };
 
   const findBestMatch = (bookInfos: BookVolumeInfo[], bookTitle: string) => {
-    return bookInfos.reduce((bestMatch, bookInfo) => {
-      const similarity = stringSimilarity.compareTwoStrings(bookInfo.title.toLowerCase(), bookTitle.toLowerCase());
-      const shouldReplaceCurrentMatch = similarity > bestMatch.highestSimilarity && bookInfo.imageLinks?.thumbnail;
+    return bookInfos.reduce(
+      (bestMatch, bookInfo) => {
+        const similarity = stringSimilarity.compareTwoStrings(
+          bookInfo.title.toLowerCase(),
+          bookTitle.toLowerCase()
+        );
+        const shouldReplaceCurrentMatch =
+          similarity > bestMatch.highestSimilarity &&
+          bookInfo.imageLinks?.thumbnail;
 
-      return shouldReplaceCurrentMatch
-        ? { highestSimilarity: similarity, bestMatch: bookInfo }
-        : bestMatch;
-    }, { highestSimilarity: 0, bestMatch: {} as BookVolumeInfo}).bestMatch;
-  }
+        return shouldReplaceCurrentMatch
+          ? { highestSimilarity: similarity, bestMatch: bookInfo }
+          : bestMatch;
+      },
+      { highestSimilarity: 0, bestMatch: {} as BookVolumeInfo }
+    ).bestMatch;
+  };
 
   const fetchBookCover = useCallback(
     debounce(async (bookTitle: string) => {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=${bookTitle}`
       );
-      const data: {items: {volumeInfo: BookVolumeInfo}[]} = await response.json();
-      const bookInfos = data?.items ? data.items.map((item: any) => item.volumeInfo) : [];
+      const data: { items: { volumeInfo: BookVolumeInfo }[] } =
+        await response.json();
+      const bookInfos = data?.items
+        ? data.items.map((item: any) => item.volumeInfo)
+        : [];
 
       if (bookInfos.length > 0) {
-        const imageUrl = findBestMatch(bookInfos, bookTitle)?.imageLinks?.thumbnail;
+        const imageUrl = findBestMatch(bookInfos, bookTitle)?.imageLinks
+          ?.thumbnail;
 
         setValue('imageUrl', imageUrl);
       } else {
@@ -171,7 +184,9 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
               type="text"
               placeholder="Your progress (e.g. 50 pages)"
               error={!!errors.readingProgress}
-              helperText={errors.readingProgress ? errors.readingProgress.message : ''}
+              helperText={
+                errors.readingProgress ? errors.readingProgress.message : ''
+              }
               slotProps={{
                 input: {
                   startAdornment: <MenuBookIcon />,
