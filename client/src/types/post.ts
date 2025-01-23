@@ -6,8 +6,8 @@ export interface Post {
   createdAt: Date;
   userId: string;
   likes: string[];
-  readingProgress?: string; // Optional field
-  authorName?: string; // Optional field
+  readingProgress?: string;
+  authorName?: string;
 }
 
 export interface NewPostFormData {
