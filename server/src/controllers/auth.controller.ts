@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import mongoose from 'mongoose';
 import { IUser, userSchema } from '../schemas/user.schema';
+import { OAuth2Client } from 'google-auth-library';
 
 const User = mongoose.model('User', userSchema);
 
@@ -72,7 +73,7 @@ router.post('/login', async (req: Request, res: Response) => {
     const accessToken = generateToken(
       user._id,
       process.env.ACCESS_TOKEN_SECRET as string,
-      process.env.REFRESH_TIMEOUT
+      process.env.TOKENS_REFRESH_TIMEOUT
     );
     const refreshToken = generateToken(
       user._id,
@@ -81,8 +82,6 @@ router.post('/login', async (req: Request, res: Response) => {
     );
 
     user.tokens.push(refreshToken);
-    console.debug('refresh userId ', user._id);
-    console.debug('login user token:', user.tokens);
     await user.save();
 
     res.json({ accessToken, refreshToken, userId: user._id });
@@ -126,7 +125,7 @@ router.post('/refresh', async (req: Request, res: Response) => {
         const accessToken = generateToken(
           user._id,
           process.env.ACCESS_TOKEN_SECRET as string,
-          process.env.REFRESH_TIMEOUT
+          process.env.TOKENS_REFRESH_TIMEOUT
         );
         res.json({ accessToken });
       }
@@ -167,6 +166,54 @@ router.post('/logout', async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error logging out user' });
+  }
+});
+
+router.post('/google', async (req: Request, res: Response) => {
+  const { credential } = req.body;
+  const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const { email_verified, email, name } = ticket.getPayload();
+    if (!email_verified) {
+      return res.status(400).json({ message: 'Email not verified' });
+    }
+
+    let user: IUser = await User.findOne({ email });
+    if (!user) {
+      const user: IUser = new User({
+        _id: uuidv4(),
+        username: name,
+        email,
+        password: 'google-login',
+      });
+
+      await user.save();
+    }
+
+    const accessToken = generateToken(
+      user._id,
+      process.env.ACCESS_TOKEN_SECRET as string,
+      process.env.TOKENS_REFRESH_TIMEOUT
+    );
+    const refreshToken = generateToken(
+      user._id,
+      process.env.REFRESH_TOKEN_SECRET as string,
+      '1h'
+    );
+
+    user.tokens.push(refreshToken);
+    await user.save();
+
+    res.json({ accessToken, refreshToken, userId: user._id });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error logging in with Google' });
   }
 });
 
