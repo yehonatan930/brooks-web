@@ -1,5 +1,4 @@
 import React, { Suspense } from 'react';
-import './App.scss';
 import { Route, Routes } from 'react-router-dom';
 import RegistrationScreen from './components/RegistrationScreen/RegistrationScreen';
 import LoginScreen from './components/LoginScreen/LoginScreen';
