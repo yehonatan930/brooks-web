@@ -113,9 +113,6 @@ router.post('/refresh', async (req: Request, res: Response) => {
           return res.status(404).json({ message: 'User not found' });
         }
 
-        console.debug('regresh userId ', userId);
-        console.debug('regresh user.tokens ', user.tokens);
-
         if (!user.tokens.includes(token)) {
           user.tokens = [];
           await user.save();
@@ -179,15 +176,12 @@ router.post('/google', async (req: Request, res: Response) => {
       audience: process.env.GOOGLE_CLIENT_ID,
     });
 
-    const { email_verified, email, name } = ticket.getPayload();
-    if (!email_verified) {
-      return res.status(400).json({ message: 'Email not verified' });
-    }
+    const { email, name, sub } = ticket.getPayload();
 
     let user: IUser = await User.findOne({ email });
     if (!user) {
       const user: IUser = new User({
-        _id: uuidv4(),
+        _id: sub,
         username: name,
         email,
         password: 'google-login',
