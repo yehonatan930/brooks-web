@@ -168,6 +168,7 @@ router.post('/logout', async (req: Request, res: Response) => {
 
 router.post('/google', async (req: Request, res: Response) => {
   const { credential } = req.body;
+
   const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
   try {
@@ -180,7 +181,7 @@ router.post('/google', async (req: Request, res: Response) => {
 
     let user: IUser = await User.findOne({ email });
     if (!user) {
-      const user: IUser = new User({
+      user = new User({
         _id: sub,
         username: name,
         email,
