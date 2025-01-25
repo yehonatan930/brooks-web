@@ -1,16 +1,16 @@
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import confetti from 'canvas-confetti';
-import { loginUser } from '../../services/userService';
-import { LoginData, LoginResponse } from '../../types/user';
+import { googleLogin } from '../../services/userService';
+import { LoginResponse } from '../../types/user';
 
-const useLogin = (handleSetLoggedInUser?: (userId: string) => void) => {
+const useGoogleLogin = (handleSetLoggedInUser?: (userId: string) => void) => {
   const { data: tokens, ...rest } = useMutation<
     LoginResponse,
     any,
-    LoginData,
+    string,
     unknown
-  >(loginUser, {
+  >(googleLogin, {
     onSuccess: (data: LoginResponse) => {
       localStorage.setItem('token', data.accessToken);
       toast.success('Login successful! Welcome!');
@@ -29,4 +29,4 @@ const useLogin = (handleSetLoggedInUser?: (userId: string) => void) => {
 
   return { ...rest, tokens };
 };
-export default useLogin;
+export default useGoogleLogin;

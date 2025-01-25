@@ -42,3 +42,12 @@ export const updateUser = async ({
   });
   return response.data;
 };
+
+export const googleLogin = async (
+  credential: string
+): Promise<LoginResponse> => {
+  const response = await axiosInstance.post<LoginResponse>('/auth/google', {
+    credential,
+  });
+  return response.data;
+};

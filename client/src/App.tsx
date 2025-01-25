@@ -1,5 +1,4 @@
 import React, { Suspense } from 'react';
-import './App.scss';
 import { Route, Routes } from 'react-router-dom';
 import RegistrationScreen from './components/RegistrationScreen/RegistrationScreen';
 import LoginScreen from './components/LoginScreen/LoginScreen';
@@ -12,13 +11,17 @@ import LoggedInUserGuard from './components/LoggedInUserGuard/LoggedInUserGuard'
 import './styles/globalStyles.scss';
 import { createStore, Provider } from 'jotai';
 import PostDetailScreen from './components/PostDetailScreen/PostDetailScreen';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const customStore = createStore();
 
 function App() {
+  console.log(process.env);
   return (
-    <Provider store={customStore}>
-      <div className="App">
+    <GoogleOAuthProvider
+      clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID || ''}
+    >
+      <Provider store={customStore}>
         <LoggedInUserGuard>
           <Navbar />
           <Suspense fallback={<div>Loading...</div>}>
@@ -33,8 +36,8 @@ function App() {
             </Routes>
           </Suspense>
         </LoggedInUserGuard>
-      </div>
-    </Provider>
+      </Provider>
+    </GoogleOAuthProvider>
   );
 }
 
