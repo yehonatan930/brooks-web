@@ -11,6 +11,9 @@ import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import useLogin from '../../hooks/api/useLogin';
 import { LoginData, User } from '../../types/user';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
+import { useNavigate } from 'react-router-dom';
+import useGoogleLogin from '../../hooks/api/useGoogleLogin';
 
 const schema = yup.object().shape({
   email: yup
@@ -33,27 +36,44 @@ const LoginScreen: React.FC = () => {
     mode: 'onChange',
   });
   const [loggedInUser, setLoggedInUser] = useAtom(loggedInUserAtom);
-  const [_, setLocalStorageUserId] = useLocalStorage<string>('userId', '');
+  const [localStorageUserId, setLocalStorageUserId] = useLocalStorage<string>(
+    'userId',
+    ''
+  );
+
+  const navigate = useNavigate();
 
   const handleSetLoggedInUser = (userId: string) => {
     console.log('login: userId', userId);
     setLoggedInUser({ _id: userId } as User);
     setLocalStorageUserId(userId);
+
+    navigate('/profile');
   };
 
-  console.log('login: loggedInUser', loggedInUser);
-  console.log('login: local storgae id', _);
-
-  const { mutate } = useLogin(handleSetLoggedInUser);
+  const { mutate: regularLogin } = useLogin(handleSetLoggedInUser);
+  const { mutate: googleLogin } = useGoogleLogin(handleSetLoggedInUser);
 
   const onSubmit = (data: LoginData) => {
-    mutate(data);
+    regularLogin(data);
+  };
+
+  const onGoogleLoginSuccess = (credentialResponse: CredentialResponse) => {
+    credentialResponse.credential && googleLogin(credentialResponse.credential);
+  };
+
+  const onGoogleLoginError = () => {
+    console.log('Login Failed');
   };
 
   return (
     <div className="login__container">
       <form className="login__form" onSubmit={handleSubmit(onSubmit)}>
         <h2 className="login__title">Login</h2>
+        <GoogleLogin
+          onSuccess={onGoogleLoginSuccess}
+          onError={onGoogleLoginError}
+        />
         <Controller
           name="email"
           control={control}
