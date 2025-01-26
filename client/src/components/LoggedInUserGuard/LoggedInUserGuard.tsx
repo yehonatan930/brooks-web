@@ -14,7 +14,8 @@ const LoggedInUserGuard: FunctionComponent<LoggedInUserGuardProps> = (
 ) => {
   const [user, setUser] = useAtom(loggedInUserAtom);
 
-  const [getLocalStorageUserId, _] = useLocalStorage<string>('userId', '');
+  const [getLocalStorageUserId, setLocalStorageUserId] =
+    useLocalStorage<string>('userId', '');
 
   const navigate = useNavigate();
 

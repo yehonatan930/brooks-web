@@ -93,9 +93,10 @@ router.post('/login', async (req: Request, res: Response) => {
 
 router.post('/refresh', async (req: Request, res: Response) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const token =
+    req.body.refreshToken || (authHeader && authHeader.split(' ')[1]);
   if (!token) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    return res.status(401).json({ message: 'Unauthorized - no refresh token' });
   }
 
   try {
@@ -104,7 +105,7 @@ router.post('/refresh', async (req: Request, res: Response) => {
       process.env.REFRESH_TOKEN_SECRET as string,
       async (err: jwt.VerifyErrors, userInfo: jwt.JwtPayload) => {
         if (err) {
-          return res.status(403).json({ message: 'Forbidden jwt err' });
+          return res.status(403).json({ message: err.message });
         }
 
         const userId = userInfo.userId;

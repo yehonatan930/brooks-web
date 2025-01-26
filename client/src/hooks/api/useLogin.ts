@@ -12,7 +12,9 @@ const useLogin = (handleSetLoggedInUser?: (userId: string) => void) => {
     unknown
   >(loginUser, {
     onSuccess: (data: LoginResponse) => {
-      localStorage.setItem('token', data.accessToken);
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+
       toast.success('Login successful! Welcome!');
       confetti({
         particleCount: 100,
