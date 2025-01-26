@@ -6,6 +6,7 @@ import {
   UpdateUserVariables,
   User,
 } from '../types/user';
+import { AxiosResponse } from 'axios';
 
 export const registerUser = async (data: RegisterData): Promise<void> => {
   await axiosInstance.post('/auth/register', data);
@@ -35,7 +36,7 @@ export const updateUser = async ({
   if (username) formData.append('username', username);
   if (profilePicture) formData.append('profilePicture', profilePicture);
 
-  const response = await axiosInstance.put(`/users/${userId}`, formData, {
+  const response = await axiosInstance.put<User>(`/users/${userId}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
