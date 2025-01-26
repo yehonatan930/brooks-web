@@ -11,8 +11,11 @@ export const getPosts = async (page: number): Promise<PostsResponse> => {
   return response.data;
 };
 
-export const getPost = async (id: string): Promise<Post> => {
-  const response = await axiosInstance.get<Post>(`/posts/${id}`);
+export const getPost = async (
+  id: string,
+  signal?: AbortSignal
+): Promise<Post> => {
+  const response = await axiosInstance.get<Post>(`/posts/${id}`, { signal });
   return response.data;
 };
 

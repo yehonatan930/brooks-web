@@ -1,9 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, List, ListItem, ListItemText, ListItemAvatar, Avatar, IconButton } from '@mui/material';
+import {
+  TextField,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+  IconButton,
+} from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
 import './CommentSection.scss';
-import { addComment, deleteComment, getComments } from '../../../../services/commentService';
+import {
+  addComment,
+  deleteComment,
+  getComments,
+} from '../../../../services/commentService';
 import { Comment } from '../../../../types/comment';
 import { useAtomValue } from 'jotai/index';
 import { loggedInUserAtom } from '../../../../context/LoggedInUserAtom';
@@ -18,9 +31,12 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   const { _id: userId } = useAtomValue(loggedInUserAtom);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const { signal } = controller;
+
     const fetchComments = async () => {
       try {
-        const comments = await getComments(postId);
+        const comments = await getComments(postId, signal);
         setComments(comments || []);
       } catch (error) {
         console.error('Error fetching comments:', error);
@@ -28,6 +44,10 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     };
 
     fetchComments();
+
+    return () => {
+      controller.abort();
+    };
   }, [postId]);
 
   const handleAddComment = async () => {
@@ -43,7 +63,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   const handleDeleteComment = async (commentId: string) => {
     try {
       await deleteComment(commentId);
-      setComments(comments.filter(comment => comment._id !== commentId));
+      setComments(comments.filter((comment) => comment._id !== commentId));
     } catch (error) {
       console.error('Error deleting comment:', error);
     }
@@ -57,8 +77,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
             <ListItemAvatar>
               <Avatar>{comment.userId.charAt(0)}</Avatar>
             </ListItemAvatar>
-            <ListItemText primary={comment.content} secondary={comment.createdAt} />
-            <IconButton onClick={() => handleDeleteComment(comment._id)} className="delete-button">
+            <ListItemText
+              primary={comment.content}
+              secondary={comment.createdAt}
+            />
+            <IconButton
+              onClick={() => handleDeleteComment(comment._id)}
+              className="delete-button"
+            >
               <DeleteIcon />
             </IconButton>
           </ListItem>
@@ -72,7 +98,12 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
           fullWidth
           multiline
         />
-        <Button onClick={handleAddComment} variant="contained" color="primary" endIcon={<SendIcon />}>
+        <Button
+          onClick={handleAddComment}
+          variant="contained"
+          color="primary"
+          endIcon={<SendIcon />}
+        >
           Add Comment
         </Button>
       </div>
