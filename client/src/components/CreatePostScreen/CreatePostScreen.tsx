@@ -1,4 +1,4 @@
-import { FunctionComponent, useCallback, useEffect } from 'react';
+import { ChangeEvent, FunctionComponent } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -48,8 +48,6 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
     },
   });
 
-  const watchBookTitle = watch('bookTitle');
-
   const onSubmit = (data: NewPostFormData) => {
     createPost({ userId: user._id, ...data });
   };
@@ -73,34 +71,34 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
     ).bestMatch;
   };
 
-  const fetchBookCover = useCallback(
-    debounce(async (bookTitle: string) => {
-      const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=${bookTitle}`
-      );
-      const data: { items: { volumeInfo: BookVolumeInfo }[] } =
-        await response.json();
-      const bookInfos = data?.items
-        ? data.items.map((item: any) => item.volumeInfo)
-        : [];
+  const fetchBookCover = debounce(async (bookTitle: string) => {
+    const response = await fetch(
+      `https://www.googleapis.com/books/v1/volumes?q=${bookTitle}`
+    );
+    const data: { items: { volumeInfo: BookVolumeInfo }[] } =
+      await response.json();
+    const bookInfos = data?.items
+      ? data.items.map((item: any) => item.volumeInfo)
+      : [];
 
-      if (bookInfos.length > 0) {
-        const imageUrl = findBestMatch(bookInfos, bookTitle)?.imageLinks
-          ?.thumbnail;
+    if (bookInfos.length > 0) {
+      const imageUrl = findBestMatch(bookInfos, bookTitle)?.imageLinks
+        ?.thumbnail;
 
-        setValue('imageUrl', imageUrl);
-      } else {
-        setValue('imageUrl', DEFAULT_IMAGE_URL);
-      }
-    }, 300) as Function,
-    [setValue]
-  );
-
-  useEffect(() => {
-    if (watchBookTitle) {
-      fetchBookCover(watchBookTitle);
+      setValue('imageUrl', imageUrl);
+    } else {
+      setValue('imageUrl', DEFAULT_IMAGE_URL);
     }
-  }, [fetchBookCover, setValue, watchBookTitle]);
+  }, 300);
+
+  const handleBookTitleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const bookTitle = e.target.value;
+    if (bookTitle) {
+      fetchBookCover(bookTitle);
+    }
+  };
 
   return (
     <div className="pretty-card CreatePostScreen">
@@ -126,6 +124,10 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
                 input: {
                   startAdornment: <BookIcon />,
                 },
+              }}
+              onChange={(e) => {
+                field.onChange(e);
+                handleBookTitleChange(e);
               }}
             />
           )}

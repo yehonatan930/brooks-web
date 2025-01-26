@@ -19,9 +19,12 @@ const PostDetailScreen: React.FC = () => {
   const { _id: userId } = useAtomValue(loggedInUserAtom);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const { signal } = controller;
+
     const fetchPost = async () => {
       try {
-        const fetchedPost = await getPost(id!);
+        const fetchedPost = await getPost(id!, signal);
         setPost(fetchedPost);
         setPostContent(fetchedPost.content);
         setReadingProgress(fetchedPost.readingProgress || '');
@@ -34,6 +37,10 @@ const PostDetailScreen: React.FC = () => {
     };
 
     fetchPost();
+
+    return () => {
+      controller.abort();
+    };
   }, [id]);
 
   const handleEditClick = () => {
@@ -43,7 +50,12 @@ const PostDetailScreen: React.FC = () => {
   const handleSaveClick = async () => {
     if (post) {
       try {
-        const updatedPost = { ...post, content: postContent, readingProgress, authorName };
+        const updatedPost = {
+          ...post,
+          content: postContent,
+          readingProgress,
+          authorName,
+        };
         await updatePost(post._id, updatedPost);
         setPost(updatedPost);
         setIsEditMode(false);
@@ -70,8 +82,8 @@ const PostDetailScreen: React.FC = () => {
         >
           <EditIcon />
           {isEditMode ? 'Save' : 'Edit'}
-        </button>)
-      }
+        </button>
+      )}
       <div className="post-detail__left">
         {isEditMode ? (
           <>
@@ -93,9 +105,7 @@ const PostDetailScreen: React.FC = () => {
             {post.readingProgress && (
               <p>📚 Reading Progress: {post.readingProgress}</p>
             )}
-            {post.authorName && (
-              <p>✍️ Author: {post.authorName}</p>
-            )}
+            {post.authorName && <p>✍️ Author: {post.authorName}</p>}
           </>
         )}
       </div>

@@ -1,10 +1,9 @@
 import axiosInstance from './axiosInstance';
 import { Comment } from '../types/comment';
-const API_URI = '/comments';
 
-export const getComments = async (postId: string) => {
+export const getComments = async (postId: string, signal?: AbortSignal) => {
   try {
-    const response = await axiosInstance.get(`${API_URI}/${postId}`);
+    const response = await axiosInstance.get(`/comments/${postId}`, { signal });
     return response.data;
   } catch (error) {
     console.error('Error fetching comments:', error);
@@ -12,9 +11,16 @@ export const getComments = async (postId: string) => {
   }
 };
 
-export const addComment = async (postId: string, content: string, userId: string): Promise<Comment> => {
+export const addComment = async (
+  postId: string,
+  content: string,
+  userId: string
+): Promise<Comment> => {
   try {
-    const response = await axiosInstance.post(`${API_URI}/${postId}`, { content, userId });
+    const response = await axiosInstance.post(`/comments/${postId}`, {
+      content,
+      userId,
+    });
     return response.data;
   } catch (error) {
     console.error('Error adding comment:', error);
@@ -24,7 +30,7 @@ export const addComment = async (postId: string, content: string, userId: string
 
 export const deleteComment = async (commentId: string) => {
   try {
-    await axiosInstance.delete(`${API_URI}/${commentId}`);
+    await axiosInstance.delete(`/comments/${commentId}`);
   } catch (error) {
     console.error('Error deleting comment:', error);
     throw error;

@@ -1,19 +1,21 @@
 import axiosInstance from './axiosInstance';
-import { NewPostData, Post } from '../types/post';
+import { NewPostData, Post, PostsResponse } from '../types/post';
 
 export const createPost = async (data: NewPostData): Promise<Post> => {
   const response = await axiosInstance.post<Post>('/posts', data);
   return response.data;
 };
 
-export const getPosts = async (page: number): Promise<{ posts: Post[], totalPages: number }> => {
+export const getPosts = async (page: number): Promise<PostsResponse> => {
   const response = await axiosInstance.get(`/posts/all?page=${page}`);
   return response.data;
-
 };
 
-export const getPost = async (id: string): Promise<Post> => {
-  const response = await axiosInstance.get<Post>(`/posts/${id}`);
+export const getPost = async (
+  id: string,
+  signal?: AbortSignal
+): Promise<Post> => {
+  const response = await axiosInstance.get<Post>(`/posts/${id}`, { signal });
   return response.data;
 };
 
@@ -33,7 +35,9 @@ export const likePost = async (id: string): Promise<void> => {
   await axiosInstance.post(`/posts/${id}/like`);
 };
 
-export const getPostsByUserId = async (page: number): Promise<{ posts: Post[], totalPages: number }> => {
+export const getPostsByUserId = async (
+  page: number
+): Promise<PostsResponse> => {
   const response = await axiosInstance.get(`/posts?page=${page}`);
   return response.data;
 };
