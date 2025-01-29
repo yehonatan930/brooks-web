@@ -66,9 +66,9 @@ const FeedScreen: React.FC = () => {
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
       try {
-        const response = await model.generateContent(`What is the book ${bookTitle} about?`);
-        const x = response.response.text();
-        setSummary(x as string);
+        const response = await model.generateContent(`What is the book ${bookTitle} about? in about 100 words`);
+        const summary = response.response.text();
+        setSummary(summary as string);
       } catch (error) {
         console.error('Error fetching book summary:', error);
         setSummary('Failed to fetch summary.');
