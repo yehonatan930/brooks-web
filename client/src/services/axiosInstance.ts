@@ -1,4 +1,6 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
+import { refreshAccessToken } from './userService';
+import { toast } from 'react-toastify';
 
 const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
@@ -25,14 +27,18 @@ axiosInstance.interceptors.response.use(
       const refreshToken = localStorage.getItem('refreshToken');
       if (refreshToken) {
         try {
-          const response = await axiosInstance.post('/auth/refresh', {
-            refreshToken,
-          });
+          const accessToken = await refreshAccessToken(refreshToken);
 
-          localStorage.setItem('accessToken', response.data.accessToken);
+          localStorage.setItem('accessToken', accessToken);
           return axiosInstance(originalRequest);
-        } catch (error) {
+        } catch (error: any) {
           console.error(error);
+          if (error.response?.status === 403) {
+            toast.error('Session expired, Please log in again');
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            window.location.href = '/login';
+          }
         }
       }
     }

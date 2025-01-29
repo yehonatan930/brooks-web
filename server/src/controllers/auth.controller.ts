@@ -78,7 +78,7 @@ router.post('/login', async (req: Request, res: Response) => {
     const refreshToken = generateToken(
       user._id,
       process.env.REFRESH_TOKEN_SECRET as string,
-      '1h'
+      '5h'
     );
 
     user.tokens.push(refreshToken);
@@ -200,7 +200,7 @@ router.post('/google', async (req: Request, res: Response) => {
     const refreshToken = generateToken(
       user._id,
       process.env.REFRESH_TOKEN_SECRET as string,
-      '1h'
+      '5h'
     );
 
     user.tokens.push(refreshToken);

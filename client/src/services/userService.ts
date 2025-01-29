@@ -1,12 +1,12 @@
 import axiosInstance from './axiosInstance';
 import {
+  AccessToken,
   LoginData,
   LoginResponse,
   RegisterData,
   UpdateUserVariables,
   User,
 } from '../types/user';
-import { AxiosResponse } from 'axios';
 
 export const registerUser = async (data: RegisterData): Promise<void> => {
   await axiosInstance.post('/auth/register', data);
@@ -15,6 +15,15 @@ export const registerUser = async (data: RegisterData): Promise<void> => {
 export const loginUser = async (data: LoginData): Promise<LoginResponse> => {
   const response = await axiosInstance.post<LoginResponse>('/auth/login', data);
   return response.data;
+};
+
+export const refreshAccessToken = async (
+  refreshToken: string
+): Promise<string> => {
+  const response = await axiosInstance.post<AccessToken>('/auth/refresh', {
+    refreshToken,
+  });
+  return response.data.accessToken;
 };
 
 export const getUser = async (id: string): Promise<User> => {
