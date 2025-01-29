@@ -25,15 +25,17 @@ function App() {
         <LoggedInUserGuard>
           <Navbar />
           <Suspense fallback={<div>Loading...</div>}>
-            <Routes>
-              <Route path="/login" element={<LoginScreen />} />
-              <Route path="/register" element={<RegistrationScreen />} />
-              <Route path="/profile" element={<ProfileScreen />} />
-              <Route path="/post/create" element={<CreatePostScreen />} />
-              <Route path="/feed" element={<FeedScreen />} />
-              <Route path="/post/:id" element={<PostDetailScreen />} />
-              <Route path="/profile/edit" element={<EditProfileScreen />} />
-            </Routes>
+            <div className="app">
+              <Routes>
+                <Route path="/" element={<FeedScreen />} />
+                <Route path="/login" element={<LoginScreen />} />
+                <Route path="/register" element={<RegistrationScreen />} />
+                <Route path="/profile" element={<ProfileScreen />} />
+                <Route path="/post/create" element={<CreatePostScreen />} />
+                <Route path="/post/:id" element={<PostDetailScreen />} />
+                <Route path="/profile/edit" element={<EditProfileScreen />} />
+              </Routes>
+            </div>
           </Suspense>
         </LoggedInUserGuard>
       </Provider>
