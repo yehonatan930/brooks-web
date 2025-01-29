@@ -9,6 +9,10 @@ export interface LoginData {
   password: string;
 }
 
+export interface AccessToken {
+  accessToken: string;
+}
+
 export interface Tokens {
   accessToken: string;
   refreshToken: string;
