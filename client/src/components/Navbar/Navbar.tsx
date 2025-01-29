@@ -10,6 +10,7 @@ import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import Person4RoundedIcon from '@mui/icons-material/Person4Rounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import { Button } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
 interface NavbarProps {}
 
@@ -53,6 +54,16 @@ const Navbar: React.FC<NavbarProps> = () => {
               }
             >
               <Person4RoundedIcon fontSize="large" />
+            </NavLink>
+          </li>
+          <li className="navbar__item">
+            <NavLink
+              to="/post/create"
+              className={({ isActive }) =>
+                isActive ? 'navbar__link navbar__link--active' : 'navbar__link'
+              }
+            >
+              <AddIcon fontSize="large" />
             </NavLink>
           </li>
           <li className="navbar__item">
