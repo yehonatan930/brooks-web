@@ -12,8 +12,8 @@ import useLikePost from '../../hooks/useLikePost';
 import { useQuery } from 'react-query';
 import { Post as PostType } from '../../types/post';
 import PaginationControls from './components/PaginationControls/PaginationControls';
-import { HfInference } from "@huggingface/inference";
 import debounce from 'lodash/debounce';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const FeedScreen: React.FC = () => {
   const [page, setPage] = useState(1);
@@ -49,15 +49,13 @@ const FeedScreen: React.FC = () => {
     if (!summary || summary === '') {
       setAnchorEl(event.target as HTMLElement);
       setLoadingSummary(true);
-      const hf = new HfInference(process.env.REACT_APP_HUGGINGFACE_API_KEY || '');
+      const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY || '');
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
       try {
-        const response = await hf.textGeneration({
-          model: 'openai-community/gpt2-xl',
-          inputs: `What is the book ${bookTitle} about?`,
-          parameters: { max_length: 400 },
-        });
-        setSummary(response.generated_text as string);
+        const response = await model.generateContent(`What is the book ${bookTitle} about?`);
+        const x = response.response.text();
+        setSummary(x as string);
       } catch (error) {
         console.error('Error fetching book summary:', error);
         setSummary('Failed to fetch summary.');
