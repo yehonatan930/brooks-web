@@ -5,6 +5,7 @@ import commentsController from './controllers/comment.controller';
 import authenticate from './middlewares/auth.middleware';
 import authController from './controllers/auth.controller';
 import usersController from './controllers/user.controller';
+import filesRouter from './controllers/file.controller';
 import { swaggerSpec } from './swagger';
 import cors from 'cors';
 import https, { Server as HttpsServer } from 'https';
@@ -40,6 +41,13 @@ const serverPromise: Promise<ServerInfo> = new Promise((resolve, reject) => {
       app.use(`${prefix}/posts`, postsController);
       app.use(`${prefix}/comments`, commentsController);
       app.use(`${prefix}/users`, usersController);
+      app.use(`${prefix}/files`, filesRouter);
+
+      // Serve static files from the public directory
+      app.use(
+        `${prefix}/media`,
+        express.static(path.join(__dirname, '../public'))
+      );
 
       // CLIENT -> Serve static files from the build directory
       app.use(express.static(path.join(__dirname, '../build')));

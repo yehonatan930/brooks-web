@@ -1,3 +1,5 @@
+import Post from '../components/Post/Post';
+
 export interface Post {
   _id: string;
   bookTitle: string;
@@ -6,8 +8,8 @@ export interface Post {
   createdAt: Date;
   userId: string;
   likes: string[];
-  readingProgress?: string; // Optional field
-  authorName?: string; // Optional field
+  readingProgress?: string;
+  authorName?: string;
 }
 
 export interface NewPostFormData {
@@ -21,11 +23,16 @@ export interface NewPostFormData {
 export interface NewPostData extends NewPostFormData {
   userId: string;
 }
- export interface BookVolumeInfo {
+export interface BookVolumeInfo {
   title: string;
   authors: string[];
   description: string;
   imageLinks: {
     thumbnail: string;
   };
- }
+}
+
+export interface PostsResponse {
+  posts: Post[];
+  totalPages: number;
+}

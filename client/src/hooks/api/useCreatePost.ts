@@ -1,6 +1,6 @@
-import { createPost } from '../services/postService';
+import { createPost } from '../../services/postService';
 import { toast } from 'react-toastify';
-import { NewPostData, Post } from '../types/post';
+import { NewPostData, Post } from '../../types/post';
 import { useMutation } from 'react-query';
 import confetti from 'canvas-confetti';
 import { useNavigate } from 'react-router-dom';

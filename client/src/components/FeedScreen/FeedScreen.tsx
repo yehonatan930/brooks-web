@@ -8,10 +8,11 @@ import { useAtomValue } from 'jotai/index';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import { Link } from 'react-router-dom';
 import PostLikes from './components/PostLikes/PostLikes';
-import useLikePost from '../../hooks/useLikePost';
+import useLikePost from '../../hooks/api/useLikePost';
 import { useQuery } from 'react-query';
 import { Post as PostType } from '../../types/post';
 import PaginationControls from './components/PaginationControls/PaginationControls';
+import CommentSection from './components/CommentSection/CommentSection';
 import debounce from 'lodash/debounce';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
@@ -35,7 +36,7 @@ const FeedScreen: React.FC = () => {
   const handleDeletePost = async (postId: string) => {
     try {
       await deletePost(postId);
-      setPosts(posts.filter(post => post._id !== postId));
+      setPosts(posts.filter((post) => post._id !== postId));
     } catch (error) {
       console.error('Error deleting post:', error);
     }
@@ -43,6 +44,18 @@ const FeedScreen: React.FC = () => {
 
   const handleLike = (postId: string) => {
     likePost({ postId, userId, page });
+  };
+
+  const toggleExpandPost = (postId: string) => {
+    setExpandedPosts((prev) => {
+      const newExpandedPosts = new Set(prev);
+      if (newExpandedPosts.has(postId)) {
+        newExpandedPosts.delete(postId);
+      } else {
+        newExpandedPosts.add(postId);
+      }
+      return newExpandedPosts;
+    });
   };
 
   const fetchBookSummary = debounce(async (bookTitle: string, event: React.MouseEvent<HTMLElement>) => {
@@ -89,15 +102,20 @@ const FeedScreen: React.FC = () => {
               postUserId={post.userId}
               onLike={handleLike}
             />
-            {post.imageUrl && <img src={post.imageUrl} alt={post.imageUrl} className="feed__post-image" />}
-            <h2
+            {post.imageUrl && (
+              <img
+                src={post.imageUrl}
+                alt={post.imageUrl}
+                className="feed__post-image"
+              />
+            )}<h2
               className="feed__post-title"
               onMouseEnter={(event) => fetchBookSummary(post.bookTitle, event)}
               onMouseLeave={handlePopoverClose}
             >
               {post.bookTitle}
             </h2>
-
+            <CommentSection postId={post._id} />
             <div className="feed__post-actions">
               <Link to={`/post/${post._id}`}>
                 <IconButton>
@@ -132,10 +150,7 @@ const FeedScreen: React.FC = () => {
       ) : (
         <p>No posts available</p>
       )}
-      <PaginationControls
-        totalPages={totalPages}
-        onPageChange={setPage}
-      />
+      <PaginationControls totalPages={totalPages} onPageChange={setPage} />
     </div>
   );
 };

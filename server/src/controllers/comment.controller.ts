@@ -223,8 +223,8 @@ router.get('/:postId', async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.post('/', async (req, res) => {
-  if (!req.body.author || !req.body.content || !req.body.postId) {
+router.post('/:postId', async (req, res) => {
+  if (!req.body.userId || !req.body.content) {
     return res
       .status(400)
       .json({ error: 'author, content and postId are required' });
@@ -233,7 +233,7 @@ router.post('/', async (req, res) => {
   try {
     const comment = new Comment({
       ...req.body,
-      postId: new mongoose.Types.ObjectId(req.body.postId as string),
+      postId: new mongoose.Types.ObjectId(req.params.postId as string),
       _id: new mongoose.Types.ObjectId(),
     });
     await comment.save();

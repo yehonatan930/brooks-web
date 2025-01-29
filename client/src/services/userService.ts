@@ -1,6 +1,12 @@
-import { AxiosResponse } from 'axios';
 import axiosInstance from './axiosInstance';
-import { LoginData, LoginResponse, RegisterData, UpdateUserData, User } from '../types/user';
+import {
+  AccessToken,
+  LoginData,
+  LoginResponse,
+  RegisterData,
+  UpdateUserVariables,
+  User,
+} from '../types/user';
 
 export const registerUser = async (data: RegisterData): Promise<void> => {
   await axiosInstance.post('/auth/register', data);
@@ -9,6 +15,15 @@ export const registerUser = async (data: RegisterData): Promise<void> => {
 export const loginUser = async (data: LoginData): Promise<LoginResponse> => {
   const response = await axiosInstance.post<LoginResponse>('/auth/login', data);
   return response.data;
+};
+
+export const refreshAccessToken = async (
+  refreshToken: string
+): Promise<string> => {
+  const response = await axiosInstance.post<AccessToken>('/auth/refresh', {
+    refreshToken,
+  });
+  return response.data.accessToken;
 };
 
 export const getUser = async (id: string): Promise<User> => {
@@ -21,10 +36,28 @@ export const logoutUser = async () => {
   return response.data;
 };
 
-export const updateUser = async (data: UpdateUserData): Promise<User> => {
-  const response: AxiosResponse<User> = await axiosInstance.put<User>(
-    `/users/${data.id}`,
-    data
-  );
+export const updateUser = async ({
+  userId,
+  username,
+  profilePictureFile: profilePicture,
+}: UpdateUserVariables): Promise<User> => {
+  const formData = new FormData();
+  if (username) formData.append('username', username);
+  if (profilePicture) formData.append('profilePicture', profilePicture);
+
+  const response = await axiosInstance.put<User>(`/users/${userId}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
+
+export const googleLogin = async (
+  credential: string
+): Promise<LoginResponse> => {
+  const response = await axiosInstance.post<LoginResponse>('/auth/google', {
+    credential,
+  });
   return response.data;
 };

@@ -1,21 +1,20 @@
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import confetti from 'canvas-confetti';
-import { loginUser } from '../services/userService';
-import { useNavigate } from 'react-router-dom';
-import { LoginData, LoginResponse } from '../types/user';
+import { googleLogin } from '../../services/userService';
+import { LoginResponse } from '../../types/user';
 
-const useLogin = (handleSetLoggedInUser: (userId: string) => void) => {
-  const navigate = useNavigate();
-
+const useGoogleLogin = (handleSetLoggedInUser?: (userId: string) => void) => {
   const { data: tokens, ...rest } = useMutation<
     LoginResponse,
     any,
-    LoginData,
+    string,
     unknown
-  >(loginUser, {
+  >(googleLogin, {
     onSuccess: (data: LoginResponse) => {
-      localStorage.setItem('token', data.accessToken);
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+
       toast.success('Login successful! Welcome!');
       confetti({
         particleCount: 100,
@@ -23,9 +22,7 @@ const useLogin = (handleSetLoggedInUser: (userId: string) => void) => {
         origin: { y: 0.6 },
       });
 
-      handleSetLoggedInUser(data.userId);
-
-      navigate('/profile');
+      handleSetLoggedInUser && handleSetLoggedInUser(data.userId);
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || 'Login failed');
@@ -34,4 +31,4 @@ const useLogin = (handleSetLoggedInUser: (userId: string) => void) => {
 
   return { ...rest, tokens };
 };
-export default useLogin;
+export default useGoogleLogin;

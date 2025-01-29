@@ -16,7 +16,8 @@ const Navbar: React.FC<NavbarProps> = () => {
   const handleLogout = async () => {
     try {
       await logoutUser();
-      localStorage.removeItem('token');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
       setUser({} as User);
     } catch (error) {
       console.error('Logout failed:', error);
