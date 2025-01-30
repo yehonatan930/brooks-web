@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CircularProgress, IconButton } from '@mui/material';
+import { CircularProgress, IconButton, Popper } from '@mui/material';
 import { deletePost, getPosts } from '../../services/postService';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -13,6 +13,8 @@ import { useQuery } from 'react-query';
 import { Post as PostType } from '../../types/post';
 import PaginationControls from './components/PaginationControls/PaginationControls';
 import CommentSection from './components/CommentSection/CommentSection';
+import debounce from 'lodash/debounce';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const FeedScreen: React.FC = () => {
   const [page, setPage] = useState(1);
@@ -20,6 +22,9 @@ const FeedScreen: React.FC = () => {
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
   const { _id: userId } = useAtomValue(loggedInUserAtom);
   const { mutate: likePost } = useLikePost();
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [summary, setSummary] = useState<string>('');
+  const [loadingSummary, setLoadingSummary] = useState<boolean>(false);
 
   const { data, isLoading } = useQuery(['posts', page], () => getPosts(page), {
     keepPreviousData: true,
@@ -53,10 +58,33 @@ const FeedScreen: React.FC = () => {
     });
   };
 
-  const truncateContent = (content: string, limit: number) => {
-    if (content.length <= limit) return content;
-    return content.substring(0, limit) + '...';
+  const fetchBookSummary = debounce(async (bookTitle: string, event: React.MouseEvent<HTMLElement>) => {
+    if (!summary || summary === '') {
+      setAnchorEl(event.target as HTMLElement);
+      setLoadingSummary(true);
+      const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY || '');
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      try {
+        const response = await model.generateContent(`What is the book ${bookTitle} about? in about 100 words`);
+        const summary = response.response.text();
+        setSummary(summary as string);
+      } catch (error) {
+        console.error('Error fetching book summary:', error);
+        setSummary('Failed to fetch summary.');
+      } finally {
+        setLoadingSummary(false);
+      }
+    }
+  }, 500);
+
+  const handlePopoverClose = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(null);
+    setSummary('');
   };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'book-summary-popover' : undefined;
 
   if (isLoading) {
     return <CircularProgress />;
@@ -80,21 +108,13 @@ const FeedScreen: React.FC = () => {
                 alt={post.imageUrl}
                 className="feed__post-image"
               />
-            )}
-            <h2 className="feed__post-title">{post.bookTitle}</h2>
-            <p className="feed__post-content">
-              {expandedPosts.has(post._id)
-                ? post.content
-                : truncateContent(post.content, 100)}
-              {post.content.length > 100 && (
-                <span
-                  onClick={() => toggleExpandPost(post._id)}
-                  className="feed__post-readmore"
-                >
-                  {expandedPosts.has(post._id) ? ' Show less' : ' Read more'}
-                </span>
-              )}
-            </p>
+            )}<h2
+              className="feed__post-title"
+              onMouseEnter={(event) => fetchBookSummary(post.bookTitle, event)}
+              onMouseLeave={handlePopoverClose}
+            >
+              {post.bookTitle}
+            </h2>
             <CommentSection postId={post._id} />
             <div className="feed__post-actions">
               <Link to={`/post/${post._id}`}>
@@ -105,9 +125,26 @@ const FeedScreen: React.FC = () => {
               {post.userId === userId && (
                 <IconButton onClick={() => handleDeletePost(post._id)}>
                   <DeleteIcon fontSize="inherit" />
-                </IconButton>
-              )}
+                </IconButton>)}
             </div>
+            <Popper
+              open={Boolean(anchorEl)}
+              anchorEl={anchorEl}
+              placement="bottom"
+              disablePortal={false}
+              modifiers={[
+                {
+                  name: 'preventOverflow',
+                  options: {
+                    boundary: 'window',
+                  },
+                },
+              ]}
+            >
+              <div className="summary-box" style={{ background: 'white', padding: '10px', borderRadius: '5px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
+                {loadingSummary ? <CircularProgress size={20} /> : summary || 'Hover over a title to see the summary'}
+              </div>
+            </Popper>
           </div>
         ))
       ) : (
