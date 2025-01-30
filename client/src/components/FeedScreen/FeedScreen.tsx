@@ -140,6 +140,7 @@ const FeedScreen: React.FC = () => {
                   },
                 },
               ]}
+              sx={{ zIndex: 9999, maxWidth: '300px' }}
             >
               <div className="summary-box" style={{ background: 'white', padding: '10px', borderRadius: '5px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
                 {loadingSummary ? <CircularProgress size={20} /> : summary || 'Hover over a title to see the summary'}
