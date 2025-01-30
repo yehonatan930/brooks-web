@@ -4,6 +4,7 @@ import { IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useDeletePost } from '../../../../hooks/api/useDeletePost';
 
 export interface MyPostProps {
   _id: string;
@@ -13,9 +14,11 @@ export interface MyPostProps {
 }
 
 const MyPost = (props: MyPostProps) => {
+  const { mutate: deletePost } = useDeletePost();
+
   const handleDeletePost = (postId: string) => {
-    // TODO: Implement delete post functionality here
     console.log(`Delete post with ID: ${postId}`);
+    deletePost(postId);
   };
 
   return (
