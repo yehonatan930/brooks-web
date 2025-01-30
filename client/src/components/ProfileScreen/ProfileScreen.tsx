@@ -4,7 +4,7 @@ import { useFetchUser } from '../../hooks/api/useFetchUser';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import { useAtom } from 'jotai';
-import UserPostList from './components/UserPostList/UserPostList';
+import MyPostList from './components/MyPostsList/MyPostsList';
 import { makeFileUrl } from '../../utils/makeFileUrl';
 import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from 'react-router-dom';
@@ -58,7 +58,7 @@ const ProfileScreen: React.FC = () => {
             </div>
           )}
         </div>
-        <UserPostList userId={user._id} />
+        <MyPostList />
       </div>
     );
   } else {

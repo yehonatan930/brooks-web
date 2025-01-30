@@ -1,5 +1,4 @@
 .profile__container {
-  background: rgba(255, 255, 255, 0.9);
   position: relative;
   width: 100%;
   display: flex;
@@ -7,6 +6,7 @@
   height: 100%;
 
   .profile__area1 {
+    background: rgba(255, 255, 255, 1);
     width: 20%;
     padding: 20px;
     position: relative;
@@ -14,7 +14,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border-right: 2px solid #ddd;
+    // border-right: 2px solid #ddd;
 
     .profile__title {
       text-align: center;
