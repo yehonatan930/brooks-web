@@ -2,19 +2,21 @@ import { FunctionComponent, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { TextField } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 import BookIcon from '@mui/icons-material/Book';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import './CreatePostScreen.scss';
 import { BookVolumeInfo, NewPostFormData } from '../../types/post';
 import { useCreatePost } from '../../hooks/api/useCreatePost';
-import LoadingButton from '@mui/lab/LoadingButton';
+import { useUpdatePost } from '../../hooks/api/useUpdatePost';
+import { useGetPost } from '../../hooks/api/useGetPost';
 import { useAtomValue } from 'jotai';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import PhotoCameraBackIcon from '@mui/icons-material/PhotoCameraBack';
 import debounce from 'lodash/debounce';
 import PersonIcon from '@mui/icons-material/Person';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
+import { useParams } from 'react-router-dom';
 
 const fetchBookCover = debounce(
   async (
@@ -40,7 +42,6 @@ const fetchBookCover = debounce(
   },
   300
 );
-
 interface CreatePostScreenProps {
   edit?: boolean;
 }
@@ -55,10 +56,25 @@ const schema = yup.object().shape({
   authorName: yup.string(),
 });
 
-const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
+const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
+  edit,
+}) => {
   const user = useAtomValue(loggedInUserAtom);
 
-  const { isLoading, mutate: createPost } = useCreatePost();
+  const { isLoading: createIsLoading, mutate: createPost } = useCreatePost();
+  const { isLoading: updateIsLoading, mutate: updatePost } = useUpdatePost();
+  const { id: postId } = useParams<{ id: string }>();
+
+  const { data: existingPost } = useGetPost(postId || '');
+
+  const getDefaultFormValues = () => {
+    if (existingPost) {
+      const { bookTitle, content, imageUrl, readingProgress, authorName } =
+        existingPost;
+      return { bookTitle, content, imageUrl, readingProgress, authorName };
+    }
+    return { imageUrl: DEFAULT_IMAGE_URL };
+  };
 
   const {
     control,
@@ -69,170 +85,176 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
   } = useForm<NewPostFormData>({
     resolver: yupResolver(schema),
     mode: 'onChange',
-    defaultValues: {
-      imageUrl: DEFAULT_IMAGE_URL,
-    },
+    defaultValues: getDefaultFormValues(),
   });
 
+  const { bookTitle, authorName } = watch();
+
   const onSubmit = (data: NewPostFormData) => {
-    createPost({ userId: user._id, ...data });
+    edit && postId
+      ? updatePost({ _id: postId, ...data })
+      : createPost({ userId: user._id, ...data });
   };
 
   useEffect(() => {
-    const fetchCover = async () => {
-      if (bookTitle) {
-        console.log('fetching book cover for:', bookTitle, authorName);
-        const imageUrl = await fetchBookCover(bookTitle, authorName);
-        console.log('Fetched image URL:', imageUrl);
+    if (existingPost) {
+      setValue('bookTitle', existingPost.bookTitle);
+      setValue('content', existingPost.content);
+      setValue('imageUrl', existingPost.imageUrl);
+      setValue('readingProgress', existingPost.readingProgress);
+      setValue('authorName', existingPost.authorName);
+    }
+  }, [existingPost, setValue]);
 
-        setValue('imageUrl', imageUrl || DEFAULT_IMAGE_URL, {
-          shouldValidate: true,
-          shouldDirty: true,
-        });
-      }
-    };
+  useEffect(() => {
+    if (bookTitle) {
+      console.log('fetching book cover');
+      console.log('bookTitle', bookTitle);
+      console.log('authorName', authorName);
 
-    fetchCover();
+      fetchBookCover(bookTitle, authorName)?.then((imageUrl) => {
+        console.log('imageUrl', imageUrl);
+
+        imageUrl
+          ? setValue('imageUrl', imageUrl)
+          : setValue('imageUrl', DEFAULT_IMAGE_URL);
+      });
+    }
   }, [bookTitle, authorName, setValue]);
 
   return (
-    <div className="pretty-card CreatePostScreen">
-      <form
-        className="CreatePostScreen__form"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <h2 className="title">New Post</h2>
-        <Controller
-          name="bookTitle"
-          control={control}
-          defaultValue=""
-          render={({ field }) => (
-            <TextField
-              {...field}
-              className="input-field"
-              type="text"
-              placeholder="Your Book title"
-              margin={'normal'}
-              error={!!errors.bookTitle}
-              helperText={errors.bookTitle ? errors.bookTitle.message : ''}
-              slotProps={{
-                input: {
-                  startAdornment: <BookIcon />,
-                },
-              }}
-              onChange={(e) => {
-                field.onChange(e);
-                handleBookTitleChange(e);
-              }}
-            />
-          )}
-        />
-        <Controller
-          name="content"
-          control={control}
-          defaultValue=""
-          render={({ field }) => (
-            <TextField
-              margin={'normal'}
-              {...field}
-              className="input-field"
-              type="text"
-              placeholder="Your thoughts"
-              error={!!errors.content}
-              helperText={errors.content ? errors.content.message : ''}
-              slotProps={{
-                input: {
-                  startAdornment: <LightbulbIcon />,
-                },
-              }}
-            />
-          )}
-        />
-        <Controller
-          name="imageUrl"
-          control={control}
-          defaultValue=""
-          render={({ field }) => (
-            <TextField
-              margin={'normal'}
-              {...field}
-              className="input-field"
-              type="text"
-              placeholder="your image url"
-              error={!!errors.imageUrl}
-              helperText={errors.imageUrl ? errors.imageUrl.message : ''}
-              slotProps={{
-                input: {
-                  startAdornment: <PhotoCameraBackIcon />,
-                },
-              }}
-            />
-          )}
-        />
-        <Controller
-          name="readingProgress"
-          control={control}
-          defaultValue=""
-          render={({ field }) => (
-            <TextField
-              margin={'normal'}
-              {...field}
-              className="input-field"
-              type="text"
-              placeholder="Your progress (e.g. 50 pages)"
-              error={!!errors.readingProgress}
-              helperText={
-                errors.readingProgress ? errors.readingProgress.message : ''
-              }
-              slotProps={{
-                input: {
-                  startAdornment: <MenuBookIcon />,
-                },
-              }}
-            />
-          )}
-        />
-        <Controller
-          name="authorName"
-          control={control}
-          defaultValue=""
-          render={({ field }) => (
-            <TextField
-              margin={'normal'}
-              {...field}
-              placeholder="Author name"
-              className="input-field"
-              type="text"
-              error={!!errors.authorName}
-              helperText={errors.authorName ? errors.authorName.message : ''}
-              slotProps={{
-                input: {
-                  startAdornment: <PersonIcon />,
-                },
-              }}
-            />
-          )}
-        />
-        <span>
-          <LoadingButton
-            disabled={!isValid}
-            type="submit"
-            variant="contained"
-            className="button"
-            loading={isLoading}
-          >
-            Publish
-          </LoadingButton>
-        </span>
-      </form>
-      <div className="CreatePostScreen__image-preview-container">
-        {watch('imageUrl') && (
-          <img
-            src={watch('imageUrl')}
-            alt="preview"
-            className="CreatePostScreen__image-preview"
+    <div className="CreatePostScreen">
+      <div className="CreatePostScreen__card">
+        <form
+          className="CreatePostScreen__form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          {!edit && <h2 className="title">New Post</h2>}
+          <Controller
+            name="bookTitle"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <TextField
+                {...field}
+                className="input-field"
+                type="text"
+                placeholder="Your Book title"
+                error={!!errors.bookTitle}
+                helperText={errors.bookTitle ? errors.bookTitle.message : ''}
+                slotProps={{
+                  input: {
+                    startAdornment: <BookIcon />,
+                  },
+                }}
+              />
+            )}
           />
-        )}
+
+          <Controller
+            name="authorName"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <TextField
+                {...field}
+                placeholder="Author name"
+                className="input-field"
+                type="text"
+                error={!!errors.authorName}
+                helperText={errors.authorName ? errors.authorName.message : ''}
+                slotProps={{
+                  input: {
+                    startAdornment: <PersonIcon />,
+                  },
+                }}
+              />
+            )}
+          />
+          <Controller
+            name="content"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <TextField
+                {...field}
+                className="input-field"
+                type="text"
+                placeholder="Your thoughts"
+                error={!!errors.content}
+                helperText={errors.content ? errors.content.message : ''}
+                slotProps={{
+                  input: {
+                    startAdornment: <LightbulbIcon />,
+                  },
+                }}
+              />
+            )}
+          />
+          <Controller
+            name="imageUrl"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <TextField
+                {...field}
+                className="input-field"
+                type="text"
+                placeholder="your image url"
+                error={!!errors.imageUrl}
+                helperText={errors.imageUrl ? errors.imageUrl.message : ''}
+                slotProps={{
+                  input: {
+                    startAdornment: <PhotoCameraBackIcon />,
+                  },
+                }}
+              />
+            )}
+          />
+          <Controller
+            name="readingProgress"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <TextField
+                {...field}
+                className="input-field"
+                type="text"
+                placeholder="Your progress (e.g. 50 pages)"
+                error={!!errors.readingProgress}
+                helperText={
+                  errors.readingProgress ? errors.readingProgress.message : ''
+                }
+                slotProps={{
+                  input: {
+                    startAdornment: <MenuBookIcon />,
+                  },
+                }}
+              />
+            )}
+          />
+          <span>
+            <Button
+              disabled={!isValid}
+              type="submit"
+              variant="contained"
+              className="button"
+              loading={createIsLoading || updateIsLoading}
+              loadingPosition="end"
+            >
+              Publish
+            </Button>
+          </span>
+        </form>
+        <div className="CreatePostScreen__image-preview-container">
+          {watch('imageUrl') && (
+            <img
+              src={watch('imageUrl')}
+              alt="preview"
+              className="CreatePostScreen__image-preview"
+            />
+          )}
+        </div>
       </div>
     </div>
   );

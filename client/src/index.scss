@@ -11,3 +11,10 @@
 body {
   margin: 0;
 }
+
+.app {
+  padding-right: calc(80px + 32px);
+  height: 100vh;
+  width: calc(100% - 80px - 32px);
+  position: relative;
+}

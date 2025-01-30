@@ -1,39 +1,44 @@
 .navbar {
-  background-color: #333; /* Darker background for a modern look */
+  background-color: #fff;
   padding: 1rem;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease;
   position: fixed;
-  width: 100%;
-  top: 0;
+  right: 0;
+  height: 100%;
   z-index: 1000;
   margin: 0;
-  left: 0; /* Ensure it starts from the left edge */
+  width: 80px;
 }
 
 .navbar__list {
   list-style: none;
   display: flex;
+  flex-direction: column;
   justify-content: space-around;
+  align-items: center;
   margin: 0;
   padding: 0;
   width: 100%;
-  max-width: 1200px; /* Restrict width for better visuals on larger screens */
+  height: 100%;
 }
 
-.navbar__item {
+li.navbar__item {
   margin: 0;
 }
 
 .navbar__link {
-  color: white;
+  display: block;
+  color: #1976d2;
   text-decoration: none;
   font-size: 1.1rem;
   padding: 0.5rem 1rem;
-  transition: color 0.3s ease, transform 0.3s ease;
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
   position: relative;
   overflow: hidden;
 }
@@ -45,7 +50,7 @@
   height: 2px;
   bottom: 0;
   left: 0;
-  background-color: #4caf50; /* Use a vibrant green for hover effect */
+  background-color: #1976d2;
   visibility: hidden;
   transform: scaleX(0);
   transition: all 0.3s ease-in-out;
@@ -57,12 +62,12 @@
 }
 
 .navbar__link:hover {
-  color: #4caf50; /* Match hover underline color */
+  color: #1976d2; /* Match hover underline color */
   transform: scale(1.05);
 }
 
 .navbar__link--active {
-  color: #4caf50;
+  color: #1976d2;
   font-weight: bold; /* Make active links more prominent */
 }
 
@@ -71,42 +76,9 @@
   transform: scaleX(1);
 }
 
-.navbar__container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px;
-  padding: 0 1rem;
-}
-
 .navbar__brand {
   font-size: 1.5rem;
   font-weight: bold;
-  color: white;
+  color: black;
   text-transform: uppercase;
-}
-
-.navbar__button {
-  background-color: #456532; /* Distinctive background for the button */
-  color: white;
-  text-decoration: none;
-  font-size: 1.1rem;
-  padding: 0.5rem 1.5rem; /* Slightly more padding for a button feel */
-  border-radius: 5px; /* Rounded corners for a button style */
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-  border: 2px solid white;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.navbar__button:hover {
-  background-color: #8bd083; /* Slightly darker shade on hover */
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-
-}
-
-.navbar__button::before {
-  display: none; /* Remove link underline effect for the button */
 }
