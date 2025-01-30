@@ -2,13 +2,14 @@ import { ChangeEvent, FunctionComponent } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { TextField } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 import BookIcon from '@mui/icons-material/Book';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import './CreatePostScreen.scss';
 import { BookVolumeInfo, NewPostFormData } from '../../types/post';
 import { useCreatePost } from '../../hooks/api/useCreatePost';
-import LoadingButton from '@mui/lab/LoadingButton';
+import { useUpdatePost } from '../../hooks/api/useUpdatePost';
+import { useGetPost } from '../../hooks/api/useGetPost';
 import { useAtomValue } from 'jotai';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import PhotoCameraBackIcon from '@mui/icons-material/PhotoCameraBack';
@@ -16,8 +17,11 @@ import stringSimilarity from 'string-similarity';
 import debounce from 'lodash/debounce';
 import PersonIcon from '@mui/icons-material/Person';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
+import { useParams } from 'react-router-dom';
 
-interface CreatePostScreenProps {}
+interface CreatePostScreenProps {
+  edit?: boolean;
+}
 const DEFAULT_IMAGE_URL: string =
   'https://cdn.candycode.com/jotai/jotai-mascot.png';
 
@@ -29,10 +33,25 @@ const schema = yup.object().shape({
   authorName: yup.string(),
 });
 
-const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
+const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
+  edit,
+}) => {
   const user = useAtomValue(loggedInUserAtom);
 
-  const { isLoading, mutate: createPost } = useCreatePost();
+  const { isLoading: createIsLoading, mutate: createPost } = useCreatePost();
+  const { isLoading: updateIsLoading, mutate: updatePost } = useUpdatePost();
+  const { id: postId } = useParams<{ id: string }>();
+
+  const { data: existingPost } = useGetPost(postId || '');
+
+  const getDefaultFormValues = () => {
+    if (existingPost) {
+      const { bookTitle, content, imageUrl, readingProgress, authorName } =
+        existingPost;
+      return { bookTitle, content, imageUrl, readingProgress, authorName };
+    }
+    return { imageUrl: DEFAULT_IMAGE_URL };
+  };
 
   const {
     control,
@@ -43,13 +62,13 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
   } = useForm<NewPostFormData>({
     resolver: yupResolver(schema),
     mode: 'onChange',
-    defaultValues: {
-      imageUrl: DEFAULT_IMAGE_URL,
-    },
+    defaultValues: getDefaultFormValues(),
   });
 
   const onSubmit = (data: NewPostFormData) => {
-    createPost({ userId: user._id, ...data });
+    edit && postId
+      ? updatePost({ _id: postId, ...data })
+      : createPost({ userId: user._id, ...data });
   };
 
   const findBestMatch = (bookInfos: BookVolumeInfo[], bookTitle: string) => {
@@ -219,15 +238,16 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
           )}
         />
         <span>
-          <LoadingButton
+          <Button
             disabled={!isValid}
             type="submit"
             variant="contained"
             className="button"
-            loading={isLoading}
+            loading={createIsLoading || updateIsLoading}
+            loadingPosition="end"
           >
             Publish
-          </LoadingButton>
+          </Button>
         </span>
       </form>
       <div className="CreatePostScreen__image-preview-container">
