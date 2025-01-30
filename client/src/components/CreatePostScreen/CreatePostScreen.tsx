@@ -125,7 +125,7 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
         className="CreatePostScreen__form"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <h2 className="title">New Post</h2>
+        {!edit && <h2 className="title">New Post</h2>}
         <Controller
           name="bookTitle"
           control={control}
