@@ -1,4 +1,4 @@
-import { ChangeEvent, FunctionComponent } from 'react';
+import { FunctionComponent, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -12,12 +12,38 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { useAtomValue } from 'jotai';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import PhotoCameraBackIcon from '@mui/icons-material/PhotoCameraBack';
-import stringSimilarity from 'string-similarity';
 import debounce from 'lodash/debounce';
 import PersonIcon from '@mui/icons-material/Person';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 
-interface CreatePostScreenProps {}
+const fetchBookCover = debounce(
+  async (
+    bookTitle: string,
+    authorName?: string
+  ): Promise<string | undefined> => {
+    const response = await fetch(
+      `https://www.googleapis.com/books/v1/volumes?q=${bookTitle}` +
+        (authorName ? `+inauthor:${authorName}` : '')
+    );
+    const data: { items: { volumeInfo: BookVolumeInfo }[] } =
+      await response.json();
+    const bookInfos: BookVolumeInfo[] = data?.items
+      ? data.items.map((item: any) => item.volumeInfo)
+      : [];
+
+    console.log('bookInfos', bookInfos);
+    if (bookInfos.length > 0) {
+      const imageUrl = bookInfos[0]?.imageLinks?.thumbnail;
+
+      return imageUrl;
+    }
+  },
+  300
+);
+
+interface CreatePostScreenProps {
+  edit?: boolean;
+}
 const DEFAULT_IMAGE_URL: string =
   'https://cdn.candycode.com/jotai/jotai-mascot.png';
 
@@ -52,53 +78,22 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = (props) => {
     createPost({ userId: user._id, ...data });
   };
 
-  const findBestMatch = (bookInfos: BookVolumeInfo[], bookTitle: string) => {
-    return bookInfos.reduce(
-      (bestMatch, bookInfo) => {
-        const similarity = stringSimilarity.compareTwoStrings(
-          bookInfo.title.toLowerCase(),
-          bookTitle.toLowerCase()
-        );
-        const shouldReplaceCurrentMatch =
-          similarity > bestMatch.highestSimilarity &&
-          bookInfo.imageLinks?.thumbnail;
+  useEffect(() => {
+    const fetchCover = async () => {
+      if (bookTitle) {
+        console.log('fetching book cover for:', bookTitle, authorName);
+        const imageUrl = await fetchBookCover(bookTitle, authorName);
+        console.log('Fetched image URL:', imageUrl);
 
-        return shouldReplaceCurrentMatch
-          ? { highestSimilarity: similarity, bestMatch: bookInfo }
-          : bestMatch;
-      },
-      { highestSimilarity: 0, bestMatch: {} as BookVolumeInfo }
-    ).bestMatch;
-  };
+        setValue('imageUrl', imageUrl || DEFAULT_IMAGE_URL, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+      }
+    };
 
-  const fetchBookCover = debounce(async (bookTitle: string) => {
-    const response = await fetch(
-      `https://www.googleapis.com/books/v1/volumes?q=${bookTitle}`
-    );
-    const data: { items: { volumeInfo: BookVolumeInfo }[] } =
-      await response.json();
-    const bookInfos = data?.items
-      ? data.items.map((item: any) => item.volumeInfo)
-      : [];
-
-    if (bookInfos.length > 0) {
-      const imageUrl = findBestMatch(bookInfos, bookTitle)?.imageLinks
-        ?.thumbnail;
-
-      setValue('imageUrl', imageUrl);
-    } else {
-      setValue('imageUrl', DEFAULT_IMAGE_URL);
-    }
-  }, 300);
-
-  const handleBookTitleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const bookTitle = e.target.value;
-    if (bookTitle) {
-      fetchBookCover(bookTitle);
-    }
-  };
+    fetchCover();
+  }, [bookTitle, authorName, setValue]);
 
   return (
     <div className="pretty-card CreatePostScreen">
