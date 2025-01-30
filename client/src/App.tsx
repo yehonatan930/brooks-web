@@ -33,9 +33,10 @@ function App() {
                 <Route path="/profile" element={<ProfileScreen />} />
                 <Route path="/post/create" element={<CreatePostScreen />} />
                 <Route
-                  path="/profile/edit/:id"
-                  element={<EditProfileScreen />}
+                  path="/post/edit/:id"
+                  element={<CreatePostScreen edit />}
                 />
+                <Route path="/profile/edit" element={<EditProfileScreen />} />
                 <Route path="/post/:id" element={<PostDetailScreen />} />
               </Routes>
             </div>

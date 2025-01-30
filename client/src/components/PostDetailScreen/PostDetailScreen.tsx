@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, CircularProgress } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import { getPost, updatePost } from '../../services/postService';
+import { getPost } from '../../services/postService';
 import { Post } from '../../types/post';
 import './PostDetailScreen.scss';
 import { useAtomValue } from 'jotai/index';
@@ -12,9 +12,6 @@ const PostDetailScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [postContent, setPostContent] = useState('');
-  const [readingProgress, setReadingProgress] = useState('');
-  const [authorName, setAuthorName] = useState('');
   const { _id: userId } = useAtomValue(loggedInUserAtom);
 
   const navigate = useNavigate();
@@ -27,9 +24,6 @@ const PostDetailScreen: React.FC = () => {
       try {
         const fetchedPost = await getPost(id!, signal);
         setPost(fetchedPost);
-        setPostContent(fetchedPost.content);
-        setReadingProgress(fetchedPost.readingProgress || '');
-        setAuthorName(fetchedPost.authorName || '');
       } catch (error) {
         console.error('Error fetching post:', error);
       } finally {
@@ -45,24 +39,7 @@ const PostDetailScreen: React.FC = () => {
   }, [id]);
 
   const handleEditClick = () => {
-    navigate('post/edit/' + id);
-  };
-
-  const handleSaveClick = async () => {
-    if (post) {
-      try {
-        const updatedPost = {
-          ...post,
-          content: postContent,
-          readingProgress,
-          authorName,
-        };
-        await updatePost(post._id, updatedPost);
-        setPost(updatedPost);
-      } catch (error) {
-        console.error('Error updating post:', error);
-      }
-    }
+    navigate('/post/edit/' + id);
   };
 
   if (isLoading) {

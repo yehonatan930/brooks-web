@@ -23,6 +23,11 @@ export interface NewPostFormData {
 export interface NewPostData extends NewPostFormData {
   userId: string;
 }
+
+export interface UpdatePostData extends NewPostFormData {
+  _id: string;
+}
+
 export interface BookVolumeInfo {
   title: string;
   authors: string[];

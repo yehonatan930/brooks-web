@@ -18,7 +18,6 @@
 
 .pretty-card.CreatePostScreen {
   max-width: 600px;
-  margin: 100px auto 50px;
   padding: 20px;
   background: rgba(255, 255, 255, 0.8);
   border: 1px solid #ccc;
@@ -37,6 +36,7 @@
     margin-bottom: 20px;
   }
 }
-textarea, input {
+textarea,
+input {
   box-shadow: none !important;
 }
