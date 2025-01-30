@@ -9,6 +9,7 @@ import './CreatePostScreen.scss';
 import { BookVolumeInfo, NewPostFormData } from '../../types/post';
 import { useCreatePost } from '../../hooks/api/useCreatePost';
 import { useUpdatePost } from '../../hooks/api/useUpdatePost';
+import { useGetPost } from '../../hooks/api/useGetPost';
 import { useAtomValue } from 'jotai';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import PhotoCameraBackIcon from '@mui/icons-material/PhotoCameraBack';
@@ -39,8 +40,18 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
 
   const { isLoading: createIsLoading, mutate: createPost } = useCreatePost();
   const { isLoading: updateIsLoading, mutate: updatePost } = useUpdatePost();
-
   const { id: postId } = useParams<{ id: string }>();
+
+  const { data: existingPost } = useGetPost(postId || '');
+
+  const getDefaultFormValues = () => {
+    if (existingPost) {
+      const { bookTitle, content, imageUrl, readingProgress, authorName } =
+        existingPost;
+      return { bookTitle, content, imageUrl, readingProgress, authorName };
+    }
+    return { imageUrl: DEFAULT_IMAGE_URL };
+  };
 
   const {
     control,
@@ -51,9 +62,7 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
   } = useForm<NewPostFormData>({
     resolver: yupResolver(schema),
     mode: 'onChange',
-    defaultValues: {
-      imageUrl: DEFAULT_IMAGE_URL,
-    },
+    defaultValues: getDefaultFormValues(),
   });
 
   const onSubmit = (data: NewPostFormData) => {
