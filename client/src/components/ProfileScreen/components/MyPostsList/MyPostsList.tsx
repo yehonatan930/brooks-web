@@ -5,14 +5,12 @@ import { Link } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
-import './UserPostList.scss';
+import './MyPostsList.scss';
 import { Post } from '../../../../types/post';
 
-interface UserPostListProps {
-  userId: string;
-}
+interface MyPostListProps {}
 
-const UserPostList: React.FC<UserPostListProps> = ({ userId }) => {
+const MyPostList: React.FC<MyPostListProps> = () => {
   const [page, setPage] = useState(1);
   const { data, isLoading } = useGetMyPosts(page);
   const posts: Post[] = data?.posts || [];
@@ -31,13 +29,12 @@ const UserPostList: React.FC<UserPostListProps> = ({ userId }) => {
   };
 
   const handleDeletePost = (postId: string) => {
-    // Implement delete post functionality here
+    // TODO: Implement delete post functionality here
     console.log(`Delete post with ID: ${postId}`);
   };
 
   return (
     <div className="profile__posts">
-      <h3>User Posts</h3>
       {isLoading ? (
         <CircularProgress />
       ) : posts ? (
@@ -75,13 +72,21 @@ const UserPostList: React.FC<UserPostListProps> = ({ userId }) => {
         <p>No posts available</p>
       )}
       <div className="pagination-controls">
-        <Button onClick={handlePreviousPage} disabled={page === 1}>
+        <Button
+          variant="contained"
+          onClick={handlePreviousPage}
+          disabled={page === 1}
+        >
           Previous
         </Button>
         <span>
           Page {page} of {totalPages}
         </span>
-        <Button onClick={handleNextPage} disabled={page === totalPages}>
+        <Button
+          variant="contained"
+          onClick={handleNextPage}
+          disabled={page === totalPages}
+        >
           Next
         </Button>
       </div>
@@ -89,4 +94,4 @@ const UserPostList: React.FC<UserPostListProps> = ({ userId }) => {
   );
 };
 
-export default UserPostList;
+export default MyPostList;
