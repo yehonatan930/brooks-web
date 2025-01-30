@@ -29,7 +29,7 @@ const MyPostList: React.FC<MyPostListProps> = () => {
   };
 
   const handleDeletePost = (postId: string) => {
-    // Implement delete post functionality here
+    // TODO: Implement delete post functionality here
     console.log(`Delete post with ID: ${postId}`);
   };
 
