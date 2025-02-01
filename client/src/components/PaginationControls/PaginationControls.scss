@@ -1,0 +1,13 @@
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  z-index: 1000;
+}
+
+.pagination-controls span {
+  margin: 0 1rem;
+}

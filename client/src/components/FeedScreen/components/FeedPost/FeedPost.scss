@@ -9,16 +9,24 @@
     transform 0.2s,
     box-shadow 0.2s;
 
+  flex-direction: column;
+
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   }
 }
 
+.feed__post__content {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 20px;
+}
+
 .feed__post-title {
-  font-size: 1.5rem;
   margin-bottom: 10px;
-  color: #333;
 }
 
 .feed__post-content {
@@ -38,12 +46,12 @@
 }
 
 .feed__post-actions {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
   display: flex;
   gap: 10px;
   margin-top: 10px;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
 }
 
 .feed__post-actions .MuiIconButton-root {

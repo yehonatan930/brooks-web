@@ -7,7 +7,7 @@ import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import useLikePost from '../../hooks/api/useLikePost';
 import { useQuery } from 'react-query';
 import { Post as PostType } from '../../types/post';
-import PaginationControls from './components/PaginationControls/PaginationControls';
+import PaginationControls from '../PaginationControls/PaginationControls';
 import debounce from 'lodash/debounce';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import FeedPost from './components/FeedPost/FeedPost';
@@ -15,7 +15,6 @@ import FeedPost from './components/FeedPost/FeedPost';
 const FeedScreen: React.FC = () => {
   const [page, setPage] = useState(1);
   let [posts, setPosts] = useState<PostType[]>([]);
-  const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
   const { _id: userId } = useAtomValue(loggedInUserAtom);
   const { mutate: likePost } = useLikePost();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -40,18 +39,6 @@ const FeedScreen: React.FC = () => {
 
   const handleLike = (postId: string) => {
     likePost({ postId, userId, page });
-  };
-
-  const toggleExpandPost = (postId: string) => {
-    setExpandedPosts((prev) => {
-      const newExpandedPosts = new Set(prev);
-      if (newExpandedPosts.has(postId)) {
-        newExpandedPosts.delete(postId);
-      } else {
-        newExpandedPosts.add(postId);
-      }
-      return newExpandedPosts;
-    });
   };
 
   const fetchBookSummary = debounce(
@@ -89,12 +76,33 @@ const FeedScreen: React.FC = () => {
   const open = Boolean(anchorEl);
   const id = open ? 'book-summary-popover' : undefined;
 
+  const handleNextPage = () => {
+    if (page < totalPages) {
+      const newPage = page + 1;
+      setPage(newPage);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (page > 1) {
+      const newPage = page - 1;
+      setPage(newPage);
+    }
+  };
+
   if (isLoading) {
     return <CircularProgress />;
   }
 
   return (
     <div className="feed">
+      <PaginationControls
+        page={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        handleNextPage={handleNextPage}
+        handlePreviousPage={handlePreviousPage}
+      />
       {posts.length > 0 ? (
         posts.map((post) => (
           <FeedPost
@@ -102,6 +110,7 @@ const FeedScreen: React.FC = () => {
             loggedInUserId={userId}
             _id={post._id}
             userId={post.userId}
+            content={post.content}
             imageUrl={post.imageUrl}
             bookTitle={post.bookTitle}
             likes={post.likes}
@@ -117,7 +126,6 @@ const FeedScreen: React.FC = () => {
       ) : (
         <p>No posts available</p>
       )}
-      <PaginationControls totalPages={totalPages} onPageChange={setPage} />
     </div>
   );
 };

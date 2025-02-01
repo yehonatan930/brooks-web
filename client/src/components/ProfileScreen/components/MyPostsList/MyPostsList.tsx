@@ -4,6 +4,7 @@ import { useGetMyPosts } from '../../../../hooks/api/useGetMyPosts';
 import './MyPostsList.scss';
 import { Post } from '../../../../types/post';
 import MyPost from '../MyPost/MyPost';
+import PaginationControls from '../../../PaginationControls/PaginationControls';
 
 interface MyPostListProps {}
 
@@ -42,25 +43,13 @@ const MyPostList: React.FC<MyPostListProps> = () => {
       ) : (
         <p>No posts available</p>
       )}
-      <div className="pagination-controls">
-        <Button
-          variant="contained"
-          onClick={handlePreviousPage}
-          disabled={page === 1}
-        >
-          Previous
-        </Button>
-        <span>
-          Page {page} of {totalPages}
-        </span>
-        <Button
-          variant="contained"
-          onClick={handleNextPage}
-          disabled={page === totalPages}
-        >
-          Next
-        </Button>
-      </div>
+      <PaginationControls
+        totalPages={totalPages}
+        onPageChange={setPage}
+        page={page}
+        handleNextPage={handleNextPage}
+        handlePreviousPage={handlePreviousPage}
+      />
     </div>
   );
 };
