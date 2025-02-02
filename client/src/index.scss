@@ -18,3 +18,7 @@ body {
   width: calc(100% - 80px - 32px);
   position: relative;
 }
+
+.flex-divider {
+  flex: 1; /* Fill the remaining space */
+}

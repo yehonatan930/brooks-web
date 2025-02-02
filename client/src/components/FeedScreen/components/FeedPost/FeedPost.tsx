@@ -52,6 +52,7 @@ const FeedPost = (props: FeedPostProps) => {
           <h3>{props.content}</h3>
         </div>
       </div>
+      <div className="flex-divider"></div>
       <CommentSection postId={props._id} />
       <div className="feed__post-actions">
         <PostLikes
