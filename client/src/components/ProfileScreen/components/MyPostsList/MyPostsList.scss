@@ -1,19 +1,16 @@
 .profile__posts {
+  position: relative;
   display: flex;
-  justify-content: center;
-  // align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
   width: 100%;
   padding: 20px;
 
-  &--container {
-    position: relative;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    justify-content: flex-start;
-    gap: 1rem;
-    // widths are dependent on: the number of posts per row, post width, post padding, post border, and gap between posts
-    width: calc((280px + 32px + 2px) * 3 + 1rem * 2);
+  &::after {
+    content: '';
+    flex: auto;
   }
 }
