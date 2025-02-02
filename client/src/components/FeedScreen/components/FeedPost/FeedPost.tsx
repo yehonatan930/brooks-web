@@ -15,6 +15,7 @@ import { PostForFeed } from '../../../../types/post';
 import SendIcon from '@mui/icons-material/Send';
 import { useState } from 'react';
 import { addComment } from '../../../../services/commentService';
+import { makeFileUrl } from '../../../../utils/makeFileUrl';
 
 export interface FeedPostProps extends PostForFeed {
   loggedInUserId: string;
@@ -48,8 +49,8 @@ const FeedPost = (props: FeedPostProps) => {
       <div className="feed__post__content">
         {props.imageUrl && (
           <img
-            src={props.imageUrl}
-            alt={props.imageUrl}
+            src={makeFileUrl(props.imageUrl)}
+            alt={makeFileUrl(props.imageUrl)}
             className="feed__post-image"
           />
         )}

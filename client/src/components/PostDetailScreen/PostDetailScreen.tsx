@@ -25,6 +25,7 @@ import {
   getComments,
 } from '../../services/commentService';
 import { Comment } from '../../types/comment';
+import { makeFileUrl } from '../../utils/makeFileUrl';
 
 const PostDetailScreen: React.FC = () => {
   const { id: postId } = useParams<{ id: string }>();
@@ -123,7 +124,9 @@ const PostDetailScreen: React.FC = () => {
           </Button>
         )}
         <div className="post-detail__left">
-          {post.imageUrl && <img src={post.imageUrl} alt={post.bookTitle} />}
+          {post.imageUrl && (
+            <img src={makeFileUrl(post.imageUrl)} alt={post.bookTitle} />
+          )}
         </div>
         <div className="post-detail__right">
           <h1>{post.bookTitle}</h1>

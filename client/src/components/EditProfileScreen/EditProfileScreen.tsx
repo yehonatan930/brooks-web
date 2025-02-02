@@ -5,6 +5,7 @@ import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import { useAtomValue } from 'jotai';
 import { UploadImageButton } from '../UploadImageButton/UploadImageButton';
 import { makeFileUrl } from '../../utils/makeFileUrl';
+import { Button, TextField } from '@mui/material';
 
 const EditProfileScreen: React.FC = () => {
   const loggedInUser = useAtomValue(loggedInUserAtom);
@@ -55,22 +56,23 @@ const EditProfileScreen: React.FC = () => {
 
   return (
     <div className="edit-profile">
-      <h2>Edit Profile</h2>
-      <div className="form-group">
-        <label>Username</label>
-        <input
-          type="text"
+      <div className="edit-profile__card">
+        <h2>Edit Profile</h2>
+
+        <TextField
+          fullWidth
+          label="Username"
           value={username}
           onChange={handleInputChange(setUsername)}
         />
-      </div>
-      <div className="form-group">
         <UploadImageButton onUploadImage={onUploadImage} />
         <div className="profile-picture">
           <img src={previewImgSrc} alt="profile" />
         </div>
+        <Button fullWidth variant="contained" onClick={handleSave}>
+          Save
+        </Button>
       </div>
-      <button onClick={handleSave}>Save</button>
     </div>
   );
 };

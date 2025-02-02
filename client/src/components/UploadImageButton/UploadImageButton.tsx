@@ -4,6 +4,7 @@ import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 export interface UploadImageButtonProps {
+  mini?: boolean;
   onUploadImage: (file: File) => void;
 }
 
@@ -35,7 +36,7 @@ export const UploadImageButton = (props: UploadImageButtonProps) => {
       tabIndex={-1}
       startIcon={<CloudUploadIcon />}
     >
-      Upload Image
+      {!props.mini && 'Upload Image'}
       <VisuallyHiddenInput type="file" onChange={onUpload} accept="image/*" />
     </Button>
   );

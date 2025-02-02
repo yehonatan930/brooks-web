@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, CircularProgress } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 import { useGetMyPosts } from '../../../../hooks/api/useGetMyPosts';
 import './MyPostsList.scss';
 import { Post } from '../../../../types/post';
@@ -10,7 +10,7 @@ interface MyPostListProps {}
 
 const MyPostList: React.FC<MyPostListProps> = () => {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useGetMyPosts(page);
+  const { data, isLoading, refetch } = useGetMyPosts(page);
   const posts: Post[] = data?.posts || [];
   const totalPages = data?.totalPages || 1;
 
@@ -29,19 +29,23 @@ const MyPostList: React.FC<MyPostListProps> = () => {
   return (
     <div className="profile__posts">
       {isLoading ? (
-        <CircularProgress />
+        <CircularProgress></CircularProgress>
       ) : posts ? (
-        posts.map((post) => (
-          <MyPost
-            key={post._id}
-            _id={post._id}
-            bookTitle={post.bookTitle}
-            content={post.content}
-            imageUrl={post.imageUrl}
-          />
-        ))
+        <>
+          {posts.map((post) => (
+            <MyPost
+              key={post._id}
+              _id={post._id}
+              bookTitle={post.bookTitle}
+              content={post.content}
+              imageUrl={post.imageUrl}
+              refetch={refetch}
+            />
+          ))}
+          {posts.length % 3 !== 0 && <div className="flex-divider"></div>}
+        </>
       ) : (
-        <p>No posts available</p>
+        <p>no posts</p>
       )}
       <PaginationControls
         totalPages={totalPages}

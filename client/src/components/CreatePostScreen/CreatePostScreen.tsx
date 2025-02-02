@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -12,11 +12,12 @@ import { useUpdatePost } from '../../hooks/api/useUpdatePost';
 import { useGetPost } from '../../hooks/api/useGetPost';
 import { useAtomValue } from 'jotai';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
-import PhotoCameraBackIcon from '@mui/icons-material/PhotoCameraBack';
 import debounce from 'lodash/debounce';
 import PersonIcon from '@mui/icons-material/Person';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { useParams } from 'react-router-dom';
+import { UploadImageButton } from '../UploadImageButton/UploadImageButton';
+import { makeFileUrl } from '../../utils/makeFileUrl';
 
 const fetchBookCover = debounce(
   async (
@@ -51,7 +52,6 @@ const DEFAULT_IMAGE_URL: string =
 const schema = yup.object().shape({
   bookTitle: yup.string().required('book title is required'),
   content: yup.string(),
-  imageUrl: yup.string(),
   readingProgress: yup.string(),
   authorName: yup.string(),
 });
@@ -59,6 +59,9 @@ const schema = yup.object().shape({
 const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
   edit,
 }) => {
+  const [imageFile, setImageFile] = useState<File | undefined>();
+  const [imageURL, setImageURL] = useState<string>(DEFAULT_IMAGE_URL);
+
   const user = useAtomValue(loggedInUserAtom);
 
   const { isLoading: createIsLoading, mutate: createPost } = useCreatePost();
@@ -91,18 +94,26 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
   const { bookTitle, authorName } = watch();
 
   const onSubmit = (data: NewPostFormData) => {
+    const imageRelevantData = imageFile
+      ? { imageFile }
+      : { imageUrl: imageURL };
+
     edit && postId
       ? updatePost({ _id: postId, ...data })
-      : createPost({ userId: user._id, ...data });
+      : createPost({
+          userId: user._id,
+          ...data,
+          ...imageRelevantData,
+        });
   };
 
   useEffect(() => {
     if (existingPost) {
       setValue('bookTitle', existingPost.bookTitle);
       setValue('content', existingPost.content);
-      setValue('imageUrl', existingPost.imageUrl);
       setValue('readingProgress', existingPost.readingProgress);
       setValue('authorName', existingPost.authorName);
+      setImageURL(existingPost.imageUrl || DEFAULT_IMAGE_URL);
     }
   }, [existingPost, setValue]);
 
@@ -115,12 +126,21 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
       fetchBookCover(bookTitle, authorName)?.then((imageUrl) => {
         console.log('imageUrl', imageUrl);
 
-        imageUrl
-          ? setValue('imageUrl', imageUrl)
-          : setValue('imageUrl', DEFAULT_IMAGE_URL);
+        setImageURL(imageUrl || DEFAULT_IMAGE_URL);
       });
     }
-  }, [bookTitle, authorName, setValue]);
+  }, [bookTitle, authorName]);
+
+  const onUploadImage = (image: File) => {
+    setImageFile(image);
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImageURL(e.target?.result as string);
+    };
+
+    reader.readAsDataURL(image as Blob);
+  };
 
   return (
     <div className="CreatePostScreen">
@@ -192,26 +212,6 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
             )}
           />
           <Controller
-            name="imageUrl"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <TextField
-                {...field}
-                className="input-field"
-                type="text"
-                placeholder="your image url"
-                error={!!errors.imageUrl}
-                helperText={errors.imageUrl ? errors.imageUrl.message : ''}
-                slotProps={{
-                  input: {
-                    startAdornment: <PhotoCameraBackIcon />,
-                  },
-                }}
-              />
-            )}
-          />
-          <Controller
             name="readingProgress"
             control={control}
             defaultValue=""
@@ -247,13 +247,14 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
           </span>
         </form>
         <div className="CreatePostScreen__image-preview-container">
-          {watch('imageUrl') && (
-            <img
-              src={watch('imageUrl')}
-              alt="preview"
-              className="CreatePostScreen__image-preview"
-            />
-          )}
+          <img
+            src={makeFileUrl(imageURL)}
+            alt="preview"
+            className="CreatePostScreen__image-preview"
+          />
+          <div className="CreatePostScreen__image-preview-absoluted">
+            <UploadImageButton onUploadImage={onUploadImage} mini />
+          </div>
         </div>
       </div>
     </div>

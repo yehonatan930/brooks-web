@@ -8,8 +8,24 @@ import {
 } from '../types/post';
 
 export const createPost = async (data: NewPostData): Promise<Post> => {
-  const response = await axiosInstance.post<Post>('/posts', data);
-  return response.data;
+  if (!data.imageFile) {
+    const response = await axiosInstance.post<Post>('/posts', data);
+    return response.data;
+  } else {
+    const formData = new FormData();
+    formData.append('bookTitle', data.bookTitle);
+    formData.append('content', data.content || '');
+    formData.append('readingProgress', data.readingProgress || '');
+    formData.append('authorName', data.authorName || '');
+    formData.append('imageFile', data.imageFile);
+
+    const response = await axiosInstance.post<Post>('/posts', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  }
 };
 
 export const getPosts = async (page: number): Promise<PostsResponse> => {
