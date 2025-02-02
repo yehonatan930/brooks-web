@@ -39,11 +39,11 @@ export const logoutUser = async () => {
 export const updateUser = async ({
   userId,
   username,
-  profilePictureFile: profilePicture,
+  profilePictureFile,
 }: UpdateUserVariables): Promise<User> => {
   const formData = new FormData();
   if (username) formData.append('username', username);
-  if (profilePicture) formData.append('profilePicture', profilePicture);
+  if (profilePictureFile) formData.append('profilePicture', profilePictureFile);
 
   const response = await axiosInstance.put<User>(`/users/${userId}`, formData, {
     headers: {

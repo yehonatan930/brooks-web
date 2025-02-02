@@ -5,6 +5,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useDeletePost } from '../../../../hooks/api/useDeletePost';
+import { makeFileUrl } from '../../../../utils/makeFileUrl';
 
 export interface MyPostProps {
   _id: string;
@@ -24,7 +25,11 @@ const MyPost = (props: MyPostProps) => {
   return (
     <div key={props._id} className="profile__post">
       {props.imageUrl && (
-        <img src={props.imageUrl} alt="Post" className="profile__post-image" />
+        <img
+          src={makeFileUrl(props.imageUrl)}
+          alt="Post"
+          className="profile__post-image"
+        />
       )}
       <div className="profile__post-content">
         <h4>{props.bookTitle}</h4>

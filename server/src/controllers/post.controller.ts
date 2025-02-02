@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import { IPost, IPostForFeed, postSchema } from '../schemas/post.schema';
 import { commentSchema } from '../schemas/comment.schema';
+import { upload } from '../utils/storage';
 const router = express.Router();
 
 const Post = mongoose.model('Post', postSchema);
@@ -269,10 +270,16 @@ router.put('/:id', async (req, res) => {
  *       400:
  *         description: Bad request
  */
-router.post('/', async (req, res) => {
+router.post('/', upload.single('imageFile'), async (req, res) => {
   try {
+    const imageUrl = req.file
+      ? `/media/${req.file.filename}` // Public URL for the file
+      : req.body.imageUrl;
+
     const newPost = new Post({
       ...req.body,
+      userId: req.user.userId,
+      imageUrl,
       _id: new mongoose.Types.ObjectId(),
     });
     const savedPost = await newPost.save();

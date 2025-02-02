@@ -13,16 +13,7 @@
     width: 600px;
     padding: 20px;
     position: relative;
-    height: 500px;
-
-    .CreatePostScreen__image-preview {
-      width: 100%;
-      max-width: 90%;
-      max-height: 90%;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-    }
+    height: 450px;
 
     .CreatePostScreen__image-preview-container {
       position: relative;
@@ -31,6 +22,21 @@
       align-items: center;
       width: 100%;
       height: auto;
+
+      .CreatePostScreen__image-preview {
+        width: 100%;
+        max-width: 90%;
+        max-height: 90%;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+
+      .CreatePostScreen__image-preview-absoluted {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+      }
     }
 
     .CreatePostScreen__form {

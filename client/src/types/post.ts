@@ -25,13 +25,14 @@ export interface PostForFeed {
 export interface NewPostFormData {
   bookTitle: string;
   content?: string;
-  imageUrl?: string;
-  readingProgress?: string; // Optional field
+  readingProgress?: string;
   authorName?: string;
 }
 
 export interface NewPostData extends NewPostFormData {
   userId: string;
+  imageUrl?: string;
+  imageFile?: File;
 }
 
 export interface UpdatePostData extends NewPostFormData {
