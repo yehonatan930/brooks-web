@@ -28,28 +28,30 @@ const MyPostList: React.FC<MyPostListProps> = () => {
 
   return (
     <div className="profile__posts">
-      {isLoading ? (
-        <CircularProgress />
-      ) : posts ? (
-        posts.map((post) => (
-          <MyPost
-            key={post._id}
-            _id={post._id}
-            bookTitle={post.bookTitle}
-            content={post.content}
-            imageUrl={post.imageUrl}
-          />
-        ))
-      ) : (
-        <p>No posts available</p>
-      )}
-      <PaginationControls
-        totalPages={totalPages}
-        onPageChange={setPage}
-        page={page}
-        handleNextPage={handleNextPage}
-        handlePreviousPage={handlePreviousPage}
-      />
+      <div className="profile__posts--container">
+        {isLoading ? (
+          <CircularProgress />
+        ) : posts ? (
+          posts.map((post) => (
+            <MyPost
+              key={post._id}
+              _id={post._id}
+              bookTitle={post.bookTitle}
+              content={post.content}
+              imageUrl={post.imageUrl}
+            />
+          ))
+        ) : (
+          <p>No posts available</p>
+        )}
+        <PaginationControls
+          totalPages={totalPages}
+          onPageChange={setPage}
+          page={page}
+          handleNextPage={handleNextPage}
+          handlePreviousPage={handlePreviousPage}
+        />
+      </div>
     </div>
   );
 };
