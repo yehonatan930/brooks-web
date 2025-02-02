@@ -1,12 +1,20 @@
 import './FeedPost.scss';
 import PostLikes from '../PostLikes/PostLikes';
-import CommentSection from '../CommentSection/CommentSection';
 import { useNavigate } from 'react-router-dom';
-import { CircularProgress, IconButton, Popper } from '@mui/material';
+import {
+  Button,
+  CircularProgress,
+  IconButton,
+  Popper,
+  TextField,
+} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import { PostForFeed } from '../../../../types/post';
+import SendIcon from '@mui/icons-material/Send';
+import { useState } from 'react';
+import { addComment } from '../../../../services/commentService';
 
 export interface FeedPostProps extends PostForFeed {
   loggedInUserId: string;
@@ -23,7 +31,17 @@ export interface FeedPostProps extends PostForFeed {
 }
 
 const FeedPost = (props: FeedPostProps) => {
+  const [newComment, setNewComment] = useState<string>('');
   const navigate = useNavigate();
+
+  const handleAddComment = async () => {
+    try {
+      await addComment(props._id, newComment, props.loggedInUserId);
+      setNewComment('');
+    } catch (error) {
+      console.error('Error adding comment:', error);
+    }
+  };
 
   return (
     <div key={props._id} className="feed__post">
@@ -49,7 +67,23 @@ const FeedPost = (props: FeedPostProps) => {
         </div>
       </div>
       <div className="flex-divider"></div>
-      <CommentSection postId={props._id} />
+      <div className="feed__post--comment-input">
+        <TextField
+          label="Add a comment"
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+          fullWidth
+          multiline
+        />
+        <Button
+          onClick={handleAddComment}
+          variant="contained"
+          color="primary"
+          endIcon={<SendIcon />}
+        >
+          Add Comment
+        </Button>
+      </div>
       <div className="feed__post-actions">
         <PostLikes
           postId={props._id}

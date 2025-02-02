@@ -3,6 +3,7 @@
   justify-content: center;
   align-items: center;
   height: 100%;
+  width: 100%;
 
   &__card {
     display: flex;
@@ -10,10 +11,12 @@
     align-items: center;
     background-color: #f9f9f9;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 600px;
+    width: 30%;
     padding: 20px;
     position: relative;
     height: 500px;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
 
     .edit-button.MuiButton-root {
       position: absolute;
@@ -54,6 +57,56 @@
       margin-top: 20px;
       font-size: 16px;
       color: #555;
+    }
+  }
+
+  &__comments-section {
+    height: 520px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 50%;
+
+    .comment-list {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+
+    .comment-item {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .comment-item:last-child {
+      border-bottom: none;
+    }
+
+    .comment-input {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .delete-button {
+      margin-left: auto;
+      color: #f44336;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   }
 }
