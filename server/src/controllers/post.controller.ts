@@ -1,56 +1,53 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import { IPost, postSchema } from '../schemas/post.schema';
+import { IPost, IPostForFeed, postSchema } from '../schemas/post.schema';
+import { commentSchema } from '../schemas/comment.schema';
 const router = express.Router();
 
 const Post = mongoose.model('Post', postSchema);
+const Comment = mongoose.model('Comment', commentSchema);
 
-/**
- * @swagger
- * tags:
- *   name: Posts
- *   description: API endpoints for managing posts
- */
-
-/**
- * @swagger
- * /posts:
- *   get:
- *     summary: Get all posts
- *     tags: [Posts]
- *     parameters:
- *       - in: query
- *         name: userId
- *         schema:
- *           type: string
- *         required: false
- *         description: Filter posts by userId ID
- *     responses:
- *       200:
- *         description: List of posts
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Post'
- *       500:
- *         description: Server error
- */
-router.get('/', async (req, res) => {
+router.get('/feed', async (req, res) => {
   const { userId } = req.user;
   const page = parseInt(req.query.page as string) || 1;
   const limit = 10; // Number of posts per page
 
   try {
-    const query = userId ? { userId } : {};
-    const totalPosts = await Post.countDocuments(query);
+    const totalPosts = await Post.countDocuments({});
     const totalPages = Math.ceil(totalPosts / limit);
-    const posts = await Post.find(query)
+    const posts = await Post.find({})
       .skip((page - 1) * limit)
-      .limit(limit);
+      .limit(limit)
+      .lean();
 
-    res.status(200).json({ posts, totalPages });
+    // Get comment counts for each post
+    const postIds = posts.map((post) => post._id);
+
+    const commentsCounts: {
+      _id: mongoose.Schema.Types.ObjectId;
+      count: number;
+    }[] = await Comment.aggregate([
+      { $match: { postId: { $in: postIds } } },
+      { $group: { _id: '$postId', count: { $sum: 1 } } },
+    ]);
+
+    const postsWithCounts: IPostForFeed[] = posts.map((post) => {
+      const commentsCount =
+        commentsCounts.find((c) => c._id.toString() === post._id.toString())
+          ?.count || 0;
+
+      return {
+        _id: post._id.toString(),
+        userId: post.userId,
+        imageUrl: post.imageUrl,
+        bookTitle: post.bookTitle,
+        content: post.content || '',
+        likesCount: post.likes.length,
+        commentsCount,
+      };
+    });
+
+    res.status(200).json({ posts: postsWithCounts, totalPages });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -110,6 +107,57 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Post not found' });
     }
     res.status(200).json(post);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * @swagger
+ * tags:
+ *   name: Posts
+ *   description: API endpoints for managing posts
+ */
+
+/**
+ * @swagger
+ * /posts:
+ *   get:
+ *     summary: Get all posts
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Filter posts by userId ID
+ *     responses:
+ *       200:
+ *         description: List of posts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Post'
+ *       500:
+ *         description: Server error
+ */
+router.get('/', async (req, res) => {
+  const { userId } = req.user;
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = 10; // Number of posts per page
+
+  try {
+    const query = userId ? { userId } : {};
+    const totalPosts = await Post.countDocuments(query);
+    const totalPages = Math.ceil(totalPosts / limit);
+    const posts = await Post.find(query)
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.status(200).json({ posts, totalPages });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

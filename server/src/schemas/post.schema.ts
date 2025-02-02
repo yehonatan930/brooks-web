@@ -1,5 +1,15 @@
 import mongoose from 'mongoose';
 
+export interface IPostForFeed {
+  _id: string;
+  userId: string;
+  imageUrl: string;
+  bookTitle: string;
+  content: string;
+  likesCount: number;
+  commentsCount: number;
+}
+
 export interface INewPost {
   bookTitle: string;
   content: string;
@@ -15,6 +25,7 @@ export interface IPost
   imageUrl: string;
   createdAt: Date;
   likes: string[];
+  comments: string[];
   readingProgress?: string;
   authorName?: string;
 }
@@ -25,7 +36,7 @@ export const postSchema = new mongoose.Schema<IPost>({
   content: { type: String, required: false },
   userId: { type: String, required: true, ref: 'User' },
   imageUrl: { type: String, required: true },
-  createdAt: { type: Date, required: true, default: new Date() },
+  createdAt: { type: Date, required: true, default: () => new Date() },
   likes: { type: [String], required: true, default: [] },
   readingProgress: { type: String }, // Optional field
   authorName: { type: String },

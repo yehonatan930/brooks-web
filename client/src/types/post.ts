@@ -12,6 +12,16 @@ export interface Post {
   authorName?: string;
 }
 
+export interface PostForFeed {
+  _id: string;
+  userId: string;
+  imageUrl: string;
+  bookTitle: string;
+  content: string;
+  likesCount: number;
+  commentsCount: number;
+}
+
 export interface NewPostFormData {
   bookTitle: string;
   content?: string;
@@ -39,5 +49,10 @@ export interface BookVolumeInfo {
 
 export interface PostsResponse {
   posts: Post[];
+  totalPages: number;
+}
+
+export interface PostsForFeedResponse {
+  posts: PostForFeed[];
   totalPages: number;
 }

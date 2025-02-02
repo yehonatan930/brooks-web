@@ -2,6 +2,7 @@ import axiosInstance from './axiosInstance';
 import {
   NewPostData,
   Post,
+  PostsForFeedResponse,
   PostsResponse,
   UpdatePostData,
 } from '../types/post';
@@ -13,6 +14,15 @@ export const createPost = async (data: NewPostData): Promise<Post> => {
 
 export const getPosts = async (page: number): Promise<PostsResponse> => {
   const response = await axiosInstance.get(`/posts/all?page=${page}`);
+  return response.data;
+};
+
+export const getPostsForFeed = async (
+  page: number
+): Promise<PostsForFeedResponse> => {
+  const response = await axiosInstance.get<PostsForFeedResponse>(
+    `/posts/feed?page=${page}`
+  );
   return response.data;
 };
 
