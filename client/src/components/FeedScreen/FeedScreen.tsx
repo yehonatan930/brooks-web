@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CircularProgress } from '@mui/material';
 import { deletePost, getPosts } from '../../services/postService';
 import './FeedScreen.scss';
@@ -6,26 +6,30 @@ import { useAtomValue } from 'jotai/index';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import useLikePost from '../../hooks/api/useLikePost';
 import { useQuery } from 'react-query';
-import { Post as PostType } from '../../types/post';
+import { Post, PostForFeed } from '../../types/post';
 import PaginationControls from '../PaginationControls/PaginationControls';
 import debounce from 'lodash/debounce';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import FeedPost from './components/FeedPost/FeedPost';
+import useGetPostsForFeed from '../../hooks/api/useGetPostsForFeed';
 
 const FeedScreen: React.FC = () => {
   const [page, setPage] = useState(1);
-  let [posts, setPosts] = useState<PostType[]>([]);
+  let [posts, setPosts] = useState<PostForFeed[]>([]);
   const { _id: userId } = useAtomValue(loggedInUserAtom);
   const { mutate: likePost } = useLikePost();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [summary, setSummary] = useState<string>('');
   const [loadingSummary, setLoadingSummary] = useState<boolean>(false);
 
-  const { data, isLoading } = useQuery(['posts', page], () => getPosts(page), {
-    keepPreviousData: true,
-  });
+  const { data, isLoading } = useGetPostsForFeed(page);
 
-  posts = data?.posts || [];
+  useEffect(() => {
+    if (data) {
+      setPosts(data.posts);
+    }
+  }, [data]);
+
   const totalPages = data?.totalPages || 1;
 
   const handleDeletePost = async (postId: string) => {
@@ -104,7 +108,7 @@ const FeedScreen: React.FC = () => {
         handlePreviousPage={handlePreviousPage}
       />
       {posts.length > 0 ? (
-        posts.map((post) => (
+        posts.map((post: PostForFeed) => (
           <FeedPost
             key={post._id}
             loggedInUserId={userId}
@@ -113,7 +117,8 @@ const FeedScreen: React.FC = () => {
             content={post.content}
             imageUrl={post.imageUrl}
             bookTitle={post.bookTitle}
-            likes={post.likes}
+            likesCount={post.likesCount}
+            commentsCount={post.commentsCount}
             handleDeletePost={handleDeletePost}
             handleLike={handleLike}
             handlePopoverClose={handlePopoverClose}

@@ -9,7 +9,10 @@
     transform 0.2s,
     box-shadow 0.2s;
 
+  display: flex;
   flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 
   &:hover {
     transform: translateY(-5px);
@@ -23,6 +26,7 @@
   justify-content: flex-start;
   align-items: center;
   gap: 20px;
+  width: 100%;
 }
 
 .feed__post-title {
@@ -72,4 +76,14 @@
   color: blue; /* Optional: Add color to make it look like a link */
   display: block; /* Ensure it appears on a new line */
   margin-top: 10px; /* Add some space above the text */
+}
+
+.feed__post--comment-input {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+  margin-top: 10px;
 }
