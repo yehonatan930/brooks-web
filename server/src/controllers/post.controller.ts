@@ -42,6 +42,7 @@ router.get('/feed', async (req, res) => {
         userId: post.userId,
         imageUrl: post.imageUrl,
         bookTitle: post.bookTitle,
+        authorName: post.authorName || '',
         content: post.content || '',
         likesCount: post.likes.length,
         commentsCount,

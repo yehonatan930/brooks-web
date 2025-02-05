@@ -25,6 +25,7 @@ export interface FeedPostProps extends PostForFeed {
   anchorEl: HTMLElement | null;
   fetchBookSummary: (
     bookTitle: string,
+    authorName: string,
     event: React.MouseEvent<HTMLElement>
   ) => void;
   summary: string;
@@ -58,7 +59,11 @@ const FeedPost = (props: FeedPostProps) => {
           <h2
             className="feed__post-title"
             onMouseEnter={(event) =>
-              props.fetchBookSummary(props.bookTitle, event)
+              props.fetchBookSummary(
+                props.bookTitle,
+                props.authorName || '',
+                event
+              )
             }
             onMouseLeave={props.handlePopoverClose}
           >

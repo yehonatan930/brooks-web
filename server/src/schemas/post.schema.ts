@@ -5,6 +5,7 @@ export interface IPostForFeed {
   userId: string;
   imageUrl: string;
   bookTitle: string;
+  authorName: string;
   content: string;
   likesCount: number;
   commentsCount: number;

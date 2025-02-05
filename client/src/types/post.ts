@@ -17,6 +17,7 @@ export interface PostForFeed {
   userId: string;
   imageUrl: string;
   bookTitle: string;
+  authorName: string;
   content: string;
   likesCount: number;
   commentsCount: number;

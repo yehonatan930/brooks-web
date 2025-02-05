@@ -45,11 +45,16 @@ const FeedScreen: React.FC = () => {
     likePost({ postId, userId, page });
   };
 
-  const fetchBookSummary = debounce(
-    async (bookTitle: string, event: React.MouseEvent<HTMLElement>) => {
+  const generateBookSummaryWithGemini = debounce(
+    async (
+      bookTitle: string,
+      authorName: string,
+      event: React.MouseEvent<HTMLElement>
+    ) => {
       if (!summary || summary === '') {
         setAnchorEl(event.target as HTMLElement);
         setLoadingSummary(true);
+
         const genAI = new GoogleGenerativeAI(
           process.env.REACT_APP_GEMINI_API_KEY || ''
         );
@@ -57,7 +62,7 @@ const FeedScreen: React.FC = () => {
 
         try {
           const response = await model.generateContent(
-            `What is the book ${bookTitle} about? in about 100 words`
+            `What is the book ${bookTitle} ${authorName ? ' by ' + authorName : ''} about? in about 100 words`
           );
           const summary = response.response.text();
           setSummary(summary as string);
@@ -117,13 +122,14 @@ const FeedScreen: React.FC = () => {
             content={post.content}
             imageUrl={post.imageUrl}
             bookTitle={post.bookTitle}
+            authorName={post.authorName}
             likesCount={post.likesCount}
             commentsCount={post.commentsCount}
             handleDeletePost={handleDeletePost}
             handleLike={handleLike}
             handlePopoverClose={handlePopoverClose}
             anchorEl={anchorEl}
-            fetchBookSummary={fetchBookSummary}
+            fetchBookSummary={generateBookSummaryWithGemini}
             summary={summary}
             loadingSummary={loadingSummary}
           />
