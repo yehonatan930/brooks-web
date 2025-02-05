@@ -28,15 +28,12 @@ const fetchBookCover = debounce(
       `https://www.googleapis.com/books/v1/volumes?q=${bookTitle}` +
         (authorName ? `+inauthor:${authorName}` : '')
     );
-    const data: { items: { volumeInfo: BookVolumeInfo }[] } =
+    const data: { items: { id: string; volumeInfo: BookVolumeInfo }[] } =
       await response.json();
-    const bookInfos: BookVolumeInfo[] = data?.items
-      ? data.items.map((item: any) => item.volumeInfo)
-      : [];
 
-    console.log('bookInfos', bookInfos);
-    if (bookInfos.length > 0) {
-      const imageUrl = bookInfos[0]?.imageLinks?.thumbnail;
+    console.log('hhh', data?.items);
+    if (data?.items.length > 0) {
+      const imageUrl = `https://books.google.com/books/publisher/content/images/frontcover/${data?.items[0].id}?fife=w400-h600&source=gbs_api`;
 
       return imageUrl;
     }
