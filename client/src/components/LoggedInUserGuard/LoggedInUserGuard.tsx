@@ -20,14 +20,20 @@ const LoggedInUserGuard: FunctionComponent<LoggedInUserGuardProps> = (
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('LoggedInUserGuard: user', user);
+    console.log('LoggedInUserGuard: user', JSON.stringify(user));
 
     const localStorageUserId: string = getLocalStorageUserId();
+
+    console.log('LoggedInUserGuard: localStorageUserId', localStorageUserId);
+    console.log(
+      'LoggedInUserGuard: window.location.pathname',
+      window.location.pathname
+    );
 
     if (
       window.location.pathname !== '/login' &&
       window.location.pathname !== '/register' &&
-      (!user || !user._id)
+      (!user || !user?._id)
     ) {
       if (localStorageUserId) {
         setUser({ _id: localStorageUserId } as User);
