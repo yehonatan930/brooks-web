@@ -82,9 +82,6 @@ const FeedScreen: React.FC = () => {
     setSummary('');
   };
 
-  const open = Boolean(anchorEl);
-  const id = open ? 'book-summary-popover' : undefined;
-
   const handleNextPage = () => {
     if (page < totalPages) {
       const newPage = page + 1;
