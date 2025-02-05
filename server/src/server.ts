@@ -57,6 +57,10 @@ const serverPromise: Promise<ServerInfo> = new Promise((resolve, reject) => {
         res.sendFile(path.join(__dirname, '../build', 'index.html'));
       });
 
+      app.get(`${prefix}`, (req, res) => {
+        res.send('Server is here');
+      });
+
       if (isProduction) {
         console.log('Production mode');
 
