@@ -1,5 +1,3 @@
-import Post from '../components/Post/Post';
-
 export interface Post {
   _id: string;
   bookTitle: string;
