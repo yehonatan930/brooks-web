@@ -351,7 +351,7 @@ router.delete('/:id', async (req, res) => {
  *       200:
  *         description: Post liked successfully
  *       400:
- *         description: Cannot like own post or already liked
+ *         description: Cannot like own post
  *       404:
  *         description: Post not found
  */
