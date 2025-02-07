@@ -21,6 +21,13 @@ export const generateToken = (
 
 /**
  * @swagger
+ * tags:
+ *   name: Auth
+ *   description: API endpoints for managing user authentication
+ */
+
+/**
+ * @swagger
  * components:
  *   schemas:
  *     User:
