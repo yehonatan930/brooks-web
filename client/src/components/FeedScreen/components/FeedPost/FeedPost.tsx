@@ -16,6 +16,7 @@ import SendIcon from '@mui/icons-material/Send';
 import { useState } from 'react';
 import { addComment } from '../../../../services/commentService';
 import { makeFileUrl } from '../../../../utils/makeFileUrl';
+import { toast } from 'react-toastify';
 
 export interface FeedPostProps extends PostForFeed {
   loggedInUserId: string;
@@ -39,6 +40,7 @@ const FeedPost = (props: FeedPostProps) => {
     try {
       await addComment(props._id, newComment, props.loggedInUserId);
       setNewComment('');
+      toast.success('Comment added!');
     } catch (error) {
       console.error('Error adding comment:', error);
     }

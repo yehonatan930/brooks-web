@@ -8,6 +8,32 @@ const router = express.Router();
 const Post = mongoose.model('Post', postSchema);
 const Comment = mongoose.model('Comment', commentSchema);
 
+/**
+ * @swagger
+ * tags:
+ *   name: Posts
+ *   description: API endpoints for managing posts
+ */
+
+/**
+ * @swagger
+ * /posts/feed:
+ *   get:
+ *     summary: Get posts for the feed
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         required: false
+ *         description: The page number for pagination
+ *     responses:
+ *       200:
+ *         description: List of posts with comments count
+ *       500:
+ *         description: Server error
+ */
 router.get('/feed', async (req, res) => {
   const { userId } = req.user;
   const page = parseInt(req.query.page as string) || 1;
@@ -112,13 +138,6 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
-/**
- * @swagger
- * tags:
- *   name: Posts
- *   description: API endpoints for managing posts
- */
 
 /**
  * @swagger
@@ -242,33 +261,22 @@ router.put('/:id', async (req, res) => {
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
- *             required:
- *               - bookTitle
- *               - content
- *               - userId
  *             properties:
  *               bookTitle:
  *                 type: string
  *               content:
  *                 type: string
- *               userId:
+ *               imageFile:
  *                 type: string
- *             example:
- *               bookTitle: "Sample Post"
- *               content: "This is a sample post."
- *               userId: "12345"
+ *                 format: binary
  *     responses:
  *       201:
  *         description: Post created successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Post'
- *       400:
- *         description: Bad request
+ *       500:
+ *         description: Server error
  */
 router.post('/', upload.single('imageFile'), async (req, res) => {
   try {
@@ -329,8 +337,8 @@ router.delete('/:id', async (req, res) => {
 /**
  * @swagger
  * /posts/{id}/like:
- *   delete:
- *     summary: Unlike a post
+ *   post:
+ *     summary: Like a post
  *     tags: [Posts]
  *     parameters:
  *       - in: path
@@ -338,10 +346,12 @@ router.delete('/:id', async (req, res) => {
  *         schema:
  *           type: string
  *         required: true
- *         description: The ID of the post
+ *         description: The ID of the post to like
  *     responses:
- *       204:
- *         description: Post unliked successfully
+ *       200:
+ *         description: Post liked successfully
+ *       400:
+ *         description: Cannot like own post
  *       404:
  *         description: Post not found
  */
