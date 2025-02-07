@@ -5,11 +5,24 @@ import * as _ from 'lodash';
 import { upload } from '../utils/storage';
 
 const router = express.Router();
-
 const User = mongoose.model('User', userSchema);
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         username:
+ *           type: string
+ *         email:
+ *           type: string
+ *         profilePicture:
+ *           type: string
+ *
  * tags:
  *   name: Users
  *   description: API endpoints for managing users
@@ -95,27 +108,17 @@ router.get('/:id', async (req: Request, res: Response) => {
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
  *               username:
  *                 type: string
- *               email:
+ *               profilePicture:
  *                 type: string
- *               password:
- *                 type: string
- *               tokens:
- *                 type: array
- *                 items:
- *                   type: string
- *             example:
- *               username: "updateduser"
- *               email: "updated@example.com"
- *               password: "newpassword"
- *               tokens: []
+ *                 format: binary
  *     responses:
- *       201:
+ *       200:
  *         description: User updated successfully
  *         content:
  *           application/json:
@@ -132,13 +135,10 @@ router.put(
   async (req: Request, res: Response) => {
     try {
       const userId = req.params.id;
-
       const { username } = req.body;
-
       const profilePicturePath = req.file
-        ? `/media/${req.file.filename}` // Public URL for the file
+        ? `/media/${req.file.filename}`
         : undefined;
-
       const updateData: UpdateQuery<IUser> = {};
       if (username) updateData.username = username;
       if (profilePicturePath) updateData.profilePicture = profilePicturePath;
@@ -146,10 +146,8 @@ router.put(
       const user: IUser = await User.findByIdAndUpdate(userId, updateData, {
         new: true,
       });
-
       if (!user) return res.status(404).json({ message: 'User not found' });
-
-      res.status(201).json(user);
+      res.status(200).json(user);
     } catch (error) {
       res.status(500).json({ message: 'Error updating user', error });
     }
@@ -177,7 +175,9 @@ router.put(
  *             schema:
  *               type: object
  *               properties:
- *                 _id:
+ *                 message:
+ *                   type: string
+ *                 deletedUserId:
  *                   type: string
  *       404:
  *         description: User not found
@@ -186,9 +186,13 @@ router.put(
  */
 router.delete('/:id', async (req: Request, res: Response) => {
   try {
-    const user: IUser = await User.findByIdAndDelete(req.user.userId);
+    const user: IUser = await User.findByIdAndDelete(req.params.id);
+
     if (!user) return res.status(404).json({ message: 'User not found' });
-    res.status(200).json({ _id: user._id });
+
+    res
+      .status(200)
+      .json({ message: 'User deleted successfully', deletedUserId: user._id });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting user', error });
   }

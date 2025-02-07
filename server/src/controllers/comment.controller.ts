@@ -7,10 +7,138 @@ const Comment = mongoose.model('Comment', commentSchema);
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     Comment:
+ *       type: object
+ *       required:
+ *         - content
+ *         - author
+ *         - postId
+ *       properties:
+ *         _id:
+ *           type: string
+ *         content:
+ *           type: string
+ *         author:
+ *           type: string
+ *         postId:
+ *           type: string
+ *       example:
+ *         _id: "60d5f2f9b4d6d68f0009f99f"
+ *         content: "This is a comment."
+ *         author: "60d5f2f9b4d6d68f0009f88f"
+ *         postId: "60d5f2f9b4d6d68f0009f77f"
+ */
+
+/**
+ * @swagger
  * tags:
  *   name: Comments
  *   description: API endpoints for managing comments
  */
+
+/**
+ * @swagger
+ * /comments:
+ *   post:
+ *     summary: Add a new comment
+ *     tags: [Comments]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Comment'
+ *     responses:
+ *       201:
+ *         description: Comment created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Comment'
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Server error
+ */
+router.post('/:postId', async (req, res) => {
+  if (!req.body.userId || !req.body.content) {
+    return res
+      .status(400)
+      .json({ error: 'author, content and postId are required' });
+  }
+
+  try {
+    const comment = new Comment({
+      ...req.body,
+      postId: new mongoose.Types.ObjectId(req.params.postId as string),
+      _id: new mongoose.Types.ObjectId(),
+    });
+    await comment.save();
+    res.status(201).json(comment);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * @swagger
+ * /comments/{id}:
+ *   put:
+ *     summary: Update a comment
+ *     tags: [Comments]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the comment to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Comment'
+ *     responses:
+ *       200:
+ *         description: Updated comment
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Comment'
+ *       400:
+ *         description: Bad request
+ *       404:
+ *         description: Comment not found
+ *       500:
+ *         description: Server error
+ */
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { content, author } = req.body;
+
+  if (!content) {
+    return res.status(400).json({ error: 'Content is required' });
+  }
+
+  try {
+    const updatedComment = await Comment.findByIdAndUpdate(
+      id,
+      { content, author },
+      { new: true }
+    );
+
+    if (!updatedComment) {
+      return res.status(404).json({ error: 'Comment not found' });
+    }
+
+    res.status(200).json(updatedComment);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 /**
  * @swagger
@@ -51,74 +179,6 @@ router.delete('/:id', async (req, res) => {
     }
 
     res.status(200).json({ _id: id });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-/**
- * @swagger
- * /comments/{id}:
- *   put:
- *     summary: Update a comment
- *     tags: [Comments]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: The ID of the comment to update
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - content
- *             properties:
- *               content:
- *                 type: string
- *               author:
- *                 type: string
- *             example:
- *               content: "Updated comment content"
- *               author: "12345"
- *     responses:
- *       200:
- *         description: Updated comment
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Comment'
- *       400:
- *         description: Bad request
- *       404:
- *         description: Comment not found
- *       500:
- *         description: Server error
- */
-router.put('/:id', async (req, res) => {
-  const { id } = req.params;
-  const { content, author } = req.body;
-
-  if (!content) {
-    return res.status(400).json({ error: 'Content is required' });
-  }
-
-  try {
-    const updatedComment = await Comment.findByIdAndUpdate(
-      id,
-      { content, author },
-      { new: true }
-    );
-
-    if (!updatedComment) {
-      return res.status(404).json({ error: 'Comment not found' });
-    }
-
-    res.status(200).json(updatedComment);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -181,63 +241,6 @@ router.get('/:postId', async (req, res) => {
   try {
     const comments = await Comment.find({ postId });
     res.status(200).json(comments);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-/**
- * @swagger
- * /comments:
- *   post:
- *     summary: Add a new comment
- *     tags: [Comments]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - content
- *               - author
- *               - postId
- *             properties:
- *               content:
- *                 type: string
- *               author:
- *                 type: string
- *               postId:
- *                 type: string
- *             example:
- *               content: "This is a comment."
- *               author: "12345"
- *               postId: "67890"
- *     responses:
- *       201:
- *         description: Comment created successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Comment'
- *       500:
- *         description: Server error
- */
-router.post('/:postId', async (req, res) => {
-  if (!req.body.userId || !req.body.content) {
-    return res
-      .status(400)
-      .json({ error: 'author, content and postId are required' });
-  }
-
-  try {
-    const comment = new Comment({
-      ...req.body,
-      postId: new mongoose.Types.ObjectId(req.params.postId as string),
-      _id: new mongoose.Types.ObjectId(),
-    });
-    await comment.save();
-    res.status(201).json(comment);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

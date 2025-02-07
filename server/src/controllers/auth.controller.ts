@@ -19,6 +19,59 @@ export const generateToken = (
   return jwt.sign({ userId }, secret, { expiresIn });
 };
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       required:
+ *         - username
+ *         - email
+ *         - password
+ *       properties:
+ *         username:
+ *           type: string
+ *         email:
+ *           type: string
+ *         password:
+ *           type: string
+ *     Tokens:
+ *       type: object
+ *       properties:
+ *         accessToken:
+ *           type: string
+ *         refreshToken:
+ *           type: string
+ *         userId:
+ *           type: string
+ *     Error:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ */
+
+/**
+ * @swagger
+ * /register:
+ *   post:
+ *     summary: Register a new user
+ *     description: Registers a new user by providing username, email, and password.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/User'
+ *     responses:
+ *       201:
+ *         description: User successfully registered
+ *       400:
+ *         description: Bad request - missing fields or email already exists
+ *       500:
+ *         description: Internal server error
+ */
 router.post('/register', async (req: Request, res: Response) => {
   const { username, email, password } = req.body;
 
@@ -52,6 +105,40 @@ router.post('/register', async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: Login with email and password
+ *     description: Logs a user in using email and password, returns access and refresh tokens.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User successfully logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Tokens'
+ *       400:
+ *         description: Invalid credentials
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
 router.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
@@ -91,6 +178,35 @@ router.post('/login', async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * @swagger
+ * /refresh:
+ *   post:
+ *     summary: Refresh access token
+ *     description: Refreshes the access token using the provided refresh token.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successfully refreshed the access token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Tokens'
+ *       401:
+ *         description: Unauthorized - no refresh token
+ *       403:
+ *         description: Forbidden - invalid refresh token
+ *       500:
+ *         description: Internal server error
+ */
 router.post('/refresh', async (req: Request, res: Response) => {
   const authHeader = req.headers['authorization'];
   const token =
@@ -134,6 +250,22 @@ router.post('/refresh', async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * @swagger
+ * /logout:
+ *   post:
+ *     summary: Logout the user
+ *     description: Logs the user out by invalidating the refresh and access tokens.
+ *     responses:
+ *       200:
+ *         description: User successfully logged out
+ *       401:
+ *         description: Unauthorized - no token provided
+ *       403:
+ *         description: Forbidden - invalid token
+ *       500:
+ *         description: Internal server error
+ */
 router.post('/logout', async (req: Request, res: Response) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -167,6 +299,33 @@ router.post('/logout', async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * @swagger
+ * /google:
+ *   post:
+ *     summary: Login with Google
+ *     description: Allows the user to login via Google OAuth2 by providing a Google ID token.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - credential
+ *             properties:
+ *               credential:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successfully logged in with Google
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Tokens'
+ *       500:
+ *         description: Internal server error
+ */
 router.post('/google', async (req: Request, res: Response) => {
   const { credential } = req.body;
 
