@@ -147,7 +147,7 @@ router.get('/:id', async (req, res) => {
  *         description: Server error
  */
 router.get('/', async (req, res) => {
-  const { userId } = req.user;
+  const userId = req.query.userId;
   const page = parseInt(req.query.page as string) || 1;
   const limit = 10; // Number of posts per page
 
@@ -212,9 +212,10 @@ router.get('/', async (req, res) => {
  *         description: Post not found
  */
 router.put('/:id', async (req, res) => {
-  if (!mongoose.isValidObjectId(req.body._id)) {
+  if (!mongoose.isValidObjectId(req.params.id)) {
     return res.status(404).json({ error: 'Post not found' });
   }
+
   try {
     const updatedPost: IPost = await Post.findByIdAndUpdate(
       req.params.id,

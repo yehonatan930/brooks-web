@@ -77,12 +77,9 @@ describe('User tests', () => {
   });
 
   describe('PUT /users/:id', () => {
-    it('should update a user', async () => {
+    it('should update a user without a file', async () => {
       const updatedUser = {
         username: 'Updated User',
-        email: 'email@email.com',
-        password: 'updatedpassword',
-        tokens: [],
       } as IUser;
 
       const response = await request(app)
@@ -90,11 +87,26 @@ describe('User tests', () => {
         .send(updatedUser)
         .set('Accept', 'application/json')
         .set('Authorization', `JWT ${accessToken}`);
-      expect(response.status).toBe(201);
+      expect(response.status).toBe(200);
       expect(response.body.username).toBe(updatedUser.username);
-      expect(response.body.email).toBe(updatedUser.email);
-      expect(response.body.password).toBe(updatedUser.password);
       expect(response.body._id).toBe(userId);
+    });
+
+    it('should update a user with a file', async () => {
+      const updatedUser = {
+        username: 'Updated User',
+      } as IUser;
+
+      const response = await request(app)
+        .put(`/users/${userId}`)
+        .set('Authorization', `JWT ${accessToken}`)
+        .field('username', updatedUser.username)
+        .attach('file', `${__dirname}/tiger.jpg`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.username).toBe(updatedUser.username);
+      expect(response.body._id).toBe(userId);
+      expect(response.body.profilePicture.startsWith('/media/')).toBeTruthy();
     });
   });
 
