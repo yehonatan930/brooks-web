@@ -4,7 +4,7 @@ import { Server as HttpServer } from 'http';
 import mongoose from 'mongoose';
 import { Chance } from 'chance';
 import { generateToken } from '../controllers/auth.controller';
-import { IUser, userSchema } from '../schemas/user.schema';
+import { userSchema } from '../schemas/user.schema';
 import { v4 as uuidv4 } from 'uuid';
 
 const chance = new Chance();
