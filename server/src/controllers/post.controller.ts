@@ -356,6 +356,8 @@ router.post('/:id/like', async (req, res) => {
       return res.status(400).json({ error: 'You cannot like your own post' });
     }
 
+    console.log('post.likes ', post.likes);
+
     if (post.likes.includes(userId)) {
       post.likes = post.likes.filter((id: string) => id !== userId);
       await post.save();

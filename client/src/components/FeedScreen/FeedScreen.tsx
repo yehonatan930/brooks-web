@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { CircularProgress } from '@mui/material';
-import { deletePost, getPosts } from '../../services/postService';
+import { deletePost } from '../../services/postService';
 import './FeedScreen.scss';
 import { useAtomValue } from 'jotai/index';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
 import useLikePost from '../../hooks/api/useLikePost';
-import { useQuery } from 'react-query';
-import { Post, PostForFeed } from '../../types/post';
+import { PostForFeed } from '../../types/post';
 import PaginationControls from '../PaginationControls/PaginationControls';
 import debounce from 'lodash/debounce';
 import { GoogleGenerativeAI } from '@google/generative-ai';
@@ -42,7 +41,7 @@ const FeedScreen: React.FC = () => {
   };
 
   const handleLike = (postId: string) => {
-    likePost({ postId, userId, page });
+    likePost({ postId, page });
   };
 
   const fetchBookSummary = debounce(
