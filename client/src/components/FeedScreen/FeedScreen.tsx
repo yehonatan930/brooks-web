@@ -56,7 +56,7 @@ const FeedScreen: React.FC = () => {
 
         try {
           const response = await model.generateContent(
-            `What is the book ${bookTitle} about? in about 100 words`
+            `What is the book "${bookTitle}" about? in about 100 words`
           );
           const summary = response.response.text();
           setSummary(summary as string);
