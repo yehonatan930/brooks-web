@@ -28,11 +28,6 @@ export const createPost = async (data: NewPostData): Promise<Post> => {
   }
 };
 
-export const getPosts = async (page: number): Promise<PostsResponse> => {
-  const response = await axiosInstance.get(`/posts/all?page=${page}`);
-  return response.data;
-};
-
 export const getPostsForFeed = async (
   page: number
 ): Promise<PostsForFeedResponse> => {

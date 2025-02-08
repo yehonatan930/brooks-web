@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { Server as HttpServer } from 'http';
 import mongoose from 'mongoose';
-import { IPost } from '../schemas/post.schema';
+import { IPost, IPostForFeed } from '../schemas/post.schema';
 import serverPromise from '../server';
 
 describe('posts tests', () => {
@@ -59,6 +59,26 @@ describe('posts tests', () => {
       expect(response.body.bookTitle).toBe(newPost.bookTitle);
       expect(response.body.content).toBe(newPost.content);
       expect(response.body._id).toBeDefined();
+    });
+  });
+
+  describe('GET /posts/feed', async () => {
+    it('should return posts for the feed', async () => {
+      const response = await request(app)
+        .get('/posts/feed')
+        .set('Authorization', `JWT ${accessToken}`);
+      expect(response.status).toBe(200);
+      expect(response.body).toBeInstanceOf(Array);
+
+      response.body.forEach((post: IPostForFeed) => {
+        expect(post._id).toBeDefined();
+        expect(post.userId).toBeDefined();
+        expect(post.bookTitle).toBeDefined();
+        expect(post.content).toBeDefined();
+        expect(post.imageUrl).toBeDefined();
+        expect(post.likesCount).toBeDefined();
+        expect(post.commentsCount).toBeDefined();
+      });
     });
   });
 

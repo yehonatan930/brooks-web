@@ -80,24 +80,6 @@ router.get('/feed', async (req, res) => {
   }
 });
 
-router.get('/all', async (req, res) => {
-  const { userId } = req.user;
-  const page = parseInt(req.query.page as string) || 1;
-  const limit = 10; // Number of posts per page
-
-  try {
-    const totalPosts = await Post.countDocuments({});
-    const totalPages = Math.ceil(totalPosts / limit);
-    const posts = await Post.find()
-      .skip((page - 1) * limit)
-      .limit(limit);
-
-    res.status(200).json({ posts, totalPages });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
 /**
  * @swagger
  * /posts/{id}:
