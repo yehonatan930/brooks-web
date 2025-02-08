@@ -8,7 +8,6 @@ import EditProfileScreen from './components/EditProfileScreen/EditProfileScreen'
 import FeedScreen from './components/FeedScreen/FeedScreen';
 import CreatePostScreen from './components/CreatePostScreen/CreatePostScreen';
 import LoggedInUserGuard from './components/LoggedInUserGuard/LoggedInUserGuard';
-import './styles/globalStyles.scss';
 import { createStore, Provider } from 'jotai';
 import PostDetailScreen from './components/PostDetailScreen/PostDetailScreen';
 import { GoogleOAuthProvider } from '@react-oauth/google';

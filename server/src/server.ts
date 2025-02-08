@@ -10,7 +10,6 @@ import { swaggerSpec } from './swagger';
 import cors from 'cors';
 import https, { Server as HttpsServer } from 'https';
 import http, { Server as HttpServer } from 'http';
-import fs from 'fs';
 import path from 'path';
 import { ServerInfo } from './types/types';
 import swaggerUi from 'swagger-ui-express';

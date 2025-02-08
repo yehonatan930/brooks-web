@@ -28,11 +28,6 @@ export const createPost = async (data: NewPostData): Promise<Post> => {
   }
 };
 
-export const getPosts = async (page: number): Promise<PostsResponse> => {
-  const response = await axiosInstance.get(`/posts/all?page=${page}`);
-  return response.data;
-};
-
 export const getPostsForFeed = async (
   page: number
 ): Promise<PostsForFeedResponse> => {
@@ -64,8 +59,11 @@ export const likePost = async (id: string): Promise<void> => {
 };
 
 export const getPostsByUserId = async (
-  page: number
+  page: number,
+  userId: string
 ): Promise<PostsResponse> => {
-  const response = await axiosInstance.get(`/posts?page=${page}`);
+  const response = await axiosInstance.get(
+    `/posts?page=${page}&userId=${userId}`
+  );
   return response.data;
 };

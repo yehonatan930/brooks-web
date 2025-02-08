@@ -4,7 +4,7 @@ import { PostsForFeedResponse } from '../../types/post';
 
 const useGetPostsForFeed = (page: number) => {
   return useQuery<PostsForFeedResponse, Error>(
-    'postsForShow',
+    ['postsForFeed', page],
     () => getPostsForFeed(page),
     {
       keepPreviousData: true,
