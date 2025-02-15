@@ -11,7 +11,7 @@ const chance = new Chance();
 
 let app: HttpServer;
 
-describe('auth', () => {
+describe('Auth tests', () => {
   const UserModel = mongoose.model('User', userSchema);
 
   let user;
@@ -170,7 +170,7 @@ describe('auth', () => {
     it('should logout a user', async () => {
       const response = await request(app)
         .post('/api/auth/logout')
-        .set('Authorization', `JWT ${refreshToken}`);
+        .set('Authorization', `JWT ${accessToken}`);
 
       expect(response.status).toBe(200);
     });
