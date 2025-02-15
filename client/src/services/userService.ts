@@ -1,8 +1,8 @@
 import axiosInstance from './axiosInstance';
-import { LoginResponse, UpdateUserVariables, User } from '../types/user';
+import { GetUserResponse, UpdateUserVariables, User } from '../types/user';
 
-export const getUser = async (id: string): Promise<User> => {
-  const response = await axiosInstance.get<User>(`/users/${id}`);
+export const getUser = async (id: string): Promise<GetUserResponse> => {
+  const response = await axiosInstance.get<GetUserResponse>(`/users/${id}`);
   return response.data;
 };
 
