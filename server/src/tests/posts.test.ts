@@ -88,7 +88,7 @@ describe('posts tests', () => {
         .set('Accept', 'multipart/form-data')
         .field('bookTitle', newPost.bookTitle)
         .field('content', newPost.content)
-        .attach('imageFile', `${__dirname}/tiger.jpg`);
+        .attach('imageFile', `${__dirname}/assets/tiger.jpg`);
 
       expect(response.status).toBe(201);
       expect(response.body.userId).toBe(newPost.userId);

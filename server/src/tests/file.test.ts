@@ -41,7 +41,7 @@ describe('File Tests', () => {
   });
 
   test('upload file', async () => {
-    const filePath = `${__dirname}/tiger.jpg`;
+    const filePath = `${__dirname}/assets/tiger.jpg`;
 
     try {
       const response = await request(app)
