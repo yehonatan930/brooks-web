@@ -15,7 +15,7 @@ describe('User tests', () => {
   beforeAll(async () => {
     app = (await serverPromise).server;
 
-    const res = await request(app).post('/auth/register').send({
+    const res = await request(app).post('/api/auth/register').send({
       email,
       username: 'test user',
       password: 'password',
@@ -25,7 +25,7 @@ describe('User tests', () => {
   });
 
   async function login() {
-    const res = await request(app).post('/auth/login').send({
+    const res = await request(app).post('/api/auth/login').send({
       email: 'yeah@oo',
       password: 'password',
     });
@@ -39,7 +39,7 @@ describe('User tests', () => {
 
   afterAll(async () => {
     const response = await request(app)
-      .delete(`/users/${userId}`)
+      .delete(`/api/users/${userId}`)
       .set('Authorization', `JWT ${accessToken}`);
     expect(response.status).toBe(200);
 
@@ -49,7 +49,7 @@ describe('User tests', () => {
   describe('GET /users', () => {
     it('should return all users', async () => {
       const response = await request(app)
-        .get('/users')
+        .get('/api/users')
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
       expect(response.body).toBeInstanceOf(Array);
@@ -66,7 +66,7 @@ describe('User tests', () => {
   describe('GET /users/:id', () => {
     it('should return a user by ID', async () => {
       const response = await request(app)
-        .get(`/users/${userId}`)
+        .get(`/api/users/${userId}`)
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
       expect(response.body._id).toBe(userId);
@@ -83,7 +83,7 @@ describe('User tests', () => {
       } as IUser;
 
       const response = await request(app)
-        .put(`/users/${userId}`)
+        .put(`/api/users/${userId}`)
         .send(updatedUser)
         .set('Accept', 'application/json')
         .set('Authorization', `JWT ${accessToken}`);
@@ -98,7 +98,7 @@ describe('User tests', () => {
       } as IUser;
 
       const response = await request(app)
-        .put(`/users/${userId}`)
+        .put(`/api/users/${userId}`)
         .set('Authorization', `JWT ${accessToken}`)
         .field('username', updatedUser.username)
         .attach('file', `${__dirname}/assets/tiger.jpg`);
@@ -113,13 +113,13 @@ describe('User tests', () => {
   describe('DELETE /users/:id', () => {
     it('should delete a user by ID', async () => {
       const response = await request(app)
-        .delete(`/users/${userId}`)
+        .delete(`/api/users/${userId}`)
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
       expect(response.body._id).toBe(userId);
 
       const userResponse = await request(app)
-        .get(`/users/${userId}`)
+        .get(`/api/users/${userId}`)
         .set('Authorization', `JWT ${accessToken}`);
       expect(userResponse.status).toBe(404);
     });

@@ -13,7 +13,7 @@ describe('File Tests', () => {
   beforeAll(async () => {
     app = (await serverPromise).server;
 
-    const res = await request(app).post('/auth/register').send({
+    const res = await request(app).post('/api/auth/register').send({
       email,
       username: 'test user',
       password: 'password',
@@ -23,7 +23,7 @@ describe('File Tests', () => {
   });
 
   async function login() {
-    const res = await request(app).post('/auth/login').send({
+    const res = await request(app).post('/api/auth/login').send({
       email,
       password: 'password',
     });
@@ -36,7 +36,7 @@ describe('File Tests', () => {
   });
 
   afterAll(async () => {
-    await request(app).delete(`/users/${postSender}`);
+    await request(app).delete(`/api/users/${postSender}`);
     await mongoose.connection.close();
   });
 
@@ -45,7 +45,7 @@ describe('File Tests', () => {
 
     try {
       const response = await request(app)
-        .post('/files?file=123.jpeg')
+        .post('/api/files?file=123.jpeg')
         .attach('file', filePath);
 
       expect(response.statusCode).toEqual(200);

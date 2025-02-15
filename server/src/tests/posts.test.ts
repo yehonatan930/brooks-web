@@ -16,7 +16,7 @@ describe('posts tests', () => {
     app = (await serverPromise).server;
 
     const registrationResponse1 = await request(app)
-      .post('/auth/register')
+      .post('/api/auth/register')
       .send({
         email,
         username: 'test user',
@@ -25,7 +25,7 @@ describe('posts tests', () => {
 
     postSender = registrationResponse1.body._id;
 
-    await request(app).post('/auth/register').send({
+    await request(app).post('/api/auth/register').send({
       email: anotherEmail,
       username: 'another test user',
       password: 'password',
@@ -33,7 +33,7 @@ describe('posts tests', () => {
   });
 
   async function login(customEmail = email) {
-    const res = await request(app).post('/auth/login').send({
+    const res = await request(app).post('/api/auth/login').send({
       email: customEmail,
       password: 'password',
     });
@@ -48,7 +48,7 @@ describe('posts tests', () => {
   });
 
   afterAll(async () => {
-    await request(app).delete(`/users/${postSender}`);
+    await request(app).delete(`/api/users/${postSender}`);
     await mongoose.connection.close();
   });
 
@@ -63,7 +63,7 @@ describe('posts tests', () => {
       } as IPost;
 
       const response = await request(app)
-        .post('/posts')
+        .post('/api/posts')
         .send(newPost)
         .set('Accept', 'application/json')
         .set('Authorization', `JWT ${accessToken}`);
@@ -83,7 +83,7 @@ describe('posts tests', () => {
       } as IPost;
 
       const response = await request(app)
-        .post('/posts')
+        .post('/api/posts')
         .set('Authorization', `JWT ${accessToken}`)
         .set('Accept', 'multipart/form-data')
         .field('bookTitle', newPost.bookTitle)
@@ -102,7 +102,7 @@ describe('posts tests', () => {
   describe('GET /posts/feed', async () => {
     it('should return posts for the feed', async () => {
       const response = await request(app)
-        .get('/posts/feed')
+        .get('/api/posts/feed')
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
       expect(response.body).toBeInstanceOf(Array);
@@ -122,7 +122,7 @@ describe('posts tests', () => {
   describe('GET /posts', () => {
     it('should return all posts', async () => {
       const response = await request(app)
-        .get('/posts')
+        .get('/api/posts/feed')
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
       expect(response.body).toBeInstanceOf(Array);
@@ -136,7 +136,7 @@ describe('posts tests', () => {
 
     it('should return posts by userId', async () => {
       const response = await request(app)
-        .get(`/posts?userId=${postSender}`)
+        .get(`/api/posts/userId/${postSender}`)
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
       expect(response.body).toBeInstanceOf(Array);
@@ -152,12 +152,12 @@ describe('posts tests', () => {
   describe('GET /posts/:id', () => {
     it('should return a post by id', async () => {
       const posts = await request(app)
-        .get('/posts')
+        .get('/api/posts')
         .set('Authorization', `JWT ${accessToken}`);
 
       const postId = posts.body[0]._id;
       const response = await request(app)
-        .get(`/posts/${postId}`)
+        .get(`/api/posts/${postId}`)
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
       expect(response.body._id).toBe(postId);
@@ -165,7 +165,7 @@ describe('posts tests', () => {
 
     it('should return 404 if post not found', async () => {
       const response = await request(app)
-        .get('/posts/1234567890')
+        .get('/api/posts/1234567890')
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(404);
     });
@@ -174,7 +174,7 @@ describe('posts tests', () => {
   describe('PUT /posts/:id', () => {
     it('should update a post', async () => {
       const posts = await request(app)
-        .get('/posts')
+        .get('/api/posts')
         .set('Authorization', `JWT ${accessToken}`);
       const postId = posts.body[0]._id;
       const updatedPost: IPost = {
@@ -185,7 +185,7 @@ describe('posts tests', () => {
       } as IPost;
 
       const response = await request(app)
-        .put(`/posts/${postId}`)
+        .put(`/api/posts/${postId}`)
         .send(updatedPost)
         .set('Accept', 'application/json')
         .set('Authorization', `JWT ${accessToken}`);
@@ -205,7 +205,7 @@ describe('posts tests', () => {
       } as IPost;
 
       const response = await request(app)
-        .put('/posts')
+        .put('/api/posts')
         .send(updatedPost)
         .set('Accept', 'application/json')
         .set('Authorization', `JWT ${accessToken}`);
@@ -218,31 +218,31 @@ describe('posts tests', () => {
       const anotherAccessToken = await login(anotherEmail);
 
       const posts = await request(app)
-        .get(`/posts/${postSender}`)
+        .get(`/api/posts/${postSender}`)
         .set('Authorization', `JWT ${accessToken}`);
       const postId = posts.body[0]._id;
 
       const response = await request(app)
-        .post(`/posts/${postId}/like`)
+        .post(`/api/posts/${postId}/like`)
         .set('Authorization', `JWT ${anotherAccessToken}`);
       expect(response.status).toBe(200);
     });
 
     it("should return 400 if user is the post's author", async () => {
       const posts = await request(app)
-        .get('/posts')
+        .get('/api/posts')
         .set('Authorization', `JWT ${accessToken}`);
       const postId = posts.body[0]._id;
 
       const response = await request(app)
-        .post(`/posts/${postId}/like`)
+        .post(`/api/posts/${postId}/like`)
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(400);
     });
 
     it('should return 404 if post not found', async () => {
       const response = await request(app)
-        .post('/posts/1234567890/like')
+        .post('/api/posts/1234567890/like')
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(404);
     });

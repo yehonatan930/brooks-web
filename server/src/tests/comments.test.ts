@@ -16,7 +16,7 @@ const email = `${Math.floor(Math.random() * 1000)}@yeah`;
 beforeAll(async () => {
   app = (await serverPromise).server;
 
-  const res = await request(app).post('/auth/register').send({
+  const res = await request(app).post('/api/auth/register').send({
     email,
     username: 'test user',
     password: 'password',
@@ -25,7 +25,7 @@ beforeAll(async () => {
   commentAuthor = res.body._id;
 
   const res2 = await request(app)
-    .post('/posts')
+    .post('/api/posts/feed')
     .send({
       bookTitle: 'Test Post',
       content: 'This is a test post',
@@ -36,7 +36,7 @@ beforeAll(async () => {
 });
 
 async function login() {
-  const res = await request(app).post('/auth/login').send({
+  const res = await request(app).post('/api/auth/login').send({
     email,
     password: 'password',
   });
@@ -49,7 +49,7 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await request(app).delete(`/users/${commentAuthor}`);
+  await request(app).delete(`/api/users/${commentAuthor}`);
   await mongoose.connection.close();
 });
 
@@ -62,7 +62,7 @@ describe('POST /comments', () => {
     };
 
     const response = await request(app)
-      .post('/comments')
+      .post('/api/comments')
       .send(newComment)
       .set('Accept', 'application/json')
       .set('Authorization', `JWT ${accessToken}`);
@@ -79,7 +79,7 @@ describe('POST /comments', () => {
     };
 
     const response = await request(app)
-      .post('/comments')
+      .post('/api/comments')
       .send(newComment)
       .set('Accept', 'application/json')
       .set('Authorization', `JWT ${accessToken}`);
@@ -92,7 +92,7 @@ describe('POST /comments', () => {
     };
 
     const response = await request(app)
-      .post('/comments')
+      .post('/api/comments')
       .send(newComment)
       .set('Accept', 'application/json')
       .set('Authorization', `JWT ${accessToken}`);
@@ -106,7 +106,7 @@ describe('POST /comments', () => {
     };
 
     const response = await request(app)
-      .post('/comments')
+      .post('/api/comments')
       .send(newComment)
       .set('Accept', 'application/json')
       .set('Authorization', `JWT ${accessToken}`);
@@ -117,7 +117,7 @@ describe('POST /comments', () => {
 describe('GET /comments', () => {
   it('should return all comments', async () => {
     const response = await request(app)
-      .get('/comments')
+      .get('/api/comments')
       .set('Authorization', `JWT ${accessToken}`);
     expect(response.status).toBe(200);
     expect(response.body).toBeInstanceOf(Array);
@@ -132,7 +132,7 @@ describe('GET /comments', () => {
 describe('GET /comments/:postId', () => {
   it('should return all comments with a certain postId', async () => {
     const response = await request(app)
-      .get(`/comments/${postId}`)
+      .get(`/api/comments/${postId}`)
       .set('Authorization', `JWT ${accessToken}`);
     expect(response.status).toBe(200);
     expect(response.body).toBeInstanceOf(Array);
@@ -148,7 +148,7 @@ describe('GET /comments/:postId', () => {
 describe('PUT /comments/:id', () => {
   it('should update a comment by ID', async () => {
     const response = await request(app)
-      .get('/comments')
+      .get('/api/comments')
       .set('Authorization', `JWT ${accessToken}`);
     const commentId = response.body[0]._id;
 
@@ -158,7 +158,7 @@ describe('PUT /comments/:id', () => {
     };
 
     const commentResponse = await request(app)
-      .put(`/comments/${commentId}`)
+      .put(`/api/comments/${commentId}`)
       .send(updatedComment)
       .set('Accept', 'application/json')
       .set('Authorization', `JWT ${accessToken}`);
@@ -173,12 +173,12 @@ describe('PUT /comments/:id', () => {
 describe('DELETE /comments/:id', () => {
   it('should delete a comment by ID', async () => {
     const response = await request(app)
-      .get('/comments')
+      .get('/api/comments')
       .set('Authorization', `JWT ${accessToken}`);
     const commentId = response.body[0]._id;
 
     const commentResponse = await request(app)
-      .delete(`/comments/${commentId}`)
+      .delete(`/api/comments/${commentId}`)
       .set('Authorization', `JWT ${accessToken}`);
     expect(commentResponse.status).toBe(200);
     expect(commentResponse.body._id).toBe(commentId);

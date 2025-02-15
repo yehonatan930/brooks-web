@@ -58,7 +58,7 @@ describe('auth', () => {
 
   describe('restrict access without token', () => {
     it('should return 401', async () => {
-      const response = await request(app).get('/posts');
+      const response = await request(app).get('/api/posts/feed');
       expect(response.status).toBe(401);
     });
   });
@@ -66,7 +66,7 @@ describe('auth', () => {
   describe('restrict access with invalid token', () => {
     it('should return 401', async () => {
       const response = await request(app)
-        .get('/posts')
+        .get('/api/posts/feed')
         .set('Authorization', 'JWT invalidtoken');
       expect(response.status).toBe(401);
     });
@@ -77,7 +77,7 @@ describe('auth', () => {
       const email = chance.email();
       const password = chance.word({ length: 10 });
 
-      const response = await request(app).post('/auth/register').send({
+      const response = await request(app).post('/api/auth/register').send({
         username: 'username',
         email,
         password,
@@ -90,7 +90,7 @@ describe('auth', () => {
   describe('login user', () => {
     it('should login a user', async () => {
       const response = await request(app)
-        .post('/auth/login')
+        .post('/api/auth/login')
         .send({ email: userEmail, password: userPassword });
 
       expect(response.status).toBe(200);
@@ -100,28 +100,28 @@ describe('auth', () => {
 
     it('should not login a user with invalid credentials', async () => {
       const response = await request(app)
-        .post('/auth/login')
+        .post('/api/auth/login')
         .send({ email: userEmail, password: 'wrongpassword' });
       expect(response.status).toBe(400);
     });
 
     it('should not login a user with missing credentials', async () => {
-      const response = await request(app).post('/auth/login').send({});
+      const response = await request(app).post('/api/auth/login').send({});
       expect(response.status).toBe(400);
     });
 
     it('should not login a user that does not exist', async () => {
       const response = await request(app)
-        .post('/auth/login')
+        .post('/api/auth/login')
         .send({ email: 'nono', password: 'nono' });
       expect(response.status).toBe(404);
     });
   });
 
-  describe('get posts', () => {
+  describe('Using access token', () => {
     it('should get all posts using access token', async () => {
       const response = await request(app)
-        .get('/posts')
+        .get('/api/posts/feed')
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
     });
@@ -136,7 +136,7 @@ describe('auth', () => {
       await new Promise((resolve) => setTimeout(resolve, 1010));
 
       const response = await request(app)
-        .get('/posts')
+        .get('/api/posts/feed')
         .set('Authorization', `JWT ${expiredAccessToken}`);
 
       expect(response.status).toBe(401);
@@ -146,7 +146,7 @@ describe('auth', () => {
   describe('refresh token', () => {
     it('should refresh token', async () => {
       const response = await request(app)
-        .post('/auth/refresh')
+        .post('/api/auth/refresh')
         .set('Authorization', `JWT ${refreshToken}`);
 
       expect(response.status).toBe(200);
@@ -155,13 +155,13 @@ describe('auth', () => {
 
     it('should not refresh token with invalid token', async () => {
       const response = await request(app)
-        .post('/auth/refresh')
+        .post('/api/auth/refresh')
         .set('Authorization', 'JWT invalidtoken');
       expect(response.status).toBe(403);
     });
 
     it('should not refresh token without token', async () => {
-      const response = await request(app).post('/auth/refresh');
+      const response = await request(app).post('/api/auth/refresh');
       expect(response.status).toBe(401);
     });
   });
@@ -169,7 +169,7 @@ describe('auth', () => {
   describe('logout user', () => {
     it('should logout a user', async () => {
       const response = await request(app)
-        .post('/auth/logout')
+        .post('/api/auth/logout')
         .set('Authorization', `JWT ${refreshToken}`);
 
       expect(response.status).toBe(200);
