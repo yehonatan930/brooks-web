@@ -35,7 +35,6 @@ const Comment = mongoose.model('Comment', commentSchema);
  *         description: Server error
  */
 router.get('/feed', async (req, res) => {
-  const { userId } = req.user;
   const page = parseInt(req.query.page as string) || 1;
   const limit = 10; // Number of posts per page
 
@@ -146,8 +145,8 @@ router.get('/:id', async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.get('/', async (req, res) => {
-  const userId = req.query.userId;
+router.get('/user/:userId', async (req, res) => {
+  const userId = req.params.userId;
   const page = parseInt(req.query.page as string) || 1;
   const limit = 10; // Number of posts per page
 

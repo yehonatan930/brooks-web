@@ -32,7 +32,7 @@ const MyPostList: React.FC<MyPostListProps> = () => {
   return (
     <div className="profile__posts">
       {isLoading ? (
-        <CircularProgress></CircularProgress>
+        <CircularProgress />
       ) : posts ? (
         <>
           {posts.map((post) => (

@@ -59,11 +59,11 @@ export const likePost = async (id: string): Promise<void> => {
 };
 
 export const getPostsByUserId = async (
-  page: number,
-  userId: string
+  userId: string,
+  page: number
 ): Promise<PostsResponse> => {
   const response = await axiosInstance.get(
-    `/posts?page=${page}&userId=${userId}`
+    `/posts/userId/${userId}?page=${page}`
   );
   return response.data;
 };
