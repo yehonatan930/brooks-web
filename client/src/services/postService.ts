@@ -63,7 +63,7 @@ export const getPostsByUserId = async (
   page: number
 ): Promise<PostsResponse> => {
   const response = await axiosInstance.get(
-    `/posts/userId/${userId}?page=${page}`
+    `/posts/user/${userId}?page=${page}`
   );
   return response.data;
 };
