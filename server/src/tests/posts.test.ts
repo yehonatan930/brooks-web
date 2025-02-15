@@ -118,7 +118,7 @@ describe('posts tests', () => {
     });
   });
 
-  describe('GET /posts/user', () => {
+  describe('GET /posts/user/:userId', () => {
     it('should return posts by userId', async () => {
       const response = await request(app)
         .get(`/api/posts/user/${postSender}`)
