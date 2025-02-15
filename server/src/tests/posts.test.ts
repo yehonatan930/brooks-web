@@ -97,7 +97,7 @@ describe('posts tests', () => {
     });
   });
 
-  describe('GET /posts/feed', async () => {
+  describe('GET /posts/feed', () => {
     it('should return posts for the feed', async () => {
       const response = await request(app)
         .get('/api/posts/feed')

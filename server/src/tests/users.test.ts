@@ -100,7 +100,7 @@ describe('User tests', () => {
         .put(`/api/users/${userId}`)
         .set('Authorization', `JWT ${accessToken}`)
         .field('username', updatedUser.username)
-        .attach('file', `${__dirname}/assets/tiger.jpg`);
+        .attach('profilePicture', `${__dirname}/assets/tiger.jpg`);
 
       expect(response.status).toBe(200);
       expect(response.body.username).toBe(updatedUser.username);
