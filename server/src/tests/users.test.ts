@@ -25,17 +25,17 @@ describe('User tests', () => {
     userId = res.body._id;
   });
 
-  async function login() {
+  async function login(customEmail = email) {
     const res = await request(app).post('/api/auth/login').send({
-      email,
+      email: customEmail,
       password: 'password',
     });
 
-    accessToken = res.body.accessToken;
+    return res.body.accessToken;
   }
 
   beforeEach(async () => {
-    await login();
+    accessToken = await login();
   });
 
   afterAll(async () => {

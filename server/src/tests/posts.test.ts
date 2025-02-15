@@ -38,13 +38,11 @@ describe('posts tests', () => {
       password: 'password',
     });
 
-    accessToken = res.body.accessToken;
-
-    return accessToken;
+    return res.body.accessToken;
   }
 
   beforeEach(async () => {
-    await login();
+    accessToken = await login();
   });
 
   afterAll(async () => {
