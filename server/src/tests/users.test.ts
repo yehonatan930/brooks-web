@@ -10,7 +10,8 @@ describe('User tests', () => {
   let accessToken: string;
 
   let userId: string;
-  const email = `anEmail@o`;
+
+  const email = `${Math.floor(Math.random() * 1000)}@yeah`;
 
   beforeAll(async () => {
     app = (await serverPromise).server;
@@ -26,7 +27,7 @@ describe('User tests', () => {
 
   async function login() {
     const res = await request(app).post('/api/auth/login').send({
-      email: 'yeah@oo',
+      email,
       password: 'password',
     });
 
@@ -69,10 +70,8 @@ describe('User tests', () => {
         .get(`/api/users/${userId}`)
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
-      expect(response.body._id).toBe(userId);
+      expect(response.body.email).toBe(email);
       expect(response.body.username).toBeDefined();
-      expect(response.body.email).toBeDefined();
-      expect(response.body.password).toBeDefined();
     });
   });
 
@@ -116,7 +115,7 @@ describe('User tests', () => {
         .delete(`/api/users/${userId}`)
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
-      expect(response.body._id).toBe(userId);
+      expect(response.body.deletedUserId).toBe(userId);
 
       const userResponse = await request(app)
         .get(`/api/users/${userId}`)
