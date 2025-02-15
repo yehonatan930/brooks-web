@@ -1,7 +1,7 @@
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import confetti from 'canvas-confetti';
-import { loginUser } from '../../services/userService';
+import { loginUser } from '../../services/authService';
 import { LoginData, LoginResponse } from '../../types/user';
 
 const useLogin = (handleSetLoggedInUser?: (userId: string) => void) => {

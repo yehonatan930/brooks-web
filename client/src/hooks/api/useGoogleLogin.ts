@@ -1,7 +1,7 @@
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import confetti from 'canvas-confetti';
-import { googleLogin } from '../../services/userService';
+import { googleLogin } from '../../services/authService';
 import { LoginResponse } from '../../types/user';
 
 const useGoogleLogin = (handleSetLoggedInUser?: (userId: string) => void) => {
