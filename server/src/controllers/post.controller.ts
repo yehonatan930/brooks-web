@@ -151,10 +151,10 @@ router.get('/user/:userId', async (req, res) => {
   const limit = 10; // Number of posts per page
 
   try {
-    const query = userId ? { userId } : {};
-    const totalPosts = await Post.countDocuments(query);
+    const totalPosts = await Post.countDocuments({ userId });
     const totalPages = Math.ceil(totalPosts / limit);
-    const posts = await Post.find(query)
+
+    const posts = await Post.find({ userId })
       .skip((page - 1) * limit)
       .limit(limit);
 

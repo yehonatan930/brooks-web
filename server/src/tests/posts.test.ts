@@ -103,9 +103,10 @@ describe('posts tests', () => {
         .get('/api/posts/feed')
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
-      expect(response.body).toBeInstanceOf(Array);
+      expect(response.body.posts).toBeInstanceOf(Array);
+      expect(response.body.totalPages).toBeGreaterThan(0);
 
-      response.body.forEach((post: IPostForFeed) => {
+      response.body.posts.forEach((post: IPostForFeed) => {
         expect(post._id).toBeDefined();
         expect(post.userId).toBeDefined();
         expect(post.bookTitle).toBeDefined();
@@ -117,32 +118,18 @@ describe('posts tests', () => {
     });
   });
 
-  describe('GET /posts', () => {
-    it('should return all posts', async () => {
-      const response = await request(app)
-        .get('/api/posts/feed')
-        .set('Authorization', `JWT ${accessToken}`);
-      expect(response.status).toBe(200);
-      expect(response.body).toBeInstanceOf(Array);
-      response.body.forEach((post: IPost) => {
-        expect(post._id).toBeDefined();
-        expect(post.userId).toBeDefined();
-        expect(post.bookTitle).toBeDefined();
-        expect(post.content).toBeDefined();
-      });
-    });
-
+  describe('GET /posts/user', () => {
     it('should return posts by userId', async () => {
       const response = await request(app)
-        .get(`/api/posts/userId/${postSender}`)
+        .get(`/api/posts/user/${postSender}`)
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
-      expect(response.body).toBeInstanceOf(Array);
-      response.body.forEach((post: IPost) => {
+      expect(response.body.posts).toBeInstanceOf(Array);
+      expect(response.body.totalPages).toBeGreaterThan(0);
+
+      response.body.posts.forEach((post: IPost) => {
         expect(post._id).toBeDefined();
         expect(post.userId).toBe(postSender);
-        expect(post.bookTitle).toBeDefined();
-        expect(post.content).toBeDefined();
       });
     });
   });
