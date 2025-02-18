@@ -13,7 +13,7 @@ describe('File Tests', () => {
   beforeAll(async () => {
     app = (await serverPromise).server;
 
-    const res = await request(app).post('/auth/register').send({
+    const res = await request(app).post('/api/auth/register').send({
       email,
       username: 'test user',
       password: 'password',
@@ -22,30 +22,30 @@ describe('File Tests', () => {
     postSender = res.body._id;
   });
 
-  async function login() {
-    const res = await request(app).post('/auth/login').send({
-      email,
+  async function login(customEmail = email) {
+    const res = await request(app).post('/api/auth/login').send({
+      email: customEmail,
       password: 'password',
     });
 
-    accessToken = res.body.accessToken;
+    return res.body.accessToken;
   }
 
   beforeEach(async () => {
-    await login();
+    accessToken = await login();
   });
 
   afterAll(async () => {
-    await request(app).delete(`/users/${postSender}`);
+    await request(app).delete(`/api/users/${postSender}`);
     await mongoose.connection.close();
   });
 
   test('upload file', async () => {
-    const filePath = `${__dirname}/tiger.jpg`;
+    const filePath = `${__dirname}/assets/tiger.jpg`;
 
     try {
       const response = await request(app)
-        .post('/files?file=123.jpeg')
+        .post('/api/files?file=123.jpeg')
         .attach('file', filePath);
 
       expect(response.statusCode).toEqual(200);

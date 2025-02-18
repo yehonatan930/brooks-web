@@ -2,12 +2,12 @@ import { useQuery } from 'react-query';
 import { getUser } from '../../services/userService';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { User } from '../../types/user';
+import { GetUserResponse } from '../../types/user';
 
 export const useFetchUser = (id: string | undefined) => {
   const navigate = useNavigate();
 
-  const { data: user, ...rest } = useQuery<User, any>(
+  return useQuery<GetUserResponse, any>(
     ['getUser', id],
     () => getUser(id || ''),
     {
@@ -21,6 +21,4 @@ export const useFetchUser = (id: string | undefined) => {
       },
     }
   );
-
-  return { user, ...rest };
 };

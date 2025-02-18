@@ -1,5 +1,5 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
-import { refreshAccessToken } from './userService';
+import { refreshAccessToken } from './authService';
 import { toast } from 'react-toastify';
 
 const axiosInstance = axios.create({

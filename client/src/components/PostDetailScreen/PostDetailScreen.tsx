@@ -13,8 +13,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemAvatar,
-  Avatar,
   IconButton,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';

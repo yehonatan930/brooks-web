@@ -17,7 +17,8 @@ export const addComment = async (
   userId: string
 ): Promise<Comment> => {
   try {
-    const response = await axiosInstance.post(`/comments/${postId}`, {
+    const response = await axiosInstance.post(`/comments/`, {
+      postId,
       content,
       userId,
     });

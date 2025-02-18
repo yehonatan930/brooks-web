@@ -136,3 +136,6 @@ cert/
 # builds
 build/
 dist/
+
+# static files
+server/public/

@@ -15,7 +15,10 @@ const authenticate = (req: Request, res: Response, next: NextFunction) => {
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err: any, user: any) => {
     if (err) {
-      console.error(err, user);
+      console.debug('Hello, this is the middleware.');
+      console.debug('err', err);
+      console.debug('user', user);
+
       return res.status(401).json({ message: 'Invalid token' });
     }
 
