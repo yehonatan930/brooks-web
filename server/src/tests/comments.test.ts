@@ -10,7 +10,6 @@ describe('comments tests', () => {
 
   let commentAuthor: string;
   let accessToken: string;
-  let postId: string;
 
   const email = `${Math.floor(Math.random() * 1000)}@yeah`;
 
@@ -24,17 +23,6 @@ describe('comments tests', () => {
     });
 
     commentAuthor = res.body._id;
-
-    const res2 = await request(app)
-      .post('/api/posts')
-      .set('Authorization', `JWT ${accessToken}`)
-      .send({
-        bookTitle: 'Test Post',
-        content: 'This is a test post',
-        userId: commentAuthor,
-      } as IPost);
-
-    postId = res2.body._id;
   });
 
   async function login(customEmail = email) {
@@ -56,6 +44,25 @@ describe('comments tests', () => {
   });
 
   describe('POST /comments', () => {
+    let postId: string;
+
+    beforeAll(async () => {
+      const res2 = await request(app)
+        .post('/api/posts')
+        .set('Authorization', `JWT ${accessToken}`)
+        .send({
+          bookTitle: 'Test Post',
+          content: 'This is a test post',
+          userId: commentAuthor,
+        } as IPost);
+
+      postId = res2.body._id;
+    });
+
+    afterAll(async () => {
+      await request(app).delete(`/api/posts/${postId}`);
+    });
+
     it('should create a new comment', async () => {
       const newComment = {
         content: 'This is a test comment',
@@ -131,6 +138,25 @@ describe('comments tests', () => {
   });
 
   describe('GET /comments/:postId', () => {
+    let postId: string;
+
+    beforeAll(async () => {
+      const res2 = await request(app)
+        .post('/api/posts')
+        .set('Authorization', `JWT ${accessToken}`)
+        .send({
+          bookTitle: 'Test Post',
+          content: 'This is a test post',
+          userId: commentAuthor,
+        } as IPost);
+
+      postId = res2.body._id;
+    });
+
+    afterAll(async () => {
+      await request(app).delete(`/api/posts/${postId}`);
+    });
+
     it('should return all comments with a certain postId', async () => {
       const response = await request(app)
         .get(`/api/comments/${postId}`)
