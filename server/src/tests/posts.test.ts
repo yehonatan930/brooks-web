@@ -7,7 +7,7 @@ import serverPromise from '../server';
 describe('posts tests', () => {
   let app: HttpServer;
 
-  let postSender: string;
+  let postAuthorId: string;
   let accessToken: string;
   const email = `${Math.floor(Math.random() * 1000)}@yeah`;
   const anotherEmail = `${Math.floor(Math.random() * 1000)}@yeah`;
@@ -23,7 +23,7 @@ describe('posts tests', () => {
         password: 'password',
       });
 
-    postSender = registrationResponse1.body._id;
+    postAuthorId = registrationResponse1.body._id;
 
     await request(app).post('/api/auth/register').send({
       email: anotherEmail,
@@ -46,14 +46,14 @@ describe('posts tests', () => {
   });
 
   afterAll(async () => {
-    await request(app).delete(`/api/users/${postSender}`);
+    await request(app).delete(`/api/users/${postAuthorId}`);
     await mongoose.connection.close();
   });
 
   describe('POST /posts', () => {
     it('should create a new post without file', async () => {
       const newPost: IPost = {
-        userId: postSender,
+        userId: postAuthorId,
         bookTitle: 'Hello, World!',
         content: 'This is a test post',
         imageUrl:
@@ -63,7 +63,6 @@ describe('posts tests', () => {
       const response = await request(app)
         .post('/api/posts')
         .send(newPost)
-        .set('Accept', 'application/json')
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(201);
       expect(response.body.userId).toBe(newPost.userId);
@@ -75,7 +74,7 @@ describe('posts tests', () => {
 
     it('should create a new post with file', async () => {
       const newPost: IPost = {
-        userId: postSender,
+        userId: postAuthorId,
         bookTitle: 'Hello, World!',
         content: 'This is a test post',
       } as IPost;
@@ -121,7 +120,7 @@ describe('posts tests', () => {
   describe('GET /posts/user/:userId', () => {
     it('should return posts by userId', async () => {
       const response = await request(app)
-        .get(`/api/posts/user/${postSender}`)
+        .get(`/api/posts/user/${postAuthorId}`)
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
       expect(response.body.posts).toBeInstanceOf(Array);
@@ -129,7 +128,7 @@ describe('posts tests', () => {
 
       response.body.posts.forEach((post: IPost) => {
         expect(post._id).toBeDefined();
-        expect(post.userId).toBe(postSender);
+        expect(post.userId).toBe(postAuthorId);
       });
     });
   });
@@ -137,10 +136,11 @@ describe('posts tests', () => {
   describe('GET /posts/:id', () => {
     it('should return a post by id', async () => {
       const posts = await request(app)
-        .get('/api/posts')
+        .get('/api/posts/feed')
         .set('Authorization', `JWT ${accessToken}`);
 
-      const postId = posts.body[0]._id;
+      const postId = posts.body.posts[0]._id;
+
       const response = await request(app)
         .get(`/api/posts/${postId}`)
         .set('Authorization', `JWT ${accessToken}`);
@@ -159,12 +159,14 @@ describe('posts tests', () => {
   describe('PUT /posts/:id', () => {
     it('should update a post', async () => {
       const posts = await request(app)
-        .get('/api/posts')
+        .get('/api/posts/feed')
         .set('Authorization', `JWT ${accessToken}`);
-      const postId = posts.body[0]._id;
+
+      const postId = posts.body.posts[0]._id;
+
       const updatedPost: IPost = {
         _id: postId,
-        userId: postSender,
+        userId: postAuthorId,
         bookTitle: 'Hello, World!',
         content: 'This is an updated test post',
       } as IPost;
@@ -184,7 +186,7 @@ describe('posts tests', () => {
     it('should return 404 if post not found', async () => {
       const updatedPost: IPost = {
         _id: new mongoose.Schema.Types.ObjectId(''),
-        userId: postSender,
+        userId: postAuthorId,
         bookTitle: 'Hello, World!',
         content: 'This is an updated test post',
       } as IPost;
@@ -199,13 +201,26 @@ describe('posts tests', () => {
   });
 
   describe('POST /posts/:id/like', () => {
-    it('should like another users post', async () => {
+    const newPost: IPost = {
+      userId: postAuthorId,
+      bookTitle: 'Hello, World!',
+      content: 'This is a test post',
+      imageUrl:
+        'https://cdn.myanimelist.net/s/common/uploaded_files/1455542413-6b19ce62d01ef05368166ff6db661484.png',
+    } as IPost;
+
+    it("should like another user's post", async () => {
+      await request(app)
+        .post('/api/posts')
+        .send(newPost)
+        .set('Authorization', `JWT ${accessToken}`);
+
       const anotherAccessToken = await login(anotherEmail);
 
       const posts = await request(app)
-        .get(`/api/posts/${postSender}`)
-        .set('Authorization', `JWT ${accessToken}`);
-      const postId = posts.body[0]._id;
+        .get(`/api/posts/user/${postAuthorId}`)
+        .set('Authorization', `JWT ${anotherAccessToken}`);
+      const postId = posts.body.posts[0]._id;
 
       const response = await request(app)
         .post(`/api/posts/${postId}/like`)
@@ -214,10 +229,15 @@ describe('posts tests', () => {
     });
 
     it("should return 400 if user is the post's author", async () => {
-      const posts = await request(app)
-        .get('/api/posts')
+      await request(app)
+        .post('/api/posts')
+        .send(newPost)
         .set('Authorization', `JWT ${accessToken}`);
-      const postId = posts.body[0]._id;
+
+      const posts = await request(app)
+        .get(`/api/posts/user/${postAuthorId}`)
+        .set('Authorization', `JWT ${accessToken}`);
+      const postId = posts.body.posts[0]._id;
 
       const response = await request(app)
         .post(`/api/posts/${postId}/like`)
