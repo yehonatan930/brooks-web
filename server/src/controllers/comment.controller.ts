@@ -62,8 +62,8 @@ const Comment = mongoose.model('Comment', commentSchema);
  *       500:
  *         description: Server error
  */
-router.post('/:postId', async (req, res) => {
-  if (!req.body.userId || !req.body.content) {
+router.post('/', async (req, res) => {
+  if (!req.body.userId || !req.body.content || !req.body.postId) {
     return res
       .status(400)
       .json({ error: 'author, content and postId are required' });
@@ -72,10 +72,11 @@ router.post('/:postId', async (req, res) => {
   try {
     const comment = new Comment({
       ...req.body,
-      postId: new mongoose.Types.ObjectId(req.params.postId as string),
       _id: new mongoose.Types.ObjectId(),
     });
+
     await comment.save();
+
     res.status(201).json(comment);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
