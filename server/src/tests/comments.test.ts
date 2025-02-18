@@ -23,6 +23,8 @@ describe('comments tests', () => {
     });
 
     commentAuthor = res.body._id;
+
+    accessToken = await login();
   });
 
   async function login(customEmail = email) {
@@ -33,10 +35,6 @@ describe('comments tests', () => {
 
     return res.body.accessToken;
   }
-
-  beforeEach(async () => {
-    accessToken = await login();
-  });
 
   afterAll(async () => {
     await request(app).delete(`/api/users/${commentAuthor}`);
@@ -54,6 +52,7 @@ describe('comments tests', () => {
           bookTitle: 'Test Post',
           content: 'This is a test post',
           userId: commentAuthor,
+          imageUrl: 'https://via.placeholder.com/150',
         } as IPost);
 
       postId = res2.body._id;
@@ -148,6 +147,7 @@ describe('comments tests', () => {
           bookTitle: 'Test Post',
           content: 'This is a test post',
           userId: commentAuthor,
+          imageUrl: 'https://via.placeholder.com/150',
         } as IPost);
 
       postId = res2.body._id;
