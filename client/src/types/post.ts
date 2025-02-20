@@ -35,6 +35,19 @@ export interface NewPostData extends NewPostFormData {
 
 export interface UpdatePostData extends NewPostFormData {
   _id: string;
+  imageUrl?: string;
+  imageFile?: File;
+}
+
+export interface GoogleBooksResult {
+  items: GoogleBooksItem[];
+  kind: string;
+  totalItems: number;
+}
+
+export interface GoogleBooksItem {
+  id: string;
+  volumeInfo: BookVolumeInfo;
 }
 
 export interface BookVolumeInfo {

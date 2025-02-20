@@ -210,15 +210,19 @@ router.get('/user/:userId', async (req, res) => {
  *       404:
  *         description: Post not found
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', upload.single('imageFile'), async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
     return res.status(404).json({ error: 'Post not found' });
   }
 
   try {
+    const imageUrl = req.file
+      ? `/media/${req.file.filename}` // Public URL for the file
+      : req.body.imageUrl;
+
     const updatedPost: IPost = await Post.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      { ...req.body, imageUrl },
       {
         new: true,
       }
