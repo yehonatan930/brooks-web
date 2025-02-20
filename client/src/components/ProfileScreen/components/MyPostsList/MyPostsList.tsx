@@ -42,10 +42,10 @@ const MyPostList: React.FC<MyPostListProps> = () => {
               bookTitle={post.bookTitle}
               content={post.content}
               imageUrl={post.imageUrl}
-              refetch={refetch}
+              refetchPosts={refetch}
             />
           ))}
-          {posts.length % 3 !== 0 && <div className="flex-divider"></div>}
+          {posts.length % 3 !== 0 && <div className="flex-divider" />}
         </>
       ) : (
         <p>no posts</p>

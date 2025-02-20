@@ -12,7 +12,7 @@ export interface MyPostProps {
   bookTitle: string;
   content: string;
   imageUrl: string;
-  refetch?: () => void;
+  refetchPosts?: () => void;
 }
 
 const MyPost = (props: MyPostProps) => {
@@ -21,7 +21,8 @@ const MyPost = (props: MyPostProps) => {
   const handleDeletePost = (postId: string) => {
     console.log(`Delete post with ID: ${postId}`);
     deletePost(postId);
-    props.refetch && props.refetch();
+
+    props.refetchPosts && props.refetchPosts();
   };
 
   return (
