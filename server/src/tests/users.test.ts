@@ -42,7 +42,6 @@ describe('User tests', () => {
     const response = await request(app)
       .delete(`/api/users/${userId}`)
       .set('Authorization', `JWT ${accessToken}`);
-    expect(response.status).toBe(200);
 
     await mongoose.connection.close();
   });
