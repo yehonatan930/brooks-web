@@ -6,7 +6,7 @@ import { Button, TextField } from '@mui/material';
 import BookIcon from '@mui/icons-material/Book';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import './CreatePostScreen.scss';
-import { BookVolumeInfo, NewPostFormData } from '../../types/post';
+import { GoogleBooksResult, NewPostFormData } from '../../types/post';
 import { useCreatePost } from '../../hooks/api/useCreatePost';
 import { useUpdatePost } from '../../hooks/api/useUpdatePost';
 import { useGetPost } from '../../hooks/api/useGetPost';
@@ -28,18 +28,17 @@ const fetchBookCover = debounce(
       `https://www.googleapis.com/books/v1/volumes?q=${bookTitle}` +
         (authorName ? `+inauthor:${authorName}` : '')
     );
-    const data: { items: { volumeInfo: BookVolumeInfo }[] } =
-      await response.json();
-    const bookInfos: BookVolumeInfo[] = data?.items
-      ? data.items.map((item: any) => item.volumeInfo)
-      : [];
+    const data: GoogleBooksResult = await response.json();
 
-    console.log('bookInfos', bookInfos);
-    if (bookInfos.length > 0) {
-      const imageUrl = bookInfos[0]?.imageLinks?.thumbnail;
-
-      return imageUrl;
+    if (!data.items) {
+      return;
     }
+
+    const selectedBook = data.items[0];
+
+    const imageUrl = `https://books.google.com/books/publisher/content/images/frontcover/${selectedBook.id}?fife=w400-h600&source=gbs_api`;
+
+    return imageUrl;
   },
   300
 );
@@ -94,12 +93,16 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
   const { bookTitle, authorName } = watch();
 
   const onSubmit = (data: NewPostFormData) => {
+    console.log('data', data);
+    console.log('imageFile', imageFile);
+    console.log('imageURL', imageURL);
+
     const imageRelevantData = imageFile
       ? { imageFile }
       : { imageUrl: imageURL };
 
     edit && postId
-      ? updatePost({ _id: postId, ...data })
+      ? updatePost({ _id: postId, ...data, ...imageRelevantData })
       : createPost({
           userId: user._id,
           ...data,
@@ -124,8 +127,6 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
       console.log('authorName', authorName);
 
       fetchBookCover(bookTitle, authorName)?.then((imageUrl) => {
-        console.log('imageUrl', imageUrl);
-
         setImageURL(imageUrl || DEFAULT_IMAGE_URL);
       });
     }

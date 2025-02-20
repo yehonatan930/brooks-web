@@ -166,7 +166,7 @@ router.post('/login', async (req: Request, res: Response) => {
 
     const accessToken = generateToken(
       user._id,
-      process.env.ACCESS_TOKEN_SECRET as string,
+      process.env.ACCESS_TOKEN_SECRET,
       process.env.TOKENS_REFRESH_TIMEOUT
     );
     const refreshToken = generateToken(

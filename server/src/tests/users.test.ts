@@ -10,12 +10,13 @@ describe('User tests', () => {
   let accessToken: string;
 
   let userId: string;
-  const email = `anEmail@o`;
+
+  const email = `${Math.floor(Math.random() * 1000)}@yeah`;
 
   beforeAll(async () => {
     app = (await serverPromise).server;
 
-    const res = await request(app).post('/auth/register').send({
+    const res = await request(app).post('/api/auth/register').send({
       email,
       username: 'test user',
       password: 'password',
@@ -24,24 +25,23 @@ describe('User tests', () => {
     userId = res.body._id;
   });
 
-  async function login() {
-    const res = await request(app).post('/auth/login').send({
-      email: 'yeah@oo',
+  async function login(customEmail = email) {
+    const res = await request(app).post('/api/auth/login').send({
+      email: customEmail,
       password: 'password',
     });
 
-    accessToken = res.body.accessToken;
+    return res.body.accessToken;
   }
 
   beforeEach(async () => {
-    await login();
+    accessToken = await login();
   });
 
   afterAll(async () => {
     const response = await request(app)
-      .delete(`/users/${userId}`)
+      .delete(`/api/users/${userId}`)
       .set('Authorization', `JWT ${accessToken}`);
-    expect(response.status).toBe(200);
 
     await mongoose.connection.close();
   });
@@ -49,7 +49,7 @@ describe('User tests', () => {
   describe('GET /users', () => {
     it('should return all users', async () => {
       const response = await request(app)
-        .get('/users')
+        .get('/api/users')
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
       expect(response.body).toBeInstanceOf(Array);
@@ -66,13 +66,11 @@ describe('User tests', () => {
   describe('GET /users/:id', () => {
     it('should return a user by ID', async () => {
       const response = await request(app)
-        .get(`/users/${userId}`)
+        .get(`/api/users/${userId}`)
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
-      expect(response.body._id).toBe(userId);
+      expect(response.body.email).toBe(email);
       expect(response.body.username).toBeDefined();
-      expect(response.body.email).toBeDefined();
-      expect(response.body.password).toBeDefined();
     });
   });
 
@@ -83,7 +81,7 @@ describe('User tests', () => {
       } as IUser;
 
       const response = await request(app)
-        .put(`/users/${userId}`)
+        .put(`/api/users/${userId}`)
         .send(updatedUser)
         .set('Accept', 'application/json')
         .set('Authorization', `JWT ${accessToken}`);
@@ -98,10 +96,10 @@ describe('User tests', () => {
       } as IUser;
 
       const response = await request(app)
-        .put(`/users/${userId}`)
+        .put(`/api/users/${userId}`)
         .set('Authorization', `JWT ${accessToken}`)
         .field('username', updatedUser.username)
-        .attach('file', `${__dirname}/tiger.jpg`);
+        .attach('profilePicture', `${__dirname}/assets/tiger.jpg`);
 
       expect(response.status).toBe(200);
       expect(response.body.username).toBe(updatedUser.username);
@@ -113,13 +111,13 @@ describe('User tests', () => {
   describe('DELETE /users/:id', () => {
     it('should delete a user by ID', async () => {
       const response = await request(app)
-        .delete(`/users/${userId}`)
+        .delete(`/api/users/${userId}`)
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
-      expect(response.body._id).toBe(userId);
+      expect(response.body.deletedUserId).toBe(userId);
 
       const userResponse = await request(app)
-        .get(`/users/${userId}`)
+        .get(`/api/users/${userId}`)
         .set('Authorization', `JWT ${accessToken}`);
       expect(userResponse.status).toBe(404);
     });

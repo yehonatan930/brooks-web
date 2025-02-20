@@ -1,38 +1,8 @@
 import axiosInstance from './axiosInstance';
-import {
-  AccessToken,
-  LoginData,
-  LoginResponse,
-  RegisterData,
-  UpdateUserVariables,
-  User,
-} from '../types/user';
+import { GetUserResponse, UpdateUserVariables, User } from '../types/user';
 
-export const registerUser = async (data: RegisterData): Promise<void> => {
-  await axiosInstance.post('/auth/register', data);
-};
-
-export const loginUser = async (data: LoginData): Promise<LoginResponse> => {
-  const response = await axiosInstance.post<LoginResponse>('/auth/login', data);
-  return response.data;
-};
-
-export const refreshAccessToken = async (
-  refreshToken: string
-): Promise<string> => {
-  const response = await axiosInstance.post<AccessToken>('/auth/refresh', {
-    refreshToken,
-  });
-  return response.data.accessToken;
-};
-
-export const getUser = async (id: string): Promise<User> => {
-  const response = await axiosInstance.get<User>(`/users/${id}`);
-  return response.data;
-};
-
-export const logoutUser = async () => {
-  const response = await axiosInstance.post('/auth/logout');
+export const getUser = async (id: string): Promise<GetUserResponse> => {
+  const response = await axiosInstance.get<GetUserResponse>(`/users/${id}`);
   return response.data;
 };
 
@@ -49,15 +19,6 @@ export const updateUser = async ({
     headers: {
       'Content-Type': 'multipart/form-data',
     },
-  });
-  return response.data;
-};
-
-export const googleLogin = async (
-  credential: string
-): Promise<LoginResponse> => {
-  const response = await axiosInstance.post<LoginResponse>('/auth/google', {
-    credential,
   });
   return response.data;
 };

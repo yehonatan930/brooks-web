@@ -135,10 +135,12 @@ router.put(
   async (req: Request, res: Response) => {
     try {
       const userId = req.params.id;
+
       const { username } = req.body;
       const profilePicturePath = req.file
         ? `/media/${req.file.filename}`
         : undefined;
+
       const updateData: UpdateQuery<IUser> = {};
       if (username) updateData.username = username;
       if (profilePicturePath) updateData.profilePicture = profilePicturePath;

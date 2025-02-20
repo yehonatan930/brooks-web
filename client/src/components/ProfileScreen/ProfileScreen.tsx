@@ -12,9 +12,11 @@ import { Button } from '@mui/material';
 
 const ProfileScreen: React.FC = () => {
   const [user, setUser] = useAtom(loggedInUserAtom);
-  const { user: fetchedUser, isSuccess: fetchSucceeded } = useFetchUser(
-    user._id
-  );
+  const {
+    data: fetchedUser,
+    isSuccess: fetchSucceeded,
+    isLoading,
+  } = useFetchUser(user._id);
 
   const navigate = useNavigate();
 
@@ -24,46 +26,49 @@ const ProfileScreen: React.FC = () => {
 
   useEffect(() => {
     if (fetchSucceeded && fetchedUser) {
-      setUser({ ...fetchedUser, _id: user._id });
+      setUser({
+        _id: user._id,
+        ...fetchedUser,
+      });
     }
   }, [fetchSucceeded, fetchedUser, setUser, user._id]);
 
-  if (fetchedUser) {
-    return (
-      <div className="profile__container">
-        <div className="profile__area1">
-          <h2 className="profile__title">Profile</h2>
-          {user && (
-            <div className="profile__details">
-              {user.profilePicture && (
-                <img
-                  src={makeFileUrl(user.profilePicture)}
-                  alt="Profile"
-                  className="profile__picture"
-                />
-              )}
-              <p className="profile__detail">
-                <strong>Username:</strong> {user.username}
-              </p>
-              <p className="profile__detail">
-                <strong>Email:</strong> {user.email}
-              </p>
-              <Button
-                variant="contained"
-                onClick={navigateToEditProfile}
-                endIcon={<EditIcon />}
-              >
-                Edit Profile
-              </Button>
-            </div>
-          )}
-        </div>
-        <MyPostList />
-      </div>
-    );
-  } else {
+  if (isLoading) {
     return <LoadingSpinner />;
   }
+
+  return (
+    <div className="profile__container">
+      <div className="profile__area1">
+        <h2 className="profile__title">Profile</h2>
+        {user && (
+          <div className="profile__details">
+            {user.profilePicture && (
+              <img
+                src={makeFileUrl(user.profilePicture)}
+                alt="Profile"
+                className="profile__picture"
+              />
+            )}
+            <p className="profile__detail">
+              <strong>Username:</strong> {user.username}
+            </p>
+            <p className="profile__detail">
+              <strong>Email:</strong> {user.email}
+            </p>
+            <Button
+              variant="contained"
+              onClick={navigateToEditProfile}
+              endIcon={<EditIcon />}
+            >
+              Edit Profile
+            </Button>
+          </div>
+        )}
+      </div>
+      <MyPostList />
+    </div>
+  );
 };
 
 export default ProfileScreen;

@@ -27,11 +27,16 @@ export interface User {
   username: string;
   email: string;
   profilePicture: string;
-  createdAt: string;
 }
 
 export interface UpdateUserVariables {
   userId: string;
   username: string;
   profilePictureFile?: File;
+}
+
+export interface GetUserResponse {
+  username: string;
+  email: string;
+  profilePicture: string;
 }

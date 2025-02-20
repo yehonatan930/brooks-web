@@ -5,182 +5,210 @@ import mongoose from 'mongoose';
 import { IPost } from '../schemas/post.schema';
 import { IComment } from '../schemas/comment.schema';
 
-let app: HttpServer;
+describe('comments tests', () => {
+  let app: HttpServer;
 
-let commentAuthor: string;
-let accessToken: string;
-let postId: string;
+  let commentAuthor: string;
+  let accessToken: string;
 
-const email = `${Math.floor(Math.random() * 1000)}@yeah`;
+  const email = `${Math.floor(Math.random() * 1000)}@yeah`;
 
-beforeAll(async () => {
-  app = (await serverPromise).server;
+  beforeAll(async () => {
+    app = (await serverPromise).server;
 
-  const res = await request(app).post('/auth/register').send({
-    email,
-    username: 'test user',
-    password: 'password',
+    const res = await request(app).post('/api/auth/register').send({
+      email,
+      username: 'test user',
+      password: 'password',
+    });
+
+    commentAuthor = res.body._id;
+
+    accessToken = await login();
   });
 
-  commentAuthor = res.body._id;
+  async function login(customEmail = email) {
+    const res = await request(app).post('/api/auth/login').send({
+      email: customEmail,
+      password: 'password',
+    });
 
-  const res2 = await request(app)
-    .post('/posts')
-    .send({
-      bookTitle: 'Test Post',
-      content: 'This is a test post',
-      userId: commentAuthor,
-    } as IPost);
+    return res.body.accessToken;
+  }
 
-  postId = '677815024466160f0e770436';
-});
-
-async function login() {
-  const res = await request(app).post('/auth/login').send({
-    email,
-    password: 'password',
+  afterAll(async () => {
+    await request(app).delete(`/api/users/${commentAuthor}`);
+    await mongoose.connection.close();
   });
 
-  accessToken = res.body.accessToken;
-}
+  describe('POST /comments', () => {
+    let postId: string;
 
-beforeEach(async () => {
-  await login();
-});
+    beforeAll(async () => {
+      const res2 = await request(app)
+        .post('/api/posts')
+        .set('Authorization', `JWT ${accessToken}`)
+        .send({
+          bookTitle: 'Test Post',
+          content: 'This is a test post',
+          userId: commentAuthor,
+          imageUrl: 'https://via.placeholder.com/150',
+        } as IPost);
 
-afterAll(async () => {
-  await request(app).delete(`/users/${commentAuthor}`);
-  await mongoose.connection.close();
-});
+      postId = res2.body._id;
+    });
 
-describe('POST /comments', () => {
-  it('should create a new comment', async () => {
-    const newComment = {
-      content: 'This is a test comment',
-      postId,
-      userId: commentAuthor,
-    };
+    afterAll(async () => {
+      await request(app).delete(`/api/posts/${postId}`);
+    });
 
-    const response = await request(app)
-      .post('/comments')
-      .send(newComment)
-      .set('Accept', 'application/json')
-      .set('Authorization', `JWT ${accessToken}`);
-    expect(response.status).toBe(201);
-    expect(response.body.content).toBe(newComment.content);
-    expect(response.body.postId).toBe(newComment.postId);
-    expect(response.body.userId).toBe(newComment.userId);
-    expect(response.body._id).toBeDefined();
-  });
+    it('should create a new comment', async () => {
+      const newComment = {
+        content: 'This is a test comment',
+        postId,
+        userId: commentAuthor,
+      };
 
-  it('should not create a new comment without content', async () => {
-    const newComment = {
-      postId,
-    };
+      const response = await request(app)
+        .post('/api/comments')
+        .send(newComment)
+        .set('Authorization', `JWT ${accessToken}`);
+      expect(response.status).toBe(201);
+      expect(response.body.content).toBe(newComment.content);
+      expect(response.body.postId).toBe(newComment.postId);
+      expect(response.body.userId).toBe(newComment.userId);
+      expect(response.body._id).toBeDefined();
+    });
 
-    const response = await request(app)
-      .post('/comments')
-      .send(newComment)
-      .set('Accept', 'application/json')
-      .set('Authorization', `JWT ${accessToken}`);
-    expect(response.status).toBe(400);
-  });
+    it('should not create a new comment without content', async () => {
+      const newComment = {
+        postId,
+      };
 
-  it('should not create a new comment without postId', async () => {
-    const newComment = {
-      content: 'This is a test comment',
-    };
+      const response = await request(app)
+        .post('/api/comments')
+        .send(newComment)
+        .set('Accept', 'application/json')
+        .set('Authorization', `JWT ${accessToken}`);
+      expect(response.status).toBe(400);
+    });
 
-    const response = await request(app)
-      .post('/comments')
-      .send(newComment)
-      .set('Accept', 'application/json')
-      .set('Authorization', `JWT ${accessToken}`);
-    expect(response.status).toBe(400);
-  });
+    it('should not create a new comment without postId', async () => {
+      const newComment = {
+        content: 'This is a test comment',
+      };
 
-  it('should not create a new comment without userId', async () => {
-    const newComment = {
-      content: 'This is a test comment',
-      postId,
-    };
+      const response = await request(app)
+        .post('/api/comments')
+        .send(newComment)
+        .set('Accept', 'application/json')
+        .set('Authorization', `JWT ${accessToken}`);
+      expect(response.status).toBe(400);
+    });
 
-    const response = await request(app)
-      .post('/comments')
-      .send(newComment)
-      .set('Accept', 'application/json')
-      .set('Authorization', `JWT ${accessToken}`);
-    expect(response.status).toBe(400);
-  });
-});
+    it('should not create a new comment without userId', async () => {
+      const newComment = {
+        content: 'This is a test comment',
+        postId,
+      };
 
-describe('GET /comments', () => {
-  it('should return all comments', async () => {
-    const response = await request(app)
-      .get('/comments')
-      .set('Authorization', `JWT ${accessToken}`);
-    expect(response.status).toBe(200);
-    expect(response.body).toBeInstanceOf(Array);
-    response.body.forEach((comment: IComment) => {
-      expect(comment._id).toBeDefined();
-      expect(comment.userId).toBeDefined();
-      expect(comment.content).toBeDefined();
+      const response = await request(app)
+        .post('/api/comments')
+        .send(newComment)
+        .set('Accept', 'application/json')
+        .set('Authorization', `JWT ${accessToken}`);
+      expect(response.status).toBe(400);
     });
   });
-});
 
-describe('GET /comments/:postId', () => {
-  it('should return all comments with a certain postId', async () => {
-    const response = await request(app)
-      .get(`/comments/${postId}`)
-      .set('Authorization', `JWT ${accessToken}`);
-    expect(response.status).toBe(200);
-    expect(response.body).toBeInstanceOf(Array);
-    response.body.forEach((comment: IComment) => {
-      expect(comment._id).toBeDefined();
-      expect(comment.userId).toBeDefined();
-      expect(comment.content).toBeDefined();
-      expect(comment.postId).toBe(postId);
+  describe('GET /comments', () => {
+    it('should return all comments', async () => {
+      const response = await request(app)
+        .get('/api/comments')
+        .set('Authorization', `JWT ${accessToken}`);
+      expect(response.status).toBe(200);
+      expect(response.body).toBeInstanceOf(Array);
+      response.body.forEach((comment: IComment) => {
+        expect(comment._id).toBeDefined();
+        expect(comment.userId).toBeDefined();
+        expect(comment.content).toBeDefined();
+      });
     });
   });
-});
 
-describe('PUT /comments/:id', () => {
-  it('should update a comment by ID', async () => {
-    const response = await request(app)
-      .get('/comments')
-      .set('Authorization', `JWT ${accessToken}`);
-    const commentId = response.body[0]._id;
+  describe('GET /comments/:postId', () => {
+    let postId: string;
 
-    const updatedComment: IComment = {
-      ...response.body[0],
-      content: 'This is an updated test comment',
-    };
+    beforeAll(async () => {
+      const res2 = await request(app)
+        .post('/api/posts')
+        .set('Authorization', `JWT ${accessToken}`)
+        .send({
+          bookTitle: 'Test Post',
+          content: 'This is a test post',
+          userId: commentAuthor,
+          imageUrl: 'https://via.placeholder.com/150',
+        } as IPost);
 
-    const commentResponse = await request(app)
-      .put(`/comments/${commentId}`)
-      .send(updatedComment)
-      .set('Accept', 'application/json')
-      .set('Authorization', `JWT ${accessToken}`);
-    expect(commentResponse.status).toBe(200);
-    expect(commentResponse.body.content).toBe(updatedComment.content);
-    expect(commentResponse.body.postId).toBe(updatedComment.postId);
-    expect(commentResponse.body.userId).toBe(updatedComment.userId);
-    expect(commentResponse.body._id).toBe(commentId);
+      postId = res2.body._id;
+    });
+
+    afterAll(async () => {
+      await request(app).delete(`/api/posts/${postId}`);
+    });
+
+    it('should return all comments with a certain postId', async () => {
+      const response = await request(app)
+        .get(`/api/comments/${postId}`)
+        .set('Authorization', `JWT ${accessToken}`);
+      expect(response.status).toBe(200);
+      expect(response.body).toBeInstanceOf(Array);
+      response.body.forEach((comment: IComment) => {
+        expect(comment._id).toBeDefined();
+        expect(comment.userId).toBeDefined();
+        expect(comment.content).toBeDefined();
+        expect(comment.postId).toBe(postId);
+      });
+    });
   });
-});
 
-describe('DELETE /comments/:id', () => {
-  it('should delete a comment by ID', async () => {
-    const response = await request(app)
-      .get('/comments')
-      .set('Authorization', `JWT ${accessToken}`);
-    const commentId = response.body[0]._id;
+  describe('PUT /comments/:id', () => {
+    it('should update a comment by ID', async () => {
+      const response = await request(app)
+        .get('/api/comments')
+        .set('Authorization', `JWT ${accessToken}`);
+      const commentId = response.body[0]._id;
 
-    const commentResponse = await request(app)
-      .delete(`/comments/${commentId}`)
-      .set('Authorization', `JWT ${accessToken}`);
-    expect(commentResponse.status).toBe(200);
-    expect(commentResponse.body._id).toBe(commentId);
+      const updatedComment: IComment = {
+        ...response.body[0],
+        content: 'This is an updated test comment',
+      };
+
+      const commentResponse = await request(app)
+        .put(`/api/comments/${commentId}`)
+        .send(updatedComment)
+        .set('Accept', 'application/json')
+        .set('Authorization', `JWT ${accessToken}`);
+      expect(commentResponse.status).toBe(200);
+      expect(commentResponse.body.content).toBe(updatedComment.content);
+      expect(commentResponse.body.postId).toBe(updatedComment.postId);
+      expect(commentResponse.body.userId).toBe(updatedComment.userId);
+      expect(commentResponse.body._id).toBe(commentId);
+    });
+  });
+
+  describe('DELETE /comments/:id', () => {
+    it('should delete a comment by ID', async () => {
+      const response = await request(app)
+        .get('/api/comments')
+        .set('Authorization', `JWT ${accessToken}`);
+      const commentId = response.body[0]._id;
+
+      const commentResponse = await request(app)
+        .delete(`/api/comments/${commentId}`)
+        .set('Authorization', `JWT ${accessToken}`);
+      expect(commentResponse.status).toBe(200);
+      expect(commentResponse.body._id).toBe(commentId);
+    });
   });
 });

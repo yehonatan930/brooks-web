@@ -35,7 +35,6 @@ const Comment = mongoose.model('Comment', commentSchema);
  *         description: Server error
  */
 router.get('/feed', async (req, res) => {
-  const { userId } = req.user;
   const page = parseInt(req.query.page as string) || 1;
   const limit = 10; // Number of posts per page
 
@@ -146,16 +145,16 @@ router.get('/:id', async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.get('/', async (req, res) => {
-  const userId = req.query.userId;
+router.get('/user/:userId', async (req, res) => {
+  const userId = req.params.userId;
   const page = parseInt(req.query.page as string) || 1;
   const limit = 10; // Number of posts per page
 
   try {
-    const query = userId ? { userId } : {};
-    const totalPosts = await Post.countDocuments(query);
+    const totalPosts = await Post.countDocuments({ userId });
     const totalPages = Math.ceil(totalPosts / limit);
-    const posts = await Post.find(query)
+
+    const posts = await Post.find({ userId })
       .skip((page - 1) * limit)
       .limit(limit);
 
@@ -211,15 +210,19 @@ router.get('/', async (req, res) => {
  *       404:
  *         description: Post not found
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', upload.single('imageFile'), async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
     return res.status(404).json({ error: 'Post not found' });
   }
 
   try {
+    const imageUrl = req.file
+      ? `/media/${req.file.filename}` // Public URL for the file
+      : req.body.imageUrl;
+
     const updatedPost: IPost = await Post.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      { ...req.body, imageUrl },
       {
         new: true,
       }

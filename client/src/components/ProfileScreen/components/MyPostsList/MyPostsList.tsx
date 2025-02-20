@@ -32,7 +32,7 @@ const MyPostList: React.FC<MyPostListProps> = () => {
   return (
     <div className="profile__posts">
       {isLoading ? (
-        <CircularProgress></CircularProgress>
+        <CircularProgress />
       ) : posts ? (
         <>
           {posts.map((post) => (
@@ -42,10 +42,10 @@ const MyPostList: React.FC<MyPostListProps> = () => {
               bookTitle={post.bookTitle}
               content={post.content}
               imageUrl={post.imageUrl}
-              refetch={refetch}
+              refetchPosts={refetch}
             />
           ))}
-          {posts.length % 3 !== 0 && <div className="flex-divider"></div>}
+          {posts.length % 3 !== 0 && <div className="flex-divider" />}
         </>
       ) : (
         <p>no posts</p>
