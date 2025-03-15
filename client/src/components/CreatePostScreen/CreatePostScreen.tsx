@@ -1,5 +1,11 @@
 import { FormEvent, FunctionComponent, useEffect, useState } from 'react';
-import { Button, TextField, Autocomplete, Box } from '@mui/material';
+import {
+  Button,
+  TextField,
+  Autocomplete,
+  Box,
+  CircularProgress,
+} from '@mui/material';
 import BookIcon from '@mui/icons-material/Book';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import './CreatePostScreen.scss';
@@ -46,6 +52,8 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
   const [imageURL, setImageURL] = useState<string>(
     existingPost?.imageUrl || DEFAULT_IMAGE_URL
   );
+
+  const [autoCompleteIsOpen, setAutoCompleteIsOpen] = useState<boolean>(false);
 
   const user = useAtomValue(loggedInUserAtom);
   const {
@@ -97,11 +105,6 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
     }
   }, [existingPost]);
 
-  useEffect(() => {
-    console.log('bookTitle', bookTitle);
-    console.log('authorName', authorName);
-  }, [bookTitle, authorName]);
-
   const onUploadImage = (image: File) => {
     setImageFile(image);
 
@@ -113,17 +116,37 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
     reader.readAsDataURL(image as Blob);
   };
 
+  const handleOpen = () => {
+    console.log('handleOpen');
+    setAutoCompleteIsOpen(true);
+  };
+
+  const handleClose = () => {
+    console.log('handleClose');
+    setAutoCompleteIsOpen(false);
+  };
+
   return (
     <div className="CreatePostScreen">
       <div className="CreatePostScreen__card">
         <form className="CreatePostScreen__form" onSubmit={onSubmit}>
           {!edit && <h2 className="title">New Post</h2>}
           <>
-            <Autocomplete<GoogleBooksRelevantBookData>
+            <Autocomplete
+              freeSolo
               disablePortal
               loading={bookSearchIsLoading}
               options={bookSearchResults || []}
-              getOptionLabel={(option) => option.bookTitle}
+              open={autoCompleteIsOpen}
+              onOpen={handleOpen}
+              onClose={handleClose}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              getOptionKey={(option) =>
+                typeof option === 'string' ? option : option.id
+              }
+              getOptionLabel={(option) =>
+                typeof option === 'string' ? option : option.bookTitle
+              }
               value={
                 bookSearchResults?.find((b) => b.id === selectedBookId) || null
               }
@@ -132,15 +155,22 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
                   {...params}
                   className="input-field"
                   label="Search a book"
-                  // error={!!errors.bookTitle}
-                  // helperText={
-                  //   errors.bookTitle ? errors.bookTitle.message : ''
-                  // }
                   slotProps={{
+                    input: {
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {bookSearchIsLoading ? (
+                            <CircularProgress color="inherit" size={20} />
+                          ) : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                      startAdornment: <BookIcon />,
+                    },
                     htmlInput: {
                       ...params.inputProps,
                       autoComplete: 'new-password', // disable autocomplete and autofill
-                      // startAdornment: <BookIcon />,
                     },
                   }}
                 />
@@ -171,6 +201,10 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
               }}
               onChange={(_, value) => {
                 console.log('onChange value', value);
+                if (typeof value === 'string') {
+                  return;
+                }
+
                 setSelectedBookPageCount(value?.pageCount);
                 setBookTitle(value?.bookTitle || '');
                 setAuthorName(value?.authorName || '');
@@ -185,8 +219,6 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
             placeholder="Author name"
             className="input-field"
             type="text"
-            // error={!!errors.authorName}
-            // helperText={errors.authorName ? errors.authorName.message : ''}
             slotProps={{
               input: {
                 startAdornment: <PersonIcon />,
