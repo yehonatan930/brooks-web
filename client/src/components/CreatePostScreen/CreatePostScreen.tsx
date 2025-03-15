@@ -53,8 +53,6 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
     existingPost?.imageUrl || DEFAULT_IMAGE_URL
   );
 
-  const [autoCompleteIsOpen, setAutoCompleteIsOpen] = useState<boolean>(false);
-
   const user = useAtomValue(loggedInUserAtom);
   const {
     data: bookSearchResults,
@@ -116,16 +114,6 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
     reader.readAsDataURL(image as Blob);
   };
 
-  const handleOpen = () => {
-    console.log('handleOpen');
-    setAutoCompleteIsOpen(true);
-  };
-
-  const handleClose = () => {
-    console.log('handleClose');
-    setAutoCompleteIsOpen(false);
-  };
-
   return (
     <div className="CreatePostScreen">
       <div className="CreatePostScreen__card">
@@ -137,10 +125,8 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
               disablePortal
               loading={bookSearchIsLoading}
               options={bookSearchResults || []}
-              open={autoCompleteIsOpen}
-              onOpen={handleOpen}
-              onClose={handleClose}
               isOptionEqualToValue={(option, value) => option.id === value.id}
+              filterOptions={(x) => x}
               getOptionKey={(option) =>
                 typeof option === 'string' ? option : option.id
               }
@@ -214,6 +200,7 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
             />
           </>
           <TextField
+            disabled
             value={authorName}
             onChange={(e) => setAuthorName(e.target.value)}
             placeholder="Author name"
