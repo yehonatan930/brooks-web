@@ -7,7 +7,7 @@
   border-radius: 8px;
   background-color: #fff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  height: 120px;
+  height: 150px;
   width: 27%;
   transition:
     transform 0.2s,
@@ -21,7 +21,7 @@
 
 .profile__post-image {
   width: 120px;
-  height: 120px;
+  height: 150px;
   object-fit: cover;
   margin-right: 1rem;
   border-radius: 8px;
@@ -30,12 +30,18 @@
 .profile__post-content {
   flex: 1;
   overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
 .profile__post-content h4 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.25rem;
+  font-size: 0.9rem;
   color: #333;
+  height: 50%;
+  overflow: hidden;
 }
 
 .profile__post-content p {
@@ -52,5 +58,4 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
-  margin-top: 10px;
 }

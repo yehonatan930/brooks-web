@@ -6,7 +6,7 @@ export interface Post {
   createdAt: Date;
   userId: string;
   likes: string[];
-  readingProgress?: string;
+  readingProgress?: number;
   authorName?: string;
 }
 
@@ -23,7 +23,7 @@ export interface PostForFeed {
 export interface NewPostFormData {
   bookTitle: string;
   content?: string;
-  readingProgress?: string;
+  readingProgress?: number;
   authorName?: string;
 }
 
@@ -37,26 +37,6 @@ export interface UpdatePostData extends NewPostFormData {
   _id: string;
   imageUrl?: string;
   imageFile?: File;
-}
-
-export interface GoogleBooksResult {
-  items: GoogleBooksItem[];
-  kind: string;
-  totalItems: number;
-}
-
-export interface GoogleBooksItem {
-  id: string;
-  volumeInfo: BookVolumeInfo;
-}
-
-export interface BookVolumeInfo {
-  title: string;
-  authors: string[];
-  description: string;
-  imageLinks: {
-    thumbnail: string;
-  };
 }
 
 export interface PostsResponse {
