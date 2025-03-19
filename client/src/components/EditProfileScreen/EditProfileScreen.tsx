@@ -23,8 +23,10 @@ const EditProfileScreen: React.FC = () => {
   useEffect(() => {
     if (loggedInUser) {
       setUsername(loggedInUser.username);
-      const loggedInUserImageUrl = makeFileUrl(loggedInUser.profilePicture);
-      setPreviewImgSrc(loggedInUserImageUrl);
+      if (loggedInUser.profilePicture) {
+        const loggedInUserImageUrl = makeFileUrl(loggedInUser.profilePicture);
+        setPreviewImgSrc(loggedInUserImageUrl);
+      }
     }
   }, [loggedInUser]);
 
@@ -67,7 +69,7 @@ const EditProfileScreen: React.FC = () => {
         />
         <UploadImageButton onUploadImage={onUploadImage} />
         <div className="profile-picture">
-          <img src={previewImgSrc} alt="profile" />
+          <img src={previewImgSrc} alt="" />
         </div>
         <Button fullWidth variant="contained" onClick={handleSave}>
           Save
