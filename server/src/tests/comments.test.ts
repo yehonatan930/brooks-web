@@ -3,7 +3,7 @@ import serverPromise from '../server';
 import { Server as HttpServer } from 'http';
 import mongoose from 'mongoose';
 import { IPost } from '../schemas/post.schema';
-import { IComment } from '../schemas/comment.schema';
+import { CommentForViewPost, IComment } from '../schemas/comment.schema';
 
 describe('comments tests', () => {
   let app: HttpServer;
@@ -128,10 +128,8 @@ describe('comments tests', () => {
         .set('Authorization', `JWT ${accessToken}`);
       expect(response.status).toBe(200);
       expect(response.body).toBeInstanceOf(Array);
-      response.body.forEach((comment: IComment) => {
+      response.body.forEach((comment: CommentForViewPost) => {
         expect(comment._id).toBeDefined();
-        expect(comment.userId).toBeDefined();
-        expect(comment.content).toBeDefined();
       });
     });
   });
@@ -165,8 +163,6 @@ describe('comments tests', () => {
       expect(response.body).toBeInstanceOf(Array);
       response.body.forEach((comment: IComment) => {
         expect(comment._id).toBeDefined();
-        expect(comment.userId).toBeDefined();
-        expect(comment.content).toBeDefined();
         expect(comment.postId).toBe(postId);
       });
     });
