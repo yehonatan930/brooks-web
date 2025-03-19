@@ -95,6 +95,7 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
 
   useEffect(() => {
     if (existingPost) {
+      console.log('existingPost', existingPost);
       setBookTitle(existingPost.bookTitle);
       setAuthorName(existingPost.authorName || '');
       setContent(existingPost.content);
@@ -141,6 +142,7 @@ const CreatePostScreen: FunctionComponent<CreatePostScreenProps> = ({
                   {...params}
                   className="input-field"
                   label="Search a book"
+                  placeholder={bookTitle}
                   slotProps={{
                     input: {
                       ...params.InputProps,

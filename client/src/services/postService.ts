@@ -46,8 +46,28 @@ export const getPost = async (
 };
 
 export const updatePost = async (data: UpdatePostData): Promise<Post> => {
-  const response = await axiosInstance.put<Post>(`/posts/${data._id}`, data);
-  return response.data;
+  if (!data.imageFile) {
+    const response = await axiosInstance.put<Post>(`/posts/${data._id}`, data);
+    return response.data;
+  } else {
+    const formData = new FormData();
+    formData.append('bookTitle', data.bookTitle);
+    formData.append('content', data.content || '');
+    formData.append('readingProgress', (data.readingProgress || 0).toString());
+    formData.append('authorName', data.authorName || '');
+    formData.append('imageFile', data.imageFile);
+
+    const response = await axiosInstance.put<Post>(
+      `/posts/${data._id}`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    return response.data;
+  }
 };
 
 export const deletePost = async (id: string): Promise<void> => {

@@ -220,6 +220,8 @@ router.put('/:id', upload.single('imageFile'), async (req, res) => {
       ? `/media/${req.file.filename}` // Public URL for the file
       : req.body.imageUrl;
 
+    console.log('imageUrl', imageUrl);
+
     const updatedPost: IPost = await Post.findByIdAndUpdate(
       req.params.id,
       { ...req.body, imageUrl },
