@@ -97,8 +97,11 @@ const PostDetailScreen: React.FC = () => {
             {comments.map((comment) => (
               <ListItem key={comment._id} className="comment-item">
                 <ListItemText
-                  primary={comment.content + ' by ' + comment.username}
-                  // secondary={comment.createdAt}
+                  primary={comment.content}
+                  secondary={
+                    ' by ' + comment.username
+                    // + comment.createdAt
+                  }
                 />
                 {comment.userId === userId && (
                   <IconButton
