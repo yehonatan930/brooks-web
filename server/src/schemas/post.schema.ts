@@ -26,7 +26,7 @@ export interface IPost
   createdAt: Date;
   likes: string[];
   comments: string[];
-  readingProgress?: string;
+  readingProgress?: number;
   authorName?: string;
 }
 
@@ -38,6 +38,6 @@ export const postSchema = new mongoose.Schema<IPost>({
   imageUrl: { type: String, required: true },
   createdAt: { type: Date, required: true, default: () => new Date() },
   likes: { type: [String], required: true, default: [] },
-  readingProgress: { type: String }, // Optional field
+  readingProgress: { type: Number }, // Optional field
   authorName: { type: String },
 });

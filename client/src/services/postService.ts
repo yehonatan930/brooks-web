@@ -15,7 +15,7 @@ export const createPost = async (data: NewPostData): Promise<Post> => {
     const formData = new FormData();
     formData.append('bookTitle', data.bookTitle);
     formData.append('content', data.content || '');
-    formData.append('readingProgress', data.readingProgress || '');
+    formData.append('readingProgress', (data.readingProgress || 0).toString());
     formData.append('authorName', data.authorName || '');
     formData.append('imageFile', data.imageFile);
 

@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
-import { getPost } from '../../services/postService';
-import { Post } from '../../types/post';
 import './PostDetailScreen.scss';
 import { useAtomValue } from 'jotai/index';
 import { loggedInUserAtom } from '../../context/LoggedInUserAtom';
@@ -17,84 +15,25 @@ import {
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
-import {
-  addComment,
-  deleteComment,
-  getComments,
-} from '../../services/commentService';
-import { Comment } from '../../types/comment';
 import { makeFileUrl } from '../../utils/makeFileUrl';
+import { useGetComments } from '../../hooks/api/useGetComments';
+import useAddComment from '../../hooks/api/useAddComment';
+import useDeleteComment from '../../hooks/api/useDeleteComment';
+import { useGetPost } from '../../hooks/api/useGetPost';
 
 const PostDetailScreen: React.FC = () => {
   const { id: postId } = useParams<{ id: string }>();
-  const [post, setPost] = useState<Post | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const { _id: userId } = useAtomValue(loggedInUserAtom);
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [newComment, setNewComment] = useState<string>('');
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const { signal } = controller;
-
-    const fetchComments = async () => {
-      try {
-        const comments = await getComments(postId || '', signal);
-        setComments(comments || []);
-      } catch (error) {
-        console.error('Error fetching comments:', error);
-      }
-    };
-
-    fetchComments();
-
-    return () => {
-      controller.abort();
-    };
-  }, [postId]);
-
-  const handleAddComment = async () => {
-    try {
-      const response = await addComment(postId || '', newComment, userId);
-      setComments([...comments, response]);
-      setNewComment('');
-    } catch (error) {
-      console.error('Error adding comment:', error);
-    }
-  };
-
-  const handleDeleteComment = async (commentId: string) => {
-    try {
-      await deleteComment(commentId);
-      setComments(comments.filter((comment) => comment._id !== commentId));
-    } catch (error) {
-      console.error('Error deleting comment:', error);
-    }
-  };
+  const { data: post, isLoading } = useGetPost(postId || '');
+  const { data: comments } = useGetComments(postId || '');
+  const { mutate: addNewComment } = useAddComment(postId || '', userId, () => {
+    setNewComment('');
+  });
+  const { mutate: deleteComment } = useDeleteComment(postId || '');
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const { signal } = controller;
-
-    const fetchPost = async () => {
-      try {
-        const fetchedPost = await getPost(postId!, signal);
-        setPost(fetchedPost);
-      } catch (error) {
-        console.error('Error fetching post:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPost();
-
-    return () => {
-      controller.abort();
-    };
-  }, [postId]);
+  const [newComment, setNewComment] = useState<string>('');
 
   const handleEditClick = () => {
     navigate('/post/edit/' + postId);
@@ -145,7 +84,7 @@ const PostDetailScreen: React.FC = () => {
             multiline
           />
           <Button
-            onClick={handleAddComment}
+            onClick={() => addNewComment(newComment)}
             variant="contained"
             color="primary"
             endIcon={<SendIcon />}
@@ -153,24 +92,29 @@ const PostDetailScreen: React.FC = () => {
             Add Comment
           </Button>
         </div>
-        <List className="comment-list">
-          {comments.map((comment) => (
-            <ListItem key={comment._id} className="comment-item">
-              <ListItemText
-                primary={comment.content}
-                secondary={comment.createdAt}
-              />
-              {comment.userId === userId && (
-                <IconButton
-                  onClick={() => handleDeleteComment(comment._id)}
-                  className="delete-button"
-                >
-                  <DeleteIcon />
-                </IconButton>
-              )}
-            </ListItem>
-          ))}
-        </List>
+        {comments && (
+          <List className="comment-list">
+            {comments.map((comment) => (
+              <ListItem key={comment._id} className="comment-item">
+                <ListItemText
+                  primary={comment.content}
+                  secondary={
+                    ' by ' + comment.username
+                    // + comment.createdAt
+                  }
+                />
+                {comment.userId === userId && (
+                  <IconButton
+                    onClick={() => deleteComment(comment._id)}
+                    className="delete-button"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                )}
+              </ListItem>
+            ))}
+          </List>
+        )}
       </div>
     </div>
   );

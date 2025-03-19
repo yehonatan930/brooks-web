@@ -45,8 +45,13 @@
       align-items: center;
       width: 100%;
 
-      & .input-field {
-        font-size: 1.2rem; /* Increase the font size */
+      .MuiAutocomplete-root {
+        width: 100%;
+      }
+
+      .input-field {
+        width: 100%;
+        font-size: 1.2rem;
         margin-bottom: 20px;
       }
     }

@@ -1,9 +1,18 @@
 import axiosInstance from './axiosInstance';
-import { Comment } from '../types/comment';
+import { Comment, CommentForViewPost } from '../types/comment';
 
-export const getComments = async (postId: string, signal?: AbortSignal) => {
+export const getComments = async (
+  postId: string,
+  signal?: AbortSignal
+): Promise<CommentForViewPost[]> => {
   try {
-    const response = await axiosInstance.get(`/comments/${postId}`, { signal });
+    const response = await axiosInstance.get<CommentForViewPost[]>(
+      `/comments/${postId}`,
+      {
+        signal,
+      }
+    );
+
     return response.data;
   } catch (error) {
     console.error('Error fetching comments:', error);
