@@ -1,4 +1,11 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
+
+export interface CommentForViewPost {
+  _id: string;
+  userId: string;
+  username: string;
+  content: string;
+}
 
 export interface IComment
   extends mongoose.Document<mongoose.Schema.Types.ObjectId> {
@@ -9,7 +16,7 @@ export interface IComment
 
 export const commentSchema = new mongoose.Schema<IComment>({
   _id: { type: mongoose.Schema.Types.ObjectId, required: true },
-  postId: { type: mongoose.Schema.Types.ObjectId, ref: "Post", required: true },
+  postId: { type: mongoose.Schema.Types.ObjectId, ref: 'Post', required: true },
+  userId: { type: String, ref: 'User', required: true }, // Change from String to ObjectId
   content: { type: String, required: true },
-  userId: { type: String, ref: "User", required: true },
 });

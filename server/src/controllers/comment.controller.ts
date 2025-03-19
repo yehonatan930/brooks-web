@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import { commentSchema } from '../schemas/comment.schema';
+import { CommentForViewPost, commentSchema } from '../schemas/comment.schema';
+import { IUser } from '../schemas/user.schema';
 const router = express.Router();
 
 const Comment = mongoose.model('Comment', commentSchema);
@@ -240,8 +241,22 @@ router.get('/', async (req, res) => {
 router.get('/:postId', async (req, res) => {
   const { postId } = req.params;
   try {
-    const comments = await Comment.find({ postId });
-    res.status(200).json(comments);
+    const comments = await Comment.find({ postId }).populate(
+      'userId',
+      'username'
+    );
+
+    const commentsDto: CommentForViewPost[] = comments.map((comment) => {
+      const user = comment.userId as unknown as IUser;
+
+      return {
+        _id: comment._id.toString(),
+        userId: user._id,
+        username: user.username,
+        content: comment.content,
+      };
+    });
+    res.status(200).json(commentsDto);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
