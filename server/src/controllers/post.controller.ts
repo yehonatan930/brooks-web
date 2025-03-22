@@ -10,6 +10,37 @@ const Comment = mongoose.model('Comment', commentSchema);
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     Post:
+ *       type: object
+ *       required:
+ *         - userId
+ *         - bookTitle
+ *         - content
+ *       properties:
+ *         _id:
+ *           type: string
+ *         userId:
+ *           type: string
+ *         bookTitle:
+ *           type: string
+ *         content:
+ *           type: string
+ *         imageUrl:
+ *           type: string
+ *         readingProgress:
+ *           type: number
+ *         authorName:
+ *           type: string
+ *         likesCount:
+ *           type: integer
+ *         commentsCount:
+ *           type: integer
+ */
+
+/**
+ * @swagger
  * tags:
  *   name: Posts
  *   description: API endpoints for managing posts
@@ -31,6 +62,17 @@ const Comment = mongoose.model('Comment', commentSchema);
  *     responses:
  *       200:
  *         description: List of posts with comments count
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 posts:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Post'
+ *                 totalPages:
+ *                   type: integer
  *       500:
  *         description: Server error
  */
@@ -88,10 +130,10 @@ router.get('/feed', async (req, res) => {
  *     parameters:
  *       - in: path
  *         name: id
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
- *         description: The ID of the post
+ *         description: ID of the post to retrieve
  *     responses:
  *       200:
  *         description: The requested post
@@ -166,38 +208,35 @@ router.get('/user/:userId', async (req, res) => {
 
 /**
  * @swagger
- * /posts:
+ * /posts/{id}:
  *   put:
  *     summary: Update a post
  *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the post to update
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
- *             required:
- *               - id
  *             properties:
- *               id:
- *                 type: string
  *               bookTitle:
  *                 type: string
  *               content:
  *                 type: string
- *               imageUrl:
+ *               imageFile:
  *                 type: string
+ *                 format: binary
  *               readingProgress:
- *                 type: string
+ *                 type: number
  *               authorName:
  *                 type: string
- *             example:
- *               id: "64d2f8b0b9f8c9a1a5f8b3c3"
- *               bookTitle: "Updated Title"
- *               content: "Updated content"
- *               imageUrl: "http://example.com/image.jpg"
- *               readingProgress: "75%"
- *               authorName: "Jane Doe"
  *     responses:
  *       200:
  *         description: Updated post
@@ -209,6 +248,8 @@ router.get('/user/:userId', async (req, res) => {
  *         description: Bad request
  *       404:
  *         description: Post not found
+ *       500:
+ *         description: Server error
  */
 router.put('/:id', upload.single('imageFile'), async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
@@ -252,6 +293,9 @@ router.put('/:id', upload.single('imageFile'), async (req, res) => {
  *         multipart/form-data:
  *           schema:
  *             type: object
+ *             required:
+ *               - bookTitle
+ *               - content
  *             properties:
  *               bookTitle:
  *                 type: string
@@ -263,6 +307,12 @@ router.put('/:id', upload.single('imageFile'), async (req, res) => {
  *     responses:
  *       201:
  *         description: Post created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Post'
+ *       400:
+ *         description: Bad request
  *       500:
  *         description: Server error
  */

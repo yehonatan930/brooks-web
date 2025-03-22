@@ -14,21 +14,21 @@ const Comment = mongoose.model('Comment', commentSchema);
  *       type: object
  *       required:
  *         - content
- *         - author
+ *         - userId
  *         - postId
  *       properties:
  *         _id:
  *           type: string
  *         content:
  *           type: string
- *         author:
+ *         userId:
  *           type: string
  *         postId:
  *           type: string
  *       example:
  *         _id: "60d5f2f9b4d6d68f0009f99f"
  *         content: "This is a comment."
- *         author: "60d5f2f9b4d6d68f0009f88f"
+ *         userId: "04680794635033055239"
  *         postId: "60d5f2f9b4d6d68f0009f77f"
  */
 
@@ -119,7 +119,7 @@ router.post('/', async (req, res) => {
  */
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { content, author } = req.body;
+  const { content, userId } = req.body;
 
   if (!content) {
     return res.status(400).json({ error: 'Content is required' });
@@ -128,7 +128,7 @@ router.put('/:id', async (req, res) => {
   try {
     const updatedComment = await Comment.findByIdAndUpdate(
       id,
-      { content, author },
+      { content, userId },
       { new: true }
     );
 
