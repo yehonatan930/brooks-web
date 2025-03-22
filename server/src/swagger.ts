@@ -12,6 +12,11 @@ const options = {
     servers: [
       {
         url: 'http://localhost:80/api',
+        description: 'localhost server',
+      },
+      {
+        url: 'https://node08.cs.colman.ac.il/api',
+        description: 'Production server',
       },
     ],
     components: {
