@@ -12,6 +12,25 @@ const options = {
     servers: [
       {
         url: 'http://localhost:80/api',
+        description: 'localhost server',
+      },
+      {
+        url: 'https://node08.cs.colman.ac.il/api',
+        description: 'Production server',
+      },
+    ],
+    components: {
+      securitySchemes: {
+        BearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+    security: [
+      {
+        BearerAuth: [],
       },
     ],
   },

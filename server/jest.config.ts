@@ -8,7 +8,7 @@ const config: Config = {
   collectCoverage: true,
   coverageDirectory: "coverage",
   testPathIgnorePatterns: ["/node_modules/", "/dist/"],
-  coveragePathIgnorePatterns: ["/node_modules/", "/dist/"],
+  coveragePathIgnorePatterns: ["/node_modules/", "/dist/", "src/utils/", "src/types/"],
   collectCoverageFrom: ["src/**/*.ts"],
   preset: "ts-jest",
   testTimeout: 30000,
